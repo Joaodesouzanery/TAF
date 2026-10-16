@@ -132,6 +132,8 @@ label{display:block;font:500 10.5px var(--mono);letter-spacing:.06em;text-transf
 .toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin:14px 0 4px}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--btn);color:var(--btn-ink);padding:10px 16px;border-radius:10px;z-index:60;font-weight:500;box-shadow:0 10px 30px rgba(0,0,0,.25)}
 .chev{display:inline-block;width:14px;color:var(--ink-3)}
+.pr{display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:8px;margin-top:6px}
+@media (max-width:820px){.pr{grid-template-columns:1fr 1fr}input,select,textarea{min-height:44px;font-size:16px}}
 .kpi4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px}.kpi4>div{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--panel)}
 .kpi4 .v{font-size:22px;font-weight:500;letter-spacing:-.02em;margin-top:3px}
 @media (max-width:820px){.g2,.g3,.kpi4{grid-template-columns:1fr 1fr}}
@@ -611,7 +613,8 @@ window.TAF_CONFIG = {
      "nat": "ADM",
      "share": 1.0
     }
-   ]
+   ],
+   "hh_unit": 0.0
   },
   {
    "codigo": "A.2",
@@ -699,7 +702,8 @@ window.TAF_CONFIG = {
      "nat": "ADM",
      "share": 1.0
     }
-   ]
+   ],
+   "hh_unit": 0.0
   },
   {
    "codigo": "A.3",
@@ -791,7 +795,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.2941
     }
-   ]
+   ],
+   "hh_unit": 0.006
   },
   {
    "codigo": "A.3.1.1.2",
@@ -829,7 +834,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.0211
     }
-   ]
+   ],
+   "hh_unit": 0.0482
   },
   {
    "codigo": "A.3.1.2",
@@ -885,7 +891,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.7879
     }
-   ]
+   ],
+   "hh_unit": 0.0032
   },
   {
    "codigo": "A.3.1.3",
@@ -941,7 +948,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.8466
     }
-   ]
+   ],
+   "hh_unit": 0.0242
   },
   {
    "codigo": "A.3.1.3.2",
@@ -979,7 +987,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 0.0798
   },
   {
    "codigo": "A.3.1.3.3",
@@ -1017,7 +1026,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 0.072
   },
   {
    "codigo": "A.3.1.3.4",
@@ -1055,7 +1065,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 3.6247
   },
   {
    "codigo": "A.3.1.3.5",
@@ -1093,7 +1104,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 0.8308
   },
   {
    "codigo": "A.3.1.3.6",
@@ -1131,7 +1143,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 1.1022
   },
   {
    "codigo": "A.3.1.3.7",
@@ -1169,7 +1182,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 1.1022
   },
   {
    "codigo": "A.3.1.3.8",
@@ -1207,7 +1221,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 2.0194
   },
   {
    "codigo": "A.3.1.3.9",
@@ -1245,7 +1260,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 1.6533
   },
   {
    "codigo": "A.3.1.4",
@@ -1301,7 +1317,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.7005
     }
-   ]
+   ],
+   "hh_unit": 0.027
   },
   {
    "codigo": "A.3.1.4.2",
@@ -1339,7 +1356,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.6956
     }
-   ]
+   ],
+   "hh_unit": 0.0357
   },
   {
    "codigo": "A.3.1.4.3",
@@ -1377,7 +1395,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.8709
     }
-   ]
+   ],
+   "hh_unit": 0.05
   },
   {
    "codigo": "A.3.1.4.4",
@@ -1415,7 +1434,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.8712
     }
-   ]
+   ],
+   "hh_unit": 0.0556
   },
   {
    "codigo": "A.3.1.4.5",
@@ -1453,7 +1473,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.8721
     }
-   ]
+   ],
+   "hh_unit": 0.0125
   },
   {
    "codigo": "A.3.1.4.6",
@@ -1491,7 +1512,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.8706
     }
-   ]
+   ],
+   "hh_unit": 0.0139
   },
   {
    "codigo": "A.3.1.4.7",
@@ -1529,7 +1551,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.5564
     }
-   ]
+   ],
+   "hh_unit": 0.0282
   },
   {
    "codigo": "A.3.1.5",
@@ -1585,7 +1608,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.6147
     }
-   ]
+   ],
+   "hh_unit": 0.0522
   },
   {
    "codigo": "A.3.1.5.2",
@@ -1623,7 +1647,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.8712
     }
-   ]
+   ],
+   "hh_unit": 0.0556
   },
   {
    "codigo": "A.3.1.5.3",
@@ -1661,7 +1686,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.8706
     }
-   ]
+   ],
+   "hh_unit": 0.0139
   },
   {
    "codigo": "A.3.1.5.4",
@@ -1699,7 +1725,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.5565
     }
-   ]
+   ],
+   "hh_unit": 0.0282
   },
   {
    "codigo": "A.3.1.6",
@@ -1759,7 +1786,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.5067
     }
-   ]
+   ],
+   "hh_unit": 0.2685
   },
   {
    "codigo": "A.3.1.6.2",
@@ -1797,7 +1825,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 0.6013
   },
   {
    "codigo": "A.3.2",
@@ -1871,7 +1900,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.2942
     }
-   ]
+   ],
+   "hh_unit": 0.006
   },
   {
    "codigo": "A.3.2.1.2",
@@ -1909,7 +1939,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.0211
     }
-   ]
+   ],
+   "hh_unit": 0.0482
   },
   {
    "codigo": "A.3.2.2",
@@ -1965,7 +1996,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.7879
     }
-   ]
+   ],
+   "hh_unit": 0.0032
   },
   {
    "codigo": "A.3.2.3",
@@ -2021,7 +2053,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.78
     }
-   ]
+   ],
+   "hh_unit": 0.048
   },
   {
    "codigo": "A.3.2.3.2",
@@ -2055,7 +2088,8 @@ window.TAF_CONFIG = {
      "nat": "MO",
      "share": 1.0
     }
-   ]
+   ],
+   "hh_unit": 3.325
   },
   {
    "codigo": "A.3.2.3.3",
@@ -2089,7 +2123,8 @@ window.TAF_CONFIG = {
      "nat": "MO",
      "share": 1.0
     }
-   ]
+   ],
+   "hh_unit": 0.095
   },
   {
    "codigo": "A.3.2.3.4",
@@ -2123,7 +2158,8 @@ window.TAF_CONFIG = {
      "nat": "MO",
      "share": 1.0
     }
-   ]
+   ],
+   "hh_unit": 0.095
   },
   {
    "codigo": "A.3.2.3.5",
@@ -2161,7 +2197,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.1932
     }
-   ]
+   ],
+   "hh_unit": 0.0364
   },
   {
    "codigo": "A.3.2.3.6",
@@ -2199,7 +2236,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.0064
     }
-   ]
+   ],
+   "hh_unit": 0.8471
   },
   {
    "codigo": "A.3.2.3.7",
@@ -2237,7 +2275,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.3461
     }
-   ]
+   ],
+   "hh_unit": 0.2832
   },
   {
    "codigo": "A.3.2.4",
@@ -2293,7 +2332,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.6134
     }
-   ]
+   ],
+   "hh_unit": 0.0396
   },
   {
    "codigo": "A.3.2.4.2",
@@ -2331,7 +2371,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.8709
     }
-   ]
+   ],
+   "hh_unit": 0.05
   },
   {
    "codigo": "A.3.2.4.3",
@@ -2369,7 +2410,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.8722
     }
-   ]
+   ],
+   "hh_unit": 0.0125
   },
   {
    "codigo": "A.3.2.4.4",
@@ -2407,7 +2449,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.5564
     }
-   ]
+   ],
+   "hh_unit": 0.0282
   },
   {
    "codigo": "A.3.2.5",
@@ -2463,7 +2506,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.1686
     }
-   ]
+   ],
+   "hh_unit": 0.45
   },
   {
    "codigo": "A.3.2.5.2",
@@ -2505,7 +2549,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.0183
     }
-   ]
+   ],
+   "hh_unit": 1.4508
   },
   {
    "codigo": "A.3.2.5.3",
@@ -2547,7 +2592,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.0187
     }
-   ]
+   ],
+   "hh_unit": 0.9099
   },
   {
    "codigo": "A.3.2.6",
@@ -2603,7 +2649,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 28.826
   },
   {
    "codigo": "A.3.2.7",
@@ -2659,7 +2706,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 3.6247
   },
   {
    "codigo": "A.3.2.7.2",
@@ -2697,7 +2745,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 0.8308
   },
   {
    "codigo": "A.3.2.8",
@@ -2753,7 +2802,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.5636
     }
-   ]
+   ],
+   "hh_unit": 0.3891
   },
   {
    "codigo": "A.3.2.8.2",
@@ -2795,7 +2845,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.5197
     }
-   ]
+   ],
+   "hh_unit": 0.3358
   },
   {
    "codigo": "A.3.2.9",
@@ -2855,7 +2906,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.0259
     }
-   ]
+   ],
+   "hh_unit": 36.541
   },
   {
    "codigo": "A.3.2.9.2",
@@ -2897,7 +2949,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.0373
     }
-   ]
+   ],
+   "hh_unit": 37.3246
   },
   {
    "codigo": "A.3.3",
@@ -2971,7 +3024,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.2941
     }
-   ]
+   ],
+   "hh_unit": 0.006
   },
   {
    "codigo": "A.3.3.1.2",
@@ -3009,7 +3063,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.0211
     }
-   ]
+   ],
+   "hh_unit": 0.0482
   },
   {
    "codigo": "A.3.3.2",
@@ -3065,7 +3120,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.7879
     }
-   ]
+   ],
+   "hh_unit": 0.0032
   },
   {
    "codigo": "A.3.3.3",
@@ -3121,7 +3177,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.6705
     }
-   ]
+   ],
+   "hh_unit": 0.1108
   },
   {
    "codigo": "A.3.3.3.2",
@@ -3155,7 +3212,8 @@ window.TAF_CONFIG = {
      "nat": "MO",
      "share": 1.0
     }
-   ]
+   ],
+   "hh_unit": 3.325
   },
   {
    "codigo": "A.3.3.3.3",
@@ -3189,7 +3247,8 @@ window.TAF_CONFIG = {
      "nat": "MO",
      "share": 1.0
     }
-   ]
+   ],
+   "hh_unit": 0.095
   },
   {
    "codigo": "A.3.3.3.4",
@@ -3227,7 +3286,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.0064
     }
-   ]
+   ],
+   "hh_unit": 0.8471
   },
   {
    "codigo": "A.3.3.3.5",
@@ -3265,7 +3325,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.3461
     }
-   ]
+   ],
+   "hh_unit": 0.2832
   },
   {
    "codigo": "A.3.3.4",
@@ -3321,7 +3382,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.5568
     }
-   ]
+   ],
+   "hh_unit": 0.0282
   },
   {
    "codigo": "A.3.3.4.2",
@@ -3359,7 +3421,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.6133
     }
-   ]
+   ],
+   "hh_unit": 0.0396
   },
   {
    "codigo": "A.3.3.4.3",
@@ -3397,7 +3460,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.8709
     }
-   ]
+   ],
+   "hh_unit": 0.05
   },
   {
    "codigo": "A.3.3.4.4",
@@ -3435,7 +3499,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.8723
     }
-   ]
+   ],
+   "hh_unit": 0.0125
   },
   {
    "codigo": "A.3.3.5",
@@ -3491,7 +3556,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.1686
     }
-   ]
+   ],
+   "hh_unit": 0.45
   },
   {
    "codigo": "A.3.3.5.2",
@@ -3533,7 +3599,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.0183
     }
-   ]
+   ],
+   "hh_unit": 1.4508
   },
   {
    "codigo": "A.3.3.5.3",
@@ -3575,7 +3642,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.0187
     }
-   ]
+   ],
+   "hh_unit": 0.9099
   },
   {
    "codigo": "A.3.3.6",
@@ -3631,7 +3699,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 3.9846
   },
   {
    "codigo": "A.3.3.7",
@@ -3691,7 +3760,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.0824
     }
-   ]
+   ],
+   "hh_unit": 0.1026
   },
   {
    "codigo": "A.3.3.9",
@@ -3747,7 +3817,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 3.6247
   },
   {
    "codigo": "A.3.3.9.2",
@@ -3785,7 +3856,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 0.8308
   },
   {
    "codigo": "A.3.4",
@@ -3859,7 +3931,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.0238
     }
-   ]
+   ],
+   "hh_unit": 0.0561
   },
   {
    "codigo": "A.3.4.1.2",
@@ -3897,7 +3970,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.0211
     }
-   ]
+   ],
+   "hh_unit": 0.0482
   },
   {
    "codigo": "A.3.4.2",
@@ -3953,7 +4027,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.7879
     }
-   ]
+   ],
+   "hh_unit": 0.0032
   },
   {
    "codigo": "A.3.4.3",
@@ -4009,7 +4084,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.78
     }
-   ]
+   ],
+   "hh_unit": 0.048
   },
   {
    "codigo": "A.3.4.3.2",
@@ -4047,7 +4123,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.7806
     }
-   ]
+   ],
+   "hh_unit": 0.0602
   },
   {
    "codigo": "A.3.4.3.3",
@@ -4085,7 +4162,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.7806
     }
-   ]
+   ],
+   "hh_unit": 0.058
   },
   {
    "codigo": "A.3.4.3.4",
@@ -4119,7 +4197,8 @@ window.TAF_CONFIG = {
      "nat": "MO",
      "share": 1.0
     }
-   ]
+   ],
+   "hh_unit": 3.325
   },
   {
    "codigo": "A.3.4.3.5",
@@ -4153,7 +4232,8 @@ window.TAF_CONFIG = {
      "nat": "MO",
      "share": 1.0
     }
-   ]
+   ],
+   "hh_unit": 0.095
   },
   {
    "codigo": "A.3.4.3.6",
@@ -4191,7 +4271,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.1932
     }
-   ]
+   ],
+   "hh_unit": 0.0364
   },
   {
    "codigo": "A.3.4.3.7",
@@ -4229,7 +4310,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.0064
     }
-   ]
+   ],
+   "hh_unit": 0.8471
   },
   {
    "codigo": "A.3.4.3.8",
@@ -4267,7 +4349,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.3706
     }
-   ]
+   ],
+   "hh_unit": 0.1116
   },
   {
    "codigo": "A.3.4.4",
@@ -4323,7 +4406,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.6134
     }
-   ]
+   ],
+   "hh_unit": 0.0396
   },
   {
    "codigo": "A.3.4.4.2",
@@ -4361,7 +4445,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.6148
     }
-   ]
+   ],
+   "hh_unit": 0.0522
   },
   {
    "codigo": "A.3.4.4.3",
@@ -4399,7 +4484,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.8709
     }
-   ]
+   ],
+   "hh_unit": 0.05
   },
   {
    "codigo": "A.3.4.4.4",
@@ -4437,7 +4523,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.8712
     }
-   ]
+   ],
+   "hh_unit": 0.0556
   },
   {
    "codigo": "A.3.4.4.5",
@@ -4475,7 +4562,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.872
     }
-   ]
+   ],
+   "hh_unit": 0.0125
   },
   {
    "codigo": "A.3.4.4.6",
@@ -4513,7 +4601,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.8707
     }
-   ]
+   ],
+   "hh_unit": 0.0139
   },
   {
    "codigo": "A.3.4.4.7",
@@ -4551,7 +4640,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.5564
     }
-   ]
+   ],
+   "hh_unit": 0.0282
   },
   {
    "codigo": "A.3.4.5",
@@ -4607,7 +4697,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.1686
     }
-   ]
+   ],
+   "hh_unit": 0.45
   },
   {
    "codigo": "A.3.4.5.2",
@@ -4649,7 +4740,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.0183
     }
-   ]
+   ],
+   "hh_unit": 1.4508
   },
   {
    "codigo": "A.3.4.5.3",
@@ -4691,7 +4783,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.0187
     }
-   ]
+   ],
+   "hh_unit": 0.9099
   },
   {
    "codigo": "A.3.4.6",
@@ -4751,7 +4844,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.0004
     }
-   ]
+   ],
+   "hh_unit": 35.0294
   },
   {
    "codigo": "A.3.4.6.2",
@@ -4789,7 +4883,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 0.615
   },
   {
    "codigo": "A.3.4.7",
@@ -4845,7 +4940,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 11.0237
   },
   {
    "codigo": "A.3.4.8",
@@ -4905,7 +5001,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.1005
     }
-   ]
+   ],
+   "hh_unit": 0.1343
   },
   {
    "codigo": "A.3.4.8.2",
@@ -4947,7 +5044,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.1097
     }
-   ]
+   ],
+   "hh_unit": 0.1571
   },
   {
    "codigo": "A.3.4.8.3",
@@ -4989,7 +5087,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.3559
     }
-   ]
+   ],
+   "hh_unit": 0.2052
   },
   {
    "codigo": "A.3.4.8.4",
@@ -5031,7 +5130,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.4448
     }
-   ]
+   ],
+   "hh_unit": 0.2183
   },
   {
    "codigo": "A.3.4.8.5",
@@ -5069,7 +5169,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.5636
     }
-   ]
+   ],
+   "hh_unit": 0.3891
   },
   {
    "codigo": "A.3.4.9",
@@ -5129,7 +5230,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.0316
     }
-   ]
+   ],
+   "hh_unit": 34.3805
   },
   {
    "codigo": "A.3.4.9.2",
@@ -5171,7 +5273,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.0539
     }
-   ]
+   ],
+   "hh_unit": 37.4335
   },
   {
    "codigo": "A.3.5",
@@ -5245,7 +5348,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.4719
     }
-   ]
+   ],
+   "hh_unit": 0.26
   },
   {
    "codigo": "A.3.5.2",
@@ -5301,7 +5405,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 0.0852
   },
   {
    "codigo": "A.3.5.2.2",
@@ -5339,7 +5444,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 0.1028
   },
   {
    "codigo": "A.3.5.2.3",
@@ -5373,7 +5479,8 @@ window.TAF_CONFIG = {
      "nat": "MO",
      "share": 1.0
     }
-   ]
+   ],
+   "hh_unit": 3.5
   },
   {
    "codigo": "A.3.5.2.4",
@@ -5407,7 +5514,8 @@ window.TAF_CONFIG = {
      "nat": "MO",
      "share": 1.0
     }
-   ]
+   ],
+   "hh_unit": 0.115
   },
   {
    "codigo": "A.3.5.2.5",
@@ -5441,7 +5549,8 @@ window.TAF_CONFIG = {
      "nat": "MO",
      "share": 1.0
     }
-   ]
+   ],
+   "hh_unit": 0.4
   },
   {
    "codigo": "A.3.5.2.6",
@@ -5479,7 +5588,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 0.0242
   },
   {
    "codigo": "A.3.5.2.7",
@@ -5513,7 +5623,8 @@ window.TAF_CONFIG = {
      "nat": "MO",
      "share": 1.0
     }
-   ]
+   ],
+   "hh_unit": 1.44
   },
   {
    "codigo": "A.3.5.2.8",
@@ -5551,7 +5662,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.3572
     }
-   ]
+   ],
+   "hh_unit": 0.2425
   },
   {
    "codigo": "A.3.5.3",
@@ -5607,7 +5719,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.2984
     }
-   ]
+   ],
+   "hh_unit": 0.6306
   },
   {
    "codigo": "A.3.5.3.2",
@@ -5645,7 +5758,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.6134
     }
-   ]
+   ],
+   "hh_unit": 0.0396
   },
   {
    "codigo": "A.3.5.3.3",
@@ -5683,7 +5797,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.6149
     }
-   ]
+   ],
+   "hh_unit": 0.0522
   },
   {
    "codigo": "A.3.5.3.4",
@@ -5721,7 +5836,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.8709
     }
-   ]
+   ],
+   "hh_unit": 0.05
   },
   {
    "codigo": "A.3.5.3.5",
@@ -5759,7 +5875,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.8713
     }
-   ]
+   ],
+   "hh_unit": 0.0556
   },
   {
    "codigo": "A.3.5.3.6",
@@ -5797,7 +5914,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.8721
     }
-   ]
+   ],
+   "hh_unit": 0.0125
   },
   {
    "codigo": "A.3.5.3.7",
@@ -5835,7 +5953,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.8707
     }
-   ]
+   ],
+   "hh_unit": 0.0139
   },
   {
    "codigo": "A.3.5.3.8",
@@ -5873,7 +5992,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.5565
     }
-   ]
+   ],
+   "hh_unit": 0.0282
   },
   {
    "codigo": "A.3.5.4",
@@ -5929,7 +6049,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 0.3107
   },
   {
    "codigo": "A.3.5.5",
@@ -5989,7 +6110,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.003
     }
-   ]
+   ],
+   "hh_unit": 0.7325
   },
   {
    "codigo": "A.3.5.5.2",
@@ -6027,7 +6149,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.6657
     }
-   ]
+   ],
+   "hh_unit": 1.47
   },
   {
    "codigo": "A.3.5.5.3",
@@ -6065,7 +6188,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.5614
     }
-   ]
+   ],
+   "hh_unit": 0.2463
   },
   {
    "codigo": "A.3.5.5.4",
@@ -6103,7 +6227,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.6655
     }
-   ]
+   ],
+   "hh_unit": 0.1713
   },
   {
    "codigo": "A.3.5.5.5",
@@ -6141,7 +6266,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7469
     }
-   ]
+   ],
+   "hh_unit": 0.1184
   },
   {
    "codigo": "A.3.5.5.6",
@@ -6179,7 +6305,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7968
     }
-   ]
+   ],
+   "hh_unit": 0.0832
   },
   {
    "codigo": "A.3.5.5.7",
@@ -6217,7 +6344,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.8314
     }
-   ]
+   ],
+   "hh_unit": 0.0574
   },
   {
    "codigo": "A.3.5.5.8",
@@ -6259,7 +6387,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.0001
     }
-   ]
+   ],
+   "hh_unit": 1.391
   },
   {
    "codigo": "A.3.5.6",
@@ -6315,7 +6444,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.2917
     }
-   ]
+   ],
+   "hh_unit": 0.507
   },
   {
    "codigo": "A.3.5.6.2",
@@ -6353,7 +6483,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.3164
     }
-   ]
+   ],
+   "hh_unit": 0.6524
   },
   {
    "codigo": "A.3.5.7",
@@ -6413,7 +6544,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.0079
     }
-   ]
+   ],
+   "hh_unit": 1.2131
   },
   {
    "codigo": "A.3.5.8",
@@ -6469,7 +6601,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.0443
     }
-   ]
+   ],
+   "hh_unit": 0.1
   },
   {
    "codigo": "A.3.5.9",
@@ -6525,7 +6658,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 8.581
   },
   {
    "codigo": "A.3.5.9.2",
@@ -6563,7 +6697,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 23.3726
   },
   {
    "codigo": "A.3.5.10",
@@ -6619,7 +6754,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.2509
     }
-   ]
+   ],
+   "hh_unit": 2.6093
   },
   {
    "codigo": "A.3.5.10.2",
@@ -6661,7 +6797,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.0665
     }
-   ]
+   ],
+   "hh_unit": 6.5
   },
   {
    "codigo": "A.3.5.10.3",
@@ -6699,7 +6836,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.6363
     }
-   ]
+   ],
+   "hh_unit": 2.8
   },
   {
    "codigo": "A.3.5.10.4",
@@ -6737,7 +6875,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 0.6573
   },
   {
    "codigo": "A.3.5.10.5",
@@ -6775,7 +6914,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 7.3129
   },
   {
    "codigo": "A.3.5.10.6",
@@ -6813,7 +6953,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 1.5052
   },
   {
    "codigo": "A.3.5.10.7",
@@ -6851,7 +6992,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 2.4858
   },
   {
    "codigo": "A.3.5.11",
@@ -6907,7 +7049,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 154.5179
   },
   {
    "codigo": "A.3.6",
@@ -6977,7 +7120,8 @@ window.TAF_CONFIG = {
      "nat": "MO",
      "share": 1.0
     }
-   ]
+   ],
+   "hh_unit": 0.04
   },
   {
    "codigo": "A.3.6.1.2",
@@ -7015,7 +7159,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.4719
     }
-   ]
+   ],
+   "hh_unit": 0.26
   },
   {
    "codigo": "A.3.6.2",
@@ -7071,7 +7216,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 0.0205
   },
   {
    "codigo": "A.3.6.2.2",
@@ -7109,7 +7255,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.7726
     }
-   ]
+   ],
+   "hh_unit": 0.0323
   },
   {
    "codigo": "A.3.6.2.3",
@@ -7143,7 +7290,8 @@ window.TAF_CONFIG = {
      "nat": "MO",
      "share": 1.0
     }
-   ]
+   ],
+   "hh_unit": 3.5
   },
   {
    "codigo": "A.3.6.2.4",
@@ -7177,7 +7325,8 @@ window.TAF_CONFIG = {
      "nat": "MO",
      "share": 1.0
     }
-   ]
+   ],
+   "hh_unit": 5.8
   },
   {
    "codigo": "A.3.6.2.5",
@@ -7211,7 +7360,8 @@ window.TAF_CONFIG = {
      "nat": "MO",
      "share": 1.0
     }
-   ]
+   ],
+   "hh_unit": 0.115
   },
   {
    "codigo": "A.3.6.2.6",
@@ -7245,7 +7395,8 @@ window.TAF_CONFIG = {
      "nat": "MO",
      "share": 1.0
     }
-   ]
+   ],
+   "hh_unit": 0.4
   },
   {
    "codigo": "A.3.6.2.7",
@@ -7283,7 +7434,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 0.0242
   },
   {
    "codigo": "A.3.6.2.8",
@@ -7317,7 +7469,8 @@ window.TAF_CONFIG = {
      "nat": "MO",
      "share": 1.0
     }
-   ]
+   ],
+   "hh_unit": 1.44
   },
   {
    "codigo": "A.3.6.2.9",
@@ -7355,7 +7508,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.3572
     }
-   ]
+   ],
+   "hh_unit": 0.2425
   },
   {
    "codigo": "A.3.6.3",
@@ -7411,7 +7565,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.2984
     }
-   ]
+   ],
+   "hh_unit": 0.6306
   },
   {
    "codigo": "A.3.6.3.2",
@@ -7449,7 +7604,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.8709
     }
-   ]
+   ],
+   "hh_unit": 0.05
   },
   {
    "codigo": "A.3.6.3.3",
@@ -7487,7 +7643,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.8712
     }
-   ]
+   ],
+   "hh_unit": 0.0556
   },
   {
    "codigo": "A.3.6.3.4",
@@ -7525,7 +7682,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.8721
     }
-   ]
+   ],
+   "hh_unit": 0.0125
   },
   {
    "codigo": "A.3.6.3.5",
@@ -7563,7 +7721,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.8706
     }
-   ]
+   ],
+   "hh_unit": 0.0139
   },
   {
    "codigo": "A.3.6.3.6",
@@ -7601,7 +7760,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.5565
     }
-   ]
+   ],
+   "hh_unit": 0.0282
   },
   {
    "codigo": "A.3.6.4",
@@ -7657,7 +7817,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.2501
     }
-   ]
+   ],
+   "hh_unit": 0.6605
   },
   {
    "codigo": "A.3.6.4.2",
@@ -7695,7 +7856,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.8705
     }
-   ]
+   ],
+   "hh_unit": 0.0139
   },
   {
    "codigo": "A.3.6.4.3",
@@ -7733,7 +7895,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.5563
     }
-   ]
+   ],
+   "hh_unit": 0.0282
   },
   {
    "codigo": "A.3.6.5",
@@ -7789,7 +7952,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 0.3107
   },
   {
    "codigo": "A.3.6.6",
@@ -7845,7 +8009,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.709
     }
-   ]
+   ],
+   "hh_unit": 2.0
   },
   {
    "codigo": "A.3.6.6.2",
@@ -7887,7 +8052,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.003
     }
-   ]
+   ],
+   "hh_unit": 0.7325
   },
   {
    "codigo": "A.3.6.7",
@@ -7943,7 +8109,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.6657
     }
-   ]
+   ],
+   "hh_unit": 1.47
   },
   {
    "codigo": "A.3.6.7.2",
@@ -7981,7 +8148,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.5614
     }
-   ]
+   ],
+   "hh_unit": 0.2463
   },
   {
    "codigo": "A.3.6.7.3",
@@ -8019,7 +8187,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.6655
     }
-   ]
+   ],
+   "hh_unit": 0.1713
   },
   {
    "codigo": "A.3.6.7.4",
@@ -8057,7 +8226,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7469
     }
-   ]
+   ],
+   "hh_unit": 0.1184
   },
   {
    "codigo": "A.3.6.7.5",
@@ -8095,7 +8265,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7968
     }
-   ]
+   ],
+   "hh_unit": 0.0832
   },
   {
    "codigo": "A.3.6.7.6",
@@ -8133,7 +8304,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.8314
     }
-   ]
+   ],
+   "hh_unit": 0.0574
   },
   {
    "codigo": "A.3.6.7.7",
@@ -8175,7 +8347,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.0001
     }
-   ]
+   ],
+   "hh_unit": 1.391
   },
   {
    "codigo": "A.3.6.8",
@@ -8231,7 +8404,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.3164
     }
-   ]
+   ],
+   "hh_unit": 0.6524
   },
   {
    "codigo": "A.3.6.8.2",
@@ -8269,7 +8443,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.2917
     }
-   ]
+   ],
+   "hh_unit": 0.507
   },
   {
    "codigo": "A.3.6.9",
@@ -8329,7 +8504,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.0079
     }
-   ]
+   ],
+   "hh_unit": 1.2131
   },
   {
    "codigo": "A.3.6.10",
@@ -8385,7 +8561,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.2508
     }
-   ]
+   ],
+   "hh_unit": 2.6093
   },
   {
    "codigo": "A.3.6.10.2",
@@ -8427,7 +8604,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.0665
     }
-   ]
+   ],
+   "hh_unit": 6.5
   },
   {
    "codigo": "A.3.6.10.3",
@@ -8465,7 +8643,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.0443
     }
-   ]
+   ],
+   "hh_unit": 0.1
   },
   {
    "codigo": "A.3.6.10.4",
@@ -8503,7 +8682,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 18.6341
   },
   {
    "codigo": "A.3.6.10.5",
@@ -8541,7 +8721,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 7.3995
   },
   {
    "codigo": "A.3.6.10.6",
@@ -8579,7 +8760,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 6.8158
   },
   {
    "codigo": "A.3.6.11",
@@ -8639,7 +8821,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.134
     }
-   ]
+   ],
+   "hh_unit": 0.0704
   },
   {
    "codigo": "A.3.6.12",
@@ -8695,7 +8878,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 1.2538
   },
   {
    "codigo": "A.3.6.12.2",
@@ -8733,7 +8917,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 4.0992
   },
   {
    "codigo": "A.3.6.12.3",
@@ -8771,7 +8956,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7091
     }
-   ]
+   ],
+   "hh_unit": 2.0
   },
   {
    "codigo": "A.3.6.12.4",
@@ -8809,7 +8995,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 40.4367
   },
   {
    "codigo": "A.3.6.13",
@@ -8865,7 +9052,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 8.5679
   },
   {
    "codigo": "A.3.6.13.2",
@@ -8903,7 +9091,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 27.6793
   },
   {
    "codigo": "A.3.7",
@@ -8977,7 +9166,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.0443
     }
-   ]
+   ],
+   "hh_unit": 0.1
   },
   {
    "codigo": "A.3.7.2",
@@ -9037,7 +9227,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.004
     }
-   ]
+   ],
+   "hh_unit": 0.3706
   },
   {
    "codigo": "A.3.7.2.2",
@@ -9079,7 +9270,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.0008
     }
-   ]
+   ],
+   "hh_unit": 3.451
   },
   {
    "codigo": "A.3.7.2.3",
@@ -9117,7 +9309,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.6426
     }
-   ]
+   ],
+   "hh_unit": 0.8035
   },
   {
    "codigo": "A.3.7.2.4",
@@ -9159,7 +9352,8 @@ window.TAF_CONFIG = {
      "nat": "TER",
      "share": 0.5797
     }
-   ]
+   ],
+   "hh_unit": 0.2
   },
   {
    "codigo": "A.3.7.2.5",
@@ -9197,7 +9391,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7535
     }
-   ]
+   ],
+   "hh_unit": 0.2
   },
   {
    "codigo": "A.3.7.2.6",
@@ -9235,7 +9430,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 85.9175
   },
   {
    "codigo": "A.3.8",
@@ -9309,7 +9505,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 110.4778
   },
   {
    "codigo": "A.3.8.2",
@@ -9365,7 +9562,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 2.6548
   },
   {
    "codigo": "A.3.8.2.2",
@@ -9407,7 +9605,8 @@ window.TAF_CONFIG = {
      "nat": "EQP",
      "share": 0.0011
     }
-   ]
+   ],
+   "hh_unit": 4.1916
   },
   {
    "codigo": "A.3.8.3",
@@ -9463,7 +9662,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 62.3242
   },
   {
    "codigo": "A.3.8.3.2",
@@ -9501,7 +9701,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 175.9286
   },
   {
    "codigo": "A.3.8.3.3",
@@ -9539,7 +9740,8 @@ window.TAF_CONFIG = {
      "nat": "MAT",
      "share": 0.7
     }
-   ]
+   ],
+   "hh_unit": 6.9088
   },
   {
    "codigo": "B",
@@ -15007,7 +15209,8 @@ window.TAF_CONFIG = {
      "nat": "ADM",
      "share": 1.0
     }
-   ]
+   ],
+   "hh_unit": 0.0
   }
  ],
  "relatorio": {
@@ -15026,6 +15229,200 @@ window.TAF_CONFIG = {
   "fonte": "e462d91e-OBRA_342_-_ESTUDO_DE_OBRA_INTERNO_REV10.xlsx",
   "aviso": "META DE COMPRA enviada está marcada SUBSTITUÍDO pela REV02; usada a aba 11/12 do Estudo REV10. Aguardando REV13/META REV02."
  },
+ "banco_mo": [
+  {
+   "funcao": "Engenheiro de produção",
+   "equipe": "INDIRETA",
+   "custo_mensal": 9500.0,
+   "custo_hora": 43.18
+  },
+  {
+   "funcao": "Encarregado geral",
+   "equipe": "INDIRETA",
+   "custo_mensal": 16629.13,
+   "custo_hora": 75.59
+  },
+  {
+   "funcao": "Técnico de segurança",
+   "equipe": "INDIRETA",
+   "custo_mensal": 5601.3,
+   "custo_hora": 25.46
+  },
+  {
+   "funcao": "Almoxarife / comprador",
+   "equipe": "INDIRETA",
+   "custo_mensal": 5420.77,
+   "custo_hora": 24.64
+  },
+  {
+   "funcao": "Auxiliar de escritório",
+   "equipe": "INDIRETA",
+   "custo_mensal": 4470.39,
+   "custo_hora": 20.32
+  },
+  {
+   "funcao": "Auxiliar de serviços gerais",
+   "equipe": "INDIRETA",
+   "custo_mensal": 3614.96,
+   "custo_hora": 16.43
+  },
+  {
+   "funcao": "Vigia",
+   "equipe": "INDIRETA",
+   "custo_mensal": 4187.84,
+   "custo_hora": 19.04
+  },
+  {
+   "funcao": "Encarregado de estruturas",
+   "equipe": "DIRETA",
+   "custo_mensal": 7254.91,
+   "custo_hora": 32.98
+  },
+  {
+   "funcao": "Encarregado de redes",
+   "equipe": "DIRETA",
+   "custo_mensal": 7254.91,
+   "custo_hora": 32.98
+  },
+  {
+   "funcao": "Encarregado de drenagem",
+   "equipe": "DIRETA",
+   "custo_mensal": 7254.91,
+   "custo_hora": 32.98
+  },
+  {
+   "funcao": "Pedreiro",
+   "equipe": "DIRETA",
+   "custo_mensal": 5420.77,
+   "custo_hora": 24.64
+  },
+  {
+   "funcao": "Carpinteiro",
+   "equipe": "DIRETA",
+   "custo_mensal": 5420.77,
+   "custo_hora": 24.64
+  },
+  {
+   "funcao": "Armador",
+   "equipe": "DIRETA",
+   "custo_mensal": 5420.77,
+   "custo_hora": 24.64
+  },
+  {
+   "funcao": "Encanador",
+   "equipe": "DIRETA",
+   "custo_mensal": 5420.77,
+   "custo_hora": 24.64
+  },
+  {
+   "funcao": "Montador hidráulico",
+   "equipe": "DIRETA",
+   "custo_mensal": 5420.77,
+   "custo_hora": 24.64
+  },
+  {
+   "funcao": "Assentador de tubos",
+   "equipe": "DIRETA",
+   "custo_mensal": 5420.77,
+   "custo_hora": 24.64
+  },
+  {
+   "funcao": "Eletricista",
+   "equipe": "DIRETA",
+   "custo_mensal": 5420.77,
+   "custo_hora": 24.64
+  },
+  {
+   "funcao": "Ajudante",
+   "equipe": "DIRETA",
+   "custo_mensal": 3614.96,
+   "custo_hora": 16.43
+  },
+  {
+   "funcao": "Ajudante de eletricista",
+   "equipe": "DIRETA",
+   "custo_mensal": 3614.96,
+   "custo_hora": 16.43
+  },
+  {
+   "funcao": "Jardineiro",
+   "equipe": "DIRETA",
+   "custo_mensal": 3614.96,
+   "custo_hora": 16.43
+  },
+  {
+   "funcao": "Topógrafo",
+   "equipe": "DIRETA",
+   "custo_mensal": 0.0,
+   "custo_hora": 0.0
+  },
+  {
+   "funcao": "Auxiliar de topografia",
+   "equipe": "DIRETA",
+   "custo_mensal": 0.0,
+   "custo_hora": 0.0
+  },
+  {
+   "funcao": "Operador de escavadeira",
+   "equipe": "DIRETA",
+   "custo_mensal": 750.58,
+   "custo_hora": 3.41
+  },
+  {
+   "funcao": "Operador de compactação",
+   "equipe": "DIRETA",
+   "custo_mensal": 0.0,
+   "custo_hora": 0.0
+  },
+  {
+   "funcao": "Operador de guindauto",
+   "equipe": "DIRETA",
+   "custo_mensal": 0.0,
+   "custo_hora": 0.0
+  },
+  {
+   "funcao": "Motorista basculante",
+   "equipe": "DIRETA",
+   "custo_mensal": 750.58,
+   "custo_hora": 3.41
+  },
+  {
+   "funcao": "Impermeabilizador",
+   "equipe": "DIRETA",
+   "custo_mensal": 0.0,
+   "custo_hora": 0.0
+  },
+  {
+   "funcao": "Instalador de meio filtrante",
+   "equipe": "DIRETA",
+   "custo_mensal": 0.0,
+   "custo_hora": 0.0
+  },
+  {
+   "funcao": "Técnico de bombas",
+   "equipe": "DIRETA",
+   "custo_mensal": 0.0,
+   "custo_hora": 0.0
+  },
+  {
+   "funcao": "Técnico de automação",
+   "equipe": "DIRETA",
+   "custo_mensal": 0.0,
+   "custo_hora": 0.0
+  },
+  {
+   "funcao": "Técnico de ensaios elétricos",
+   "equipe": "DIRETA",
+   "custo_mensal": 0.0,
+   "custo_hora": 0.0
+  },
+  {
+   "funcao": "Técnico de comissionamento",
+   "equipe": "DIRETA",
+   "custo_mensal": 0.0,
+   "custo_hora": 0.0
+  }
+ ],
  "plano": [
   {
    "codigo": "3",
@@ -15268,7 +15665,7 @@ const hojeISO=()=>new Date().toISOString().slice(0,10);
 const diasAte=s=>s?Math.round((new Date(s+'T00:00:00')-new Date(hojeISO()+'T00:00:00'))/864e5):null;
 const fdata=s=>s?s.split('-').reverse().join('/'):'—';
 const ico=n=>`<svg class="ic" viewBox="0 0 24 24">${ICON[n]||''}</svg>`;
-const ICON={hoje:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+const ICON={campo:'<path d="M3 21h18M5 21V10l7-6 7 6v11M10 21v-6h4v6"/>',lean:'<path d="M4 6h16M4 12h16M4 18h10M17 17l2 2 3-4"/>',hoje:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
  eap:'<path d="M4 6h16M4 12h10M4 18h6"/>',pac:'<path d="M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8"/>',
  compras:'<path d="M5 6h15l-1.5 9h-12zM5 6L4 3H2M9 20a1 1 0 1 0 0 .01M17 20a1 1 0 1 0 0 .01"/>',
  nota:'<path d="M7 3h8l4 4v14H7zM15 3v4h4M10 12h6M10 16h6"/>',pain:'<path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/>',fin:'<path d="M3 7h18v12H3zM3 11h18M7 15h3"/>',med:'<path d="M3 17l5-5 4 4 8-9"/>',plano:'<path d="M4 5h16M4 10h12M4 15h8M4 20h4"/>',aud:'<path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/>'};
@@ -15277,10 +15674,11 @@ const ICON={hoje:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" 
 const ROLES={gestao:{n:'Gestão da carteira',u:'Felipe'},diretoria:{n:'Diretoria',u:'Thadeu'},gerente:{n:'Gerente de contrato',u:'Tiago Marinho'},
  engenheiro:{n:'Engenheiro residente',u:'Marko Aurélio'},compras:{n:'Compras e suprimentos',u:'Compras'},almox:{n:'Almoxarife',u:'Almoxarife'},
  adm:{n:'Administrativo de obra',u:'Administrativo'},financeiro:{n:'Financeiro',u:'Financeiro'},
+ encarregado:{n:'Encarregado de campo',u:'Encarregado'},planejamento:{n:'Planejamento',u:'Planejamento'},
  admin:{n:'Administrador',u:'Administrador'},pendente:{n:'Aguardando liberação',u:'Novo usuário'}};
-const PAPEIS_ATRIBUIVEIS=['admin','gestao','diretoria','gerente','engenheiro','compras','almox','adm','financeiro','pendente'];
+const PAPEIS_ATRIBUIVEIS=['admin','gestao','diretoria','gerente','engenheiro','compras','almox','adm','financeiro','encarregado','planejamento','pendente'];
 const CAN={congelar:['gestao','diretoria'],solicitar:['engenheiro','gerente'],cotar:['compras'],receber:['almox','engenheiro'],
- nota:['adm','engenheiro'],liberar:['financeiro'],remanejar:['gerente','diretoria'],medir:['engenheiro','gerente'],atestar:['gerente','diretoria'],param:['diretoria','gestao']};
+ nota:['adm','engenheiro'],liberar:['financeiro'],remanejar:['gerente','diretoria'],medir:['engenheiro','gerente'],atestar:['gerente','diretoria'],param:['diretoria','gestao'],apontar:['encarregado','engenheiro','gerente'],aprovarApt:['engenheiro','gerente'],lean:['engenheiro','gerente','planejamento','encarregado','compras','diretoria']};
 const isRole=(...r)=>r.includes(S.role)||S.role==='admin';
 const can=a=>CAN[a].includes(S.role)||S.role==='admin';
 const user=()=>(MODO_SB&&SB.perfil)?SB.perfil.nome:ROLES[S.role].u;
@@ -15291,7 +15689,7 @@ const CFG=window.TAF_CONFIG||{};
 const MODO_SB=!!(CFG.supabaseUrl&&CFG.supabaseKey)&&!/[?&]demo=1/.test(location.search);
 const SB={c:null,user:null,perfil:null,obraId:null,sync:{},estado:'',timer:null,busy:false,perfis:[]};
 let S={view:'hoje',tab:{},role:'engenheiro',D:null,t:null,exp:new Set(),q:''};
-const novoT=()=>({titulos:[],frozen:false,versao:1,hist:[],metaOv:{},sols:[],ocs:[],notas:[],aud:[],meds:[],conc:[],seq:{sol:0,oc:0,nf:0,bm:0},par:{tol:0.02,limite:100000}});
+const novoT=()=>({titulos:[],frozen:false,versao:1,hist:[],metaOv:{},sols:[],ocs:[],notas:[],aud:[],meds:[],conc:[],apts:[],rsts:[],atvs:[],tars:[],seq:{sol:0,oc:0,nf:0,bm:0},par:{tol:0.02,limite:100000}});
 const save=()=>{if(MODO_SB){sbSyncSoon();return}try{localStorage.setItem(KEY,JSON.stringify({...S.t,role:S.role}))}catch(e){}};
 function loadT(){try{const j=JSON.parse(localStorage.getItem(KEY)||'null');if(j){S.role=j.role||S.role;delete j.role;return {...novoT(),...j}}}catch(e){}return novoT()}
 const log=(ent,ref,campo,antes,depois,motivo='')=>S.t.aud.unshift({id:'a'+Date.now()+Math.random().toString(36).slice(2,6),q:new Date().toISOString(),quem:user()+' ('+ROLES[S.role].n+')',ent,ref,campo,antes:String(antes??''),depois:String(depois??''),motivo});
@@ -15302,9 +15700,15 @@ function toast(m){document.querySelectorAll('.toast').forEach(x=>x.remove());con
 const cmpCod=(a,b)=>{const x=a.split('.'),y=b.split('.');for(let i=0;i<Math.max(x.length,y.length);i++){const p=x[i],q=y[i];if(p===undefined)return -1;if(q===undefined)return 1;
   const n=/^\d+$/.test(p)&&/^\d+$/.test(q);const d=n?(+p)-(+q):p.localeCompare(q);if(d)return d}return 0};
 const estadoObra=()=>({frozen:S.t.frozen,versao:S.t.versao,hist:S.t.hist,metaOv:S.t.metaOv,par:S.t.par});
-const DOCS=[['sols','sol'],['ocs','oc'],['notas','nf'],['titulos','tit'],['meds','med'],['aud','aud']];
+const DOCS=[['sols','sol'],['ocs','oc'],['notas','nf'],['titulos','tit'],['meds','med'],['aud','aud'],['apts','apt'],['rsts','rst'],['atvs','atv'],['tars','tar']];
 function sbDocs(){const out=[];DOCS.forEach(([k,tipo])=>(S.t[k]||[]).forEach(o=>{if(!o.id)o.id=tipo+Date.now()+Math.random().toString(36).slice(2,6);out.push({id:o.id,obra_id:SB.obraId,tipo,dados:o})}));return out}
 function sbSyncSoon(){clearTimeout(SB.timer);SB.timer=setTimeout(()=>{SB.timer=null;sbSync()},250)}
+const filaKey=()=>'taf_fila_'+SB.obraId;
+function filaMerge(t){try{const q=JSON.parse(localStorage.getItem(filaKey())||'[]');if(!q.length)return;const rev=Object.fromEntries(DOCS.map(([k,tp])=>[tp,k]));
+  q.forEach(d=>{const k=rev[d.tipo];if(k&&!SB.sync[d.id]&&!t[k].some(o=>o.id===d.id))t[k].unshift(d.dados)})}catch(e){}}
+function filaSalva(docs){try{localStorage.setItem(filaKey(),JSON.stringify(docs.map(d=>({id:d.id,tipo:d.tipo,dados:d.dados}))))}catch(e){}}
+const semRede=e=>!navigator.onLine||/fetch|network|load failed/i.test(String(e&&e.message||e));
+window.addEventListener('online',()=>{if(MODO_SB&&SB.obraId)sbSync()});
 async function sbSync(){
   if(SB.busy){sbSyncSoon();return}SB.busy=true;
   try{
@@ -15312,16 +15716,19 @@ async function sbSync(){
     if(docs.length){const {error}=await SB.c.from('documento').upsert(docs.map(d=>({id:d.id,obra_id:d.obra_id,tipo:d.tipo,dados:d.dados})),{onConflict:'id'});if(error)throw error;docs.forEach(d=>SB.sync[d.id]=d._j)}
     const est=JSON.stringify(estadoObra());
     if(est!==SB.estado){const {error}=await SB.c.from('obra').update({estado:JSON.parse(est)}).eq('id',SB.obraId);if(error)throw error;SB.estado=est}
-  }catch(e){toast('Não salvou: '+(e.message||e));try{await sbPull();render()}catch(_){}}
+    try{localStorage.removeItem(filaKey())}catch(_){}
+  }catch(e){
+    if(semRede(e)){const pend=sbDocs().filter(d=>SB.sync[d.id]!==JSON.stringify(d.dados));filaSalva(pend);toast('Sem sinal: '+pend.length+' registro(s) guardado(s) no aparelho. Sobem quando voltar a conexão.')}
+    else{toast('Não salvou: '+(e.message||e));try{await sbPull();render()}catch(_){}}}
   SB.busy=false;
 }
 function aplicaDocs(est,docs){
-  const t={...novoT(),...(est&&Object.keys(est).length?est:{})};const map={sol:'sols',oc:'ocs',nf:'notas',tit:'titulos',med:'meds',aud:'aud'};
-  ['sols','ocs','notas','titulos','meds','aud'].forEach(k=>t[k]=[]);SB.sync={};
+  const t={...novoT(),...(est&&Object.keys(est).length?est:{})};const map={sol:'sols',oc:'ocs',nf:'notas',tit:'titulos',med:'meds',aud:'aud',apt:'apts',rst:'rsts',atv:'atvs',tar:'tars'};
+  ['sols','ocs','notas','titulos','meds','aud','apts','rsts','atvs','tars'].forEach(k=>t[k]=[]);SB.sync={};
   docs.forEach(r=>{if(!map[r.tipo])return;t[map[r.tipo]].push(r.dados);SB.sync[r.id]=JSON.stringify(r.dados)});
   const key=o=>parseInt(String(o.id||'').replace(/\D/g,'').slice(0,13))||0;
-  ['sols','ocs','notas','titulos','meds'].forEach(k=>t[k].sort((a,b)=>key(b)-key(a)));t.aud.sort((a,b)=>String(b.q).localeCompare(String(a.q)));
-  S.t=t;if(S.D)prep();SB.estado=JSON.stringify(estadoObra());
+  ['sols','ocs','notas','titulos','meds','apts','rsts','atvs','tars'].forEach(k=>t[k].sort((a,b)=>key(b)-key(a)));t.aud.sort((a,b)=>String(b.q).localeCompare(String(a.q)));
+  filaMerge(t);S.t=t;if(S.D)prep();SB.estado=JSON.stringify(estadoObra());
 }
 async function sbPull(){
   const [o,d]=await Promise.all([SB.c.from('obra').select('estado').eq('id',SB.obraId).single(),SB.c.from('documento').select('id,tipo,dados').eq('obra_id',SB.obraId).limit(10000)]);
@@ -15367,14 +15774,14 @@ async function sbEntrar(u){
 }
 async function sbCarregar(ob){
   const c=SB.c;SB.obraId=ob.id;
-  const [pc,ie,ct]=await Promise.all([c.from('pacote').select('*'),c.from('item_eap').select('*').limit(5000),c.from('conta').select('*')]);
+  const [pc,ie,ct,fm]=await Promise.all([c.from('pacote').select('*'),c.from('item_eap').select('*').limit(5000),c.from('conta').select('*'),c.from('funcao_mo').select('*')]);
   const err=pc.error||ie.error||ct.error;if(err){telaAviso('Erro ao carregar',esc(err.message));return}
   const N=v=>v==null?v:+v,pcode=Object.fromEntries(pc.data.map(p=>[p.id,p.codigo]));
-  const eap=ie.data.map(e=>({codigo:e.codigo,descricao:e.descricao,unidade:e.unidade,qtd:N(e.qtd),nivel:e.nivel,pai:e.pai_codigo,tipo_linha:e.eh_item?'item':'grupo',preco_venda_total:N(e.preco_venda_total),meta_total:N(e.meta_total),teto_total:N(e.teto_total),meta_unit:N(e.meta_unit),fonte_meta:e.fonte_meta,status_cotacao:e.status_cotacao,evento:e.evento,pacote:pcode[e.pacote_id],tipo:e.tipo,composicao:e.composicao,natureza:e.natureza||{}})).sort((a,b)=>cmpCod(a.codigo,b.codigo));
+  const eap=ie.data.map(e=>({codigo:e.codigo,descricao:e.descricao,unidade:e.unidade,qtd:N(e.qtd),nivel:e.nivel,pai:e.pai_codigo,tipo_linha:e.eh_item?'item':'grupo',preco_venda_total:N(e.preco_venda_total),meta_total:N(e.meta_total),teto_total:N(e.teto_total),meta_unit:N(e.meta_unit),fonte_meta:e.fonte_meta,status_cotacao:e.status_cotacao,evento:e.evento,pacote:pcode[e.pacote_id],tipo:e.tipo,composicao:e.composicao,natureza:e.natureza||{},hh_unit:N(e.hh_unit)})).sort((a,b)=>cmpCod(a.codigo,b.codigo));
   const venda=eap.filter(e=>e.tipo_linha==='item').reduce((s,e)=>s+e.preco_venda_total,0);
   S.D={obra:{codigo:ob.codigo,nome:ob.nome,contratante:ob.contratante,contrato:ob.contrato,municipio:ob.municipio,valor_contrato:N(ob.valor_contrato),regime:ob.regime,tributos_nota:N(ob.tributos_nota)},
     pacotes:pc.data.map(p=>({...p,meta:N(p.meta),teto:N(p.teto)})),eap,plano:ct.data.map(x=>({codigo:x.codigo,nome:x.nome,nivel:x.nivel,natureza:x.natureza})).sort((a,b)=>cmpCod(a.codigo,b.codigo)),
-    relatorio:{diferenca_contrato:r2(venda-N(ob.valor_contrato)),aviso:'Metas vêm do Estudo 342 REV10; aguardando META REV02 e Estudo REV13.'}};
+    banco_mo:(fm.data||[]).map(f=>({funcao:f.funcao,equipe:f.equipe,custo_hora:N(f.custo_hora)})),relatorio:{diferenca_contrato:r2(venda-N(ob.valor_contrato)),aviso:'Metas vêm do Estudo 342 REV10; aguardando META REV02 e Estudo REV13.'}};
   await sbPull();
   S.exp=new Set(S.D.eap.filter(e=>e.nivel<=2).map(e=>e.codigo));
   $('#obra-av').textContent=ob.codigo;$('#obra-nome').textContent=(ob.contratante||'')+' · '+ob.nome;$('#obra-sub').textContent='Centro de custo '+ob.codigo;
@@ -15395,7 +15802,7 @@ async function sbSair(){await SB.c.auth.signOut();location.reload()}
 document.addEventListener('change',async e=>{const el=e.target.closest&&e.target.closest('[data-perfil]');if(!el)return;
   const r=await SB.c.from('perfil').update({papel:el.value}).eq('user_id',el.dataset.perfil);if(r.error)return toast('Erro: '+r.error.message);log('perfil',el.dataset.perfil,'papel','',el.value);save();toast('Papel atualizado');await sbPerfis()});
 window.addEventListener('focus',()=>{if(MODO_SB&&SB.obraId&&!SB.busy&&!$('#modal').classList.contains('open')&&!SB.timer)sbPull().then(render).catch(()=>{})});
-setInterval(()=>{if(MODO_SB&&SB.obraId&&!SB.busy&&!SB.timer&&!$('#modal').classList.contains('open')&&document.visibilityState==='visible')sbPull().then(render).catch(()=>{})},30000);
+setInterval(()=>{if(MODO_SB&&SB.obraId&&!SB.busy&&!SB.timer&&!$('#modal').classList.contains('open')&&document.visibilityState==='visible'&&!localStorage.getItem(filaKey()))sbPull().then(render).catch(()=>{})},30000);
 
 /* ============ plano de contas ============ */
 const MAT_PAC={FOFO:'4.2.01',PVC:'4.2.01',TCONC:'4.2.01',VALV:'4.2.02',PARAF:'4.2.08',ELET:'4.2.05',ELETS:'4.2.05',CONC:'4.2.04',ACO:'4.2.04',FORMA:'4.2.04',IMPER:'4.2.06',BOMBA:'4.2.07',GUIND:'4.2.07',CIVIL:'4.2.03'};
@@ -15433,7 +15840,7 @@ function semaforo(cod,total,pendId){
 }
 const SEM_CLASS={verde:'ok',amarelo:'warn',vermelho:'bad',bloqueado:'bad'};
 const semPill=s=>`<span class="pill ${SEM_CLASS[s]||'mute'}">${s||'—'}</span>`;
-const nextNum=k=>{const arr={sol:S.t.sols,oc:S.t.ocs,nf:S.t.notas,bm:S.t.meds}[k],px={sol:'SC',oc:'OC',nf:'NF',bm:'BM'}[k];
+const nextNum=k=>{const arr={sol:S.t.sols,oc:S.t.ocs,nf:S.t.notas,bm:S.t.meds,apt:S.t.apts,rst:S.t.rsts,tar:S.t.tars}[k],px={sol:'SC',oc:'OC',nf:'NF',bm:'BM',apt:'AP',rst:'RE',tar:'TA'}[k];
   const mx=arr.reduce((m,o)=>Math.max(m,parseInt(String(o.num||'').replace(/\D/g,''))||0),0);return px+'-'+String(mx+1).padStart(4,'0')};
 const ocFat=oc=>S.t.notas.filter(n=>n.oc===oc.id&&n.status!=='lancada').reduce((s,n)=>s+n.rateio.reduce((a,l)=>a+ +l.valor,0),0);
 const ocRecebido=oc=>r2(oc.preco*(oc.recebido||0));
@@ -15470,6 +15877,9 @@ function alertas(X){
   S.t.meds.filter(m=>m.status==='lancada').forEach(m=>a.push(['warn',`${m.num} aguarda atesto`,`${m.item} · ${num(m.qtd)} medidos por ${esc(m.quem)}`]));
   S.t.titulos.filter(t=>!t.cancelado&&t.venc<hojeISO()&&tituloInfo(t).saldo>0).forEach(t=>a.push(['bad',`Título ${t.ocNum} vencido`,`${esc(t.forn)} · saldo ${brl(tituloInfo(t).saldo)}`]));
   S.D.items.forEach(i=>{const r=resItem(i);if(r.sem==='bad')a.push(['bad',`Item ${i.codigo}: ${r.txt}`,`Receita ${brl(r.rec)} × custo ${brl(r.real)}${r.idc!=null?' · IDC '+r.idc.toFixed(2).replace('.',','):''}`])});
+  restAb().filter(escalada).forEach(r=>a.push(['bad','Restrição escalada: '+r.desc,`${r.dono} · parada há ${duDesde(r.atualizada||r.criada)} dias úteis`]));
+  if(S.t.frozen&&!S.t.apts.some(x=>x.data===ontemUtil()))a.push(['warn','Sem apontamento no último dia útil',fdata(ontemUtil())+': lance ou justifique em Campo.']);
+  S.t.apts.filter(x=>x.status==='conferido').forEach(x=>a.push(['warn',x.num+' aguarda aprovação',x.item+' · '+num(x.qtd)+' apontados']));
   a.push(['warn',`${X.aCotar.length} itens sem cotação`,`${brl(X.aCotar.reduce((s,i)=>s+i.meta_total,0),true)} do custo-meta é estimativa.`]);
   a.push(['warn',`${X.semFolga.length} itens com meta acima do teto`,'Sem folga: qualquer compra neles fica vermelha.']);
   if(S.D.relatorio?.aviso)a.push(['info','Versão da META a confirmar',S.D.relatorio.aviso]);
@@ -15477,7 +15887,7 @@ function alertas(X){
 }
 
 /* ============ componentes ============ */
-const NAV_BASE=[['hoje','Hoje','hoje'],['eap','Orçamento (EAP)','eap'],['pac','Pacotes','pac'],['compras','Compras','compras'],['nota','Notas e rateio','nota'],['fin','Financeiro','fin'],['med','Medição e resultado','med'],['plano','Plano de contas','plano'],['pain','Painéis','pain'],['aud','Auditoria','aud']];
+const NAV_BASE=[['hoje','Hoje','hoje'],['eap','Orçamento (EAP)','eap'],['pac','Pacotes','pac'],['compras','Compras','compras'],['nota','Notas e rateio','nota'],['fin','Financeiro','fin'],['campo','Campo (apontamento)','campo'],['lean','Lean e planejamento','lean'],['med','Medição e resultado','med'],['plano','Plano de contas','plano'],['pain','Painéis','pain'],['aud','Auditoria','aud']];
 const navItens=()=>MODO_SB&&S.role==='admin'?[...NAV_BASE,['usuarios','Usuários','aud']]:NAV_BASE;
 function badgeFor(k,X){return k==='compras'?(X.pendAprov.length?`<span class="badge hot">${X.pendAprov.length}</span>`:''):k==='nota'?(X.semRateio.length?`<span class="badge hot">${X.semRateio.length}</span>`:''):''}
 function ticks(items){return items.map(i=>`<i class="${i.meta_total>i.teto_total?'r':i.status_cotacao==='A cotar'?'w':''}" title="${i.codigo}"></i>`).join('')}
@@ -15776,7 +16186,7 @@ function doConciliar(){
 
 /* ============ MEDIÇÃO E RESULTADO POR ITEM ============ */
 const medAcum=(cod,so)=>S.t.meds.filter(m=>m.item===cod&&(so?m.status==='atestada':true)).reduce((s,m)=>s+m.qtd,0);
-function resItem(i){const s=S.sd[i.codigo],q=medAcum(i.codigo,true),pu=i.qtd?i.preco_venda_total/i.qtd:0,rec=q*pu,fis=i.qtd?Math.min(1,q/i.qtd):0,va=fis*i.meta_total;
+function resItem(i){const s=S.sd[i.codigo],q=medAcum(i.codigo,true),pu=i.qtd?i.preco_venda_total/i.qtd:0,rec=q*pu,fis=i.qtd?Math.min(1,Math.max(q,prodAcum(i.codigo))/i.qtd):0,va=fis*i.meta_total;
   const idc=s.real>0?va/s.real:null,res=rec-s.real;
   let sem='mute',txt='sem dados';if(s.real>0||rec>0){if(res<0||(idc!=null&&idc<.9)){sem='bad';txt=res<0?'prejuízo':'IDC < 0,90'}else if(idc!=null&&idc<.95){sem='warn';txt='atenção'}else{sem='ok';txt='lucro'}}
   return {q,rec,fis,va,idc,res,real:s.real,sem,txt,mg:rec>0?res/rec:null}}
@@ -15789,7 +16199,7 @@ function viewMed(X){
   let b='';
   if(tab==='res'){
     b=`<div class="kpi4"><div><div class="k-l">Receita medida (atestada)</div><div class="v">${brl(rec,true)}</div></div><div><div class="k-l">Custo realizado</div><div class="v">${brl(cus,true)}</div></div><div><div class="k-l">Resultado</div><div class="v ${rec-cus>=0?'pos':'neg'}">${brl(rec-cus,true)}</div></div><div><div class="k-l">IDC da obra</div><div class="v ${idc!=null&&idc<.95?'neg':''}">${idc!=null?idc.toFixed(2).replace('.',','):'—'}</div></div></div>
-    <div class="sub" style="margin-top:8px">${eac?`EAC (previsão de custo final) = realizado + (meta − VA) ÷ IDC = <b>${brl(eac,true)}</b> contra meta de ${brl(X.meta,true)}. `:''}VA = % físico × meta do item; o % físico vem da medição atestada até o apontamento diário entrar (Fase 7). IDC abaixo de 0,95 alerta; abaixo de 0,90 entra na pauta.</div>
+    <div class="sub" style="margin-top:8px">${eac?`EAC (previsão de custo final) = realizado + (meta − VA) ÷ IDC = <b>${brl(eac,true)}</b> contra meta de ${brl(X.meta,true)}. `:''}VA = % físico × meta do item; o % físico vem do apontamento aprovado (Campo) ou da medição atestada, o que for maior. IDC abaixo de 0,95 alerta; abaixo de 0,90 entra na pauta.</div>
     <div class="tw">${comDado.length?`<table class="tbl"><thead><tr><th>Item</th><th class="r">% físico</th><th class="r">Receita medida</th><th class="r">Custo realizado</th><th class="r">Resultado</th><th class="r">IDC</th><th>Situação</th></tr></thead><tbody>${comDado.map(({i,r})=>`<tr class="clk" data-item="${i.codigo}"><td><span class="mono">${i.codigo}</span><div class="mut" style="font-size:11.5px">${esc(i.descricao.slice(0,60))}</div></td><td class="r">${Math.round(r.fis*100)}%</td><td class="r">${brl(r.rec)}</td><td class="r">${brl(r.real)}</td><td class="r ${r.res<0?'neg':'pos'}">${brl(r.res)}</td><td class="r">${r.idc!=null?r.idc.toFixed(2).replace('.',','):'—'}</td><td><span class="pill ${r.sem}">${r.txt}</span></td></tr>`).join('')}</tbody></table>`:empty('Ainda sem medição nem custo.','Lance e ateste uma medição; o custo vem das notas rateadas.')}</div>`}
   if(tab==='pac'){
     const L=S.D.pacotes.filter(p=>p._it.length).map(p=>{const rs=p._it.map(resItem);const rec=rs.reduce((s,r)=>s+r.rec,0),cus=rs.reduce((s,r)=>s+r.real,0),va=rs.reduce((s,r)=>s+r.va,0);return {p,rec,cus,va,idc:cus>0?va/cus:null}}).filter(x=>x.rec>0||x.cus>0);
@@ -15821,6 +16231,139 @@ function viewPlano(X){
   return `<div class="head"><div><h1>Plano de contas</h1><p class="lead">Cada natureza da composição tem uma conta. Quem lança só escolhe o item: a conta vem do cadastro, em toda solicitação, OC e nota. A meta abaixo é a meta de cada item distribuída pela composição.</p></div></div>
   <div class="tw"><table class="tbl"><thead><tr><th>Código</th><th>Conta</th><th>Natureza</th><th class="r">Meta</th><th class="r">Comprometido</th><th class="r">Realizado</th><th>Consumo</th></tr></thead><tbody>${P.map(c=>{const m=soma(meta,c.codigo),co=soma(comp,c.codigo),r=soma(real,c.codigo);return `<tr class="${c.nivel<=2?'grp':''}"><td class="mono">${c.codigo}</td><td style="padding-left:${(c.nivel-1)*14+10}px">${esc(c.nome)}</td><td>${c.natureza?`<span class="pill mute">${c.natureza}</span>`:''}</td><td class="r">${m?brl(m):'—'}</td><td class="r">${co?brl(co):'—'}</td><td class="r">${r?brl(r):'—'}</td><td>${m?bar(co,r,m):''}</td></tr>`}).join('')}</tbody></table></div>`}
 
+/* ============ CAMPO: apontamento diário (Fase 8) ============ */
+const dow=s=>new Date(s+'T12:00:00').getDay();
+const segunda=s=>addDias(s,-((dow(s)+6)%7));
+const duDesde=s=>{let n=0,d=s;while(d<hojeISO()){d=addDias(d,1);if(![0,6].includes(dow(d)))n++}return n};
+const ontemUtil=()=>{let d=addDias(hojeISO(),-1);while([0,6].includes(dow(d)))d=addDias(d,-1);return d};
+const custoHora=f=>((S.D.banco_mo||[]).find(x=>x.funcao===f)||{}).custo_hora||0;
+const FUNCOES=()=>(S.D.banco_mo||[]).map(x=>x.funcao);
+function aptCalc(a){const i=S.byCod[a.item]||{};const hh=(a.pessoas||[]).reduce((s,p)=>s+p.n*p.h,0);
+  const cmo=(a.pessoas||[]).reduce((s,p)=>s+p.n*p.h*custoHora(p.funcao),0),ceq=(a.equip||[]).reduce((s,e)=>s+(+e.h||0)*(+e.rh||0),0);
+  return {hh,cmo,ceq,custo:cmo+ceq,va:a.qtd*(i.meta_unit||0),ref:(i.hh_unit||0)*a.qtd}}
+const prodAcum=cod=>S.t.apts.filter(a=>a.item===cod&&a.status==='aprovado').reduce((s,a)=>s+a.qtd,0);
+const APT_ST={rascunho:['mute','Rascunho'],conferido:['info','Conferido'],aprovado:['ok','Aprovado']};
+function prodTabela(){
+  const m={};S.t.apts.filter(a=>a.status==='aprovado').forEach(a=>{const c=aptCalc(a);const r=m[a.item]=m[a.item]||{qtd:0,hh:0,ref:0,custo:0,va:0};r.qtd+=a.qtd;r.hh+=c.hh;r.ref+=c.ref;r.custo+=c.custo;r.va+=c.va});
+  return Object.entries(m).map(([cod,r])=>({i:S.byCod[cod],...r,fis:S.byCod[cod].qtd?Math.min(1,r.qtd/S.byCod[cod].qtd):0,ind:r.hh>0&&r.ref>0?r.ref/r.hh:null}))}
+function tabProd(L){
+  return L.length?`<div class="tw"><table class="tbl"><thead><tr><th>Item</th><th class="r">Produzido</th><th class="r">% físico</th><th class="r">HH real</th><th class="r">HH referência</th><th class="r">Produtividade</th><th class="r">Custo MO</th><th class="r">Valor agregado</th></tr></thead><tbody>${L.map(r=>`<tr class="clk" data-item="${r.i.codigo}"><td><span class="mono">${r.i.codigo}</span><div class="mut" style="font-size:11.5px">${esc(r.i.descricao.slice(0,60))}</div></td><td class="r">${num(r.qtd)} ${esc(r.i.unidade||'')}</td><td class="r">${Math.round(r.fis*100)}%</td><td class="r">${num(r.hh)}</td><td class="r">${r.ref?num(r.ref):'—'}</td><td class="r ${r.ind!=null&&r.ind<.9?'neg':''}">${r.ind!=null?r.ind.toFixed(2).replace('.',','):'—'}</td><td class="r">${brl(r.custo)}</td><td class="r">${brl(r.va)}</td></tr>`).join('')}</tbody></table></div><div class="sub" style="margin-top:8px">Produtividade = HH de referência (CPU Saneago) ÷ HH real: abaixo de 1,00 gasta mais horas que o previsto. O % físico alimenta VA e IDC.</div>`:'<div class="sub" style="padding:18px">Nenhum apontamento aprovado ainda.</div>'}
+let APT=null;
+function viewCampo(X){
+  const tab=S.tab.campo||'dia',A=S.t.apts;
+  const pend=A.filter(a=>a.status!=='aprovado');
+  const hoje=A.filter(a=>a.data===hojeISO()),cs=hoje.map(aptCalc);
+  const sem=S.t.frozen&&!A.some(a=>a.data===ontemUtil());
+  let b='';
+  if(tab==='dia'){
+    b=`${sem?`<div class="alert" style="margin-top:12px"><div class="g" style="color:var(--warn)">!</div><div><b>Sem apontamento em ${fdata(ontemUtil())}</b><p>Último dia útil sem registro. Lance ou justifique (retroativo fica marcado).</p></div></div>`:''}
+    <div class="tw">${A.length?`<table class="tbl"><thead><tr><th>Apontamento</th><th>Item</th><th class="r">Qtd</th><th class="r">HH</th><th class="r">Custo MO</th><th>Status</th><th></th></tr></thead><tbody>${A.slice(0,150).map(a=>{const c=aptCalc(a),i=S.byCod[a.item]||{},st=APT_ST[a.status];
+      return `<tr><td class="mono">${a.num}<div class="mut" style="font-size:11.5px">${fdata(a.data)} · ${esc(a.quem)}${a.retro?' · retroativo':''}${a.tarde?' · conferido após 9h':''}</div></td><td><span class="mono">${a.item}</span><div class="mut" style="font-size:11.5px">${esc((i.descricao||'').slice(0,50))}${a.parou?' · parada '+num(a.horasParada)+'h: '+esc(a.motivoParada||''):''}${a.chuva?' · chuva '+a.chuva+' mm':''}</div></td><td class="r">${num(a.qtd)} ${esc(i.unidade||'')}</td><td class="r">${num(c.hh)}</td><td class="r">${brl(c.cmo)}</td><td><span class="pill ${st[0]}">${st[1]}</span></td>
+      <td class="r">${a.status==='rascunho'?`<button class="btn sm" data-act="apt-conf" data-id="${a.id}" ${can('apontar')?'':'disabled'}>Conferir</button>`:a.status==='conferido'?`<button class="btn sm ok" data-act="apt-apr" data-id="${a.id}" ${can('aprovarApt')?'':'disabled title="Só Engenheiro ou Gerente"'}>Aprovar</button>`:''}</td></tr>`}).join('')}</tbody></table>`:'<div class="sub" style="padding:18px">Nenhum apontamento. Toque em “Novo apontamento” para registrar o dia da frente.</div>'}</div>`}
+  if(tab==='prod')b=tabProd(prodTabela());
+  return `<div class="head"><div><h1>Campo</h1><p class="lead">Apontamento diário por frente: quantidade, equipe, máquinas, chuva e paradas. Fluxo <b>rascunho → conferido → aprovado</b>; só o aprovado vira % físico (VA e IDC). ${MODO_SB?'Sem sinal, o registro fica guardado no aparelho e sobe sozinho.':''}</p></div>
+   <button class="btn dark" data-act="novo-apt" ${can('apontar')?'':'disabled title="Só Encarregado, Engenheiro ou Gerente"'}>Novo apontamento</button></div>
+   <div class="kpi4"><div><div class="k-l">Aguardando aprovação</div><div class="v ${pend.length?'neg':''}">${pend.length}</div></div><div><div class="k-l">Produzido hoje (VA)</div><div class="v">${brl(cs.reduce((s,c)=>s+c.va,0),true)}</div></div><div><div class="k-l">HH hoje</div><div class="v">${num(cs.reduce((s,c)=>s+c.hh,0))}</div></div><div><div class="k-l">Custo MO hoje</div><div class="v">${brl(cs.reduce((s,c)=>s+c.cmo,0),true)}</div></div></div>
+   <div class="toolbar">${tabs('campo',[['dia','Apontamentos '+A.length],['prod','Produção por item']],tab)}</div>${b}`}
+function modalApt(){
+  APT={data:hojeISO(),item:S.D.items[0].codigo,qtd:'',chuva:0,pessoas:[{funcao:FUNCOES()[0]||'',n:1,h:8}],equip:[],parou:false,motivoParada:'',horasParada:0,obs:''};pintaApt()}
+function lerApt(){if(!APT||!$('#a-item'))return;APT.data=$('#a-d').value;APT.item=$('#a-item').value;APT.qtd=$('#a-q').value;APT.chuva=+$('#a-ch').value||0;APT.parou=$('#a-pa').checked;APT.motivoParada=$('#a-mo').value;APT.horasParada=+$('#a-hp').value||0;APT.obs=$('#a-ob').value;
+  document.querySelectorAll('[data-pk]').forEach(e=>{const k=+e.dataset.pk,f=e.dataset.f;const v=f==='funcao'?e.value:+e.value||0;APT.pessoas[k][f]=v});
+  document.querySelectorAll('[data-ek]').forEach(e=>{const k=+e.dataset.ek,f=e.dataset.f;APT.equip[k][f]=f==='nome'?e.value:+e.value||0})}
+function pintaApt(){
+  const i=S.byCod[APT.item];
+  modal(`<h3>Apontamento do dia</h3><div class="sub">Um registro por frente (item da EAP) e dia.</div>
+  <div class="g2"><div><label>Data</label><input id="a-d" type="date" value="${APT.data}" max="${hojeISO()}"></div><div><label>Chuva (mm)</label><input id="a-ch" type="number" min="0" step="any" value="${APT.chuva}"></div></div>
+  <label>Frente / item</label><select id="a-item">${itemOptions(APT.item)}</select>
+  <label>Quantidade executada ${i&&i.unidade?'('+esc(i.unidade)+')':''}</label><input id="a-q" type="number" min="0" step="any" value="${APT.qtd}" inputmode="decimal">
+  <div class="sub" style="margin-top:6px">${i?`Orçado ${num(i.qtd)} · já aprovado ${num(prodAcum(i.codigo))}${i.hh_unit?` · referência ${num(i.hh_unit)} HH/${esc(i.unidade||'un')}`:''}`:''}</div>
+  <label>Equipe (pessoas × horas)</label>${APT.pessoas.map((p,k)=>`<div class="pr"><select data-pk="${k}" data-f="funcao">${FUNCOES().map(f=>`<option ${f===p.funcao?'selected':''}>${esc(f)}</option>`).join('')}</select><input data-pk="${k}" data-f="n" type="number" min="0" step="1" value="${p.n}" aria-label="pessoas"><input data-pk="${k}" data-f="h" type="number" min="0" step="any" value="${p.h}" aria-label="horas"><button class="btn sm" data-act="apt-delp" data-k="${k}">×</button></div>`).join('')}<button class="btn sm" style="margin-top:6px" data-act="apt-addp">+ função</button>
+  <label>Equipamentos (horas, R$/h opcional, horas paradas)</label>${APT.equip.map((e,k)=>`<div class="pr"><input data-ek="${k}" data-f="nome" placeholder="Equipamento" value="${esc(e.nome)}"><input data-ek="${k}" data-f="h" type="number" min="0" step="any" value="${e.h}" aria-label="horas"><input data-ek="${k}" data-f="rh" type="number" min="0" step="any" value="${e.rh}" aria-label="R$/h"><button class="btn sm" data-act="apt-dele" data-k="${k}">×</button></div>`).join('')}<button class="btn sm" style="margin-top:6px" data-act="apt-adde">+ equipamento</button>
+  <label style="display:flex;gap:8px;align-items:center;text-transform:none;letter-spacing:0"><input id="a-pa" type="checkbox" style="width:auto" ${APT.parou?'checked':''}> Houve parada</label>
+  <div class="g2"><div><label>Motivo da parada</label><input id="a-mo" value="${esc(APT.motivoParada)}"></div><div><label>Horas paradas</label><input id="a-hp" type="number" min="0" step="any" value="${APT.horasParada}"></div></div>
+  <label>Observação</label><textarea id="a-ob" rows="2">${esc(APT.obs)}</textarea>
+  <div class="acts"><button class="btn" data-act="fechar">Cancelar</button><button class="btn dark" data-act="apt-ok">Salvar rascunho</button></div>`);
+  $('#a-item').onchange=()=>{lerApt();pintaApt()}}
+function doApt(){lerApt();const q=+APT.qtd;if(!(q>=0)||APT.qtd==='')return toast('Informe a quantidade (0 se não produziu)');
+  if(!APT.data||APT.data>hojeISO())return toast('Data inválida');
+  if(!APT.pessoas.some(p=>p.n>0&&p.h>0)&&q>0)return toast('Informe a equipe');
+  if(S.t.apts.some(a=>a.data===APT.data&&a.item===APT.item&&a.status!=='rascunho'))return toast('Já há apontamento conferido/aprovado deste item neste dia');
+  const a={id:'apt'+Date.now(),num:nextNum('apt'),data:APT.data,item:APT.item,qtd:q,chuva:APT.chuva,pessoas:APT.pessoas.filter(p=>p.n>0&&p.h>0),equip:APT.equip.filter(e=>e.nome),parou:APT.parou,motivoParada:APT.motivoParada,horasParada:APT.horasParada,obs:APT.obs,status:'rascunho',quem:user(),criado:new Date().toISOString()};
+  S.t.apts.unshift(a);log('apontamento',a.num,'lançado','',num(q)+' · '+a.item);save();closeModal();toast(a.num+' salvo como rascunho');render()}
+function aptConf(id){const a=S.t.apts.find(x=>x.id===id);if(!can('apontar'))return;a.status='conferido';a.conferidoPor=user();a.conferidoEm=new Date().toISOString();
+  if(a.conferidoEm.slice(0,10)>addDias(a.data,1)||(a.conferidoEm.slice(0,10)===addDias(a.data,1)&&new Date().getHours()>=9))a.tarde=true;
+  log('apontamento',a.num,'status','rascunho','conferido');save();toast(a.num+' conferido');render()}
+function aptApr(id){const a=S.t.apts.find(x=>x.id===id);if(!can('aprovarApt'))return toast('Sem alçada');if(a.quem===user()&&S.role!=='admin')return toast('Quem lança não aprova');
+  a.status='aprovado';a.aprovadoPor=user();if(hojeISO()>addDias(a.data,1))a.retro=true;log('apontamento',a.num,'status','conferido','aprovado'+(a.retro?' (retroativo)':''));save();toast(a.num+' aprovado · % físico atualizado');render()}
+
+/* ============ LEAN (Fase 8) ============ */
+const CAUSAS=['Material não chegou','Projeto ou definição','Equipamento indisponível','Falta de mão de obra','Chuva','Cliente ou liberação','Retrabalho','Planejamento falho','Outro'];
+const TIPOS_R=['Material','Projeto','Equipamento','Mão de obra','Liberação do cliente','Licença','Financeiro','Outro'];
+const restAb=()=>S.t.rsts.filter(r=>r.status==='aberta');
+const escalada=r=>r.status==='aberta'&&duDesde(r.atualizada||r.criada)>=3;
+const donoAb=d=>restAb().filter(r=>r.dono===d).length;
+const bloqItem=cod=>restAb().filter(r=>r.item===cod);
+function ppcSemanas(){const m={};S.t.atvs.forEach(a=>{if(a.status!=='cumprida'&&a.status!=='nao_cumprida')return;const w=m[a.semana]=m[a.semana]||{c:0,n:0};a.status==='cumprida'?w.c++:w.n++});
+  return Object.entries(m).sort().map(([s,w])=>({semana:s,...w,ppc:w.c/(w.c+w.n)}))}
+const ppcPill=p=>`<span class="pill ${p>=.8?'ok':p>=.6?'warn':'bad'}">${Math.round(p*100)}%</span>`;
+function pareto(){const m={};S.t.atvs.filter(a=>a.status==='nao_cumprida').forEach(a=>m[a.causa||'Outro']=(m[a.causa||'Outro']||0)+1);return Object.entries(m).sort((a,b)=>b[1]-a[1])}
+function restAuto(X){return X.vencidos.map(p=>({auto:true,id:'auto-'+p.codigo,tipo:'Material',desc:`Pacote ${p.nome}: fechar até ${fdata(p.fechar_ate)} vencido, sem pedido`,dono:p.responsavel||'Compras',prazo:p.fechar_ate,valor:p.meta,status:'aberta'}))}
+function viewLean(X){
+  const tab=S.tab.lean||'pauta',T=S.t,ab=restAb(),esc3=ab.filter(escalada),auto=restAuto(X);
+  const seg=segunda(hojeISO()),segAnt=addDias(seg,-7),pp=ppcSemanas(),ppAnt=pp.find(w=>w.semana===segAnt);
+  let b='';
+  if(tab==='pauta'){
+    const sem=T.atvs.filter(a=>a.semana===seg),ven=T.tars.filter(t=>t.status!=='feito'&&t.quando&&t.quando<hojeISO());
+    b=`<div class="kpi4"><div><div class="k-l">PPC semana anterior</div><div class="v">${ppAnt?Math.round(ppAnt.ppc*100)+'%':'—'}</div></div><div><div class="k-l">Restrições abertas</div><div class="v ${esc3.length?'neg':''}">${ab.length+auto.length}</div></div><div><div class="k-l">Escaladas (3+ dias úteis)</div><div class="v ${esc3.length?'neg':''}">${esc3.length}</div></div><div><div class="k-l">Atividades da semana</div><div class="v">${sem.length}</div></div></div>
+    <div class="cols" style="margin-top:14px"><div class="card"><div class="in"><div class="panel-t">Compromissos da semana (${fdata(seg)})</div>${sem.length?sem.map(a=>`<div class="row" style="grid-template-columns:1fr auto"><div><h4>${esc(a.desc)}</h4><p class="mono">${a.item}</p></div>${atvPill(a)}</div>`).join(''):'<div class="sub">Nenhuma atividade prometida. Use Lookahead.</div>'}</div></div>
+    <div class="card"><div class="in"><div class="panel-t">Para decidir na segunda</div>
+     ${[...esc3.map(r=>`<div class="row" style="grid-template-columns:1fr auto"><div><h4>${esc(r.desc)}</h4><p>${esc(r.dono)} · escalada, parada há ${duDesde(r.atualizada||r.criada)} dias úteis</p></div><span class="pill bad">Escalar</span></div>`),
+       ...X.vencidos.slice(0,4).map(p=>`<div class="row" style="grid-template-columns:1fr auto"><div><h4>Pacote ${esc(p.nome)} sem pedido</h4><p>fechar até ${fdata(p.fechar_ate)}</p></div><span class="pill bad">Vencido</span></div>`),
+       ...ven.map(t=>`<div class="row" style="grid-template-columns:1fr auto"><div><h4>${esc(t.oque)}</h4><p>${esc(t.quem)} · era para ${fdata(t.quando)}</p></div><span class="pill warn">Atrasada</span></div>`),
+       ...(S.t.apts.filter(a=>a.status!=='aprovado').length?[`<div class="row" style="grid-template-columns:1fr auto"><div><h4>${S.t.apts.filter(a=>a.status!=='aprovado').length} apontamento(s) sem aprovação</h4><p>Campo</p></div><span class="pill warn">Pendente</span></div>`]:[])].join('')||'<div class="sub">Nada crítico.</div>'}</div></div></div>`}
+  if(tab==='look'){
+    const sems=[-2,-1,0,1,2,3,4,5].map(k=>addDias(seg,7*k));
+    b=`<div class="sub" style="margin-top:8px">Atividade só fica <b>Pronta</b> sem restrição aberta no item. Não cumprida exige a causa.</div>`+sems.map(s=>{const L=T.atvs.filter(a=>a.semana===s);return `<div class="panel-t" style="margin-top:14px">Semana de ${fdata(s)}${s===seg?' · atual':''}</div>${L.length?L.map(a=>`<div class="row" style="grid-template-columns:1fr auto auto"><div><h4>${esc(a.desc)}</h4><p class="mono">${a.item}${a.causa?' · '+esc(a.causa):''}</p></div>${atvPill(a)}<div>${a.status==='planejada'?`<button class="btn sm ok" data-act="atv-ok" data-id="${a.id}" ${bloqItem(a.item).length||!can('lean')?'disabled title="Há restrição aberta ou sem permissão"':''}>Cumprida</button> <button class="btn sm no" data-act="atv-no" data-id="${a.id}" ${can('lean')?'':'disabled'}>Não cumprida</button>`:''}</div></div>`).join(''):'<div class="sub">—</div>'}`}).join('')}
+  if(tab==='restr'){
+    const L=[...auto,...ab,...T.rsts.filter(r=>r.status!=='aberta')];
+    b=`<div class="tw">${L.length?`<table class="tbl"><thead><tr><th>Restrição</th><th>Dono</th><th>Prazo</th><th class="r">R$ em jogo</th><th>Situação</th><th></th></tr></thead><tbody>${L.map(r=>`<tr><td><b>${esc(r.desc)}</b><div class="mut" style="font-size:11.5px">${esc(r.tipo)}${r.item?' · '+r.item:''}${r.proximo?' · próximo passo: '+esc(r.proximo):''}${r.replan?' · replanejada '+r.replan+'x':''}</div></td><td>${esc(r.dono)}</td><td>${fdata(r.prazo)}</td><td class="r">${brl(r.valor)}</td><td>${r.auto?'<span class="pill info">Automática</span>':r.status==='resolvida'?'<span class="pill ok">Resolvida</span>':escalada(r)?'<span class="pill bad">Escalada</span>':r.prazo&&r.prazo<hojeISO()?'<span class="pill warn">Vencida</span>':'<span class="pill mute">Aberta</span>'}</td>
+      <td class="r">${r.status==='aberta'&&!r.auto?`<button class="btn sm ok" data-act="rst-ok" data-id="${r.id}" ${can('lean')?'':'disabled'}>Resolver</button> <button class="btn sm" data-act="rst-rep" data-id="${r.id}" ${can('lean')?'':'disabled'}>Replanejar</button>`:''}</td></tr>`).join('')}</tbody></table>`:'<div class="sub" style="padding:18px">Nenhuma restrição.</div>'}</div><div class="sub" style="margin-top:8px">Limite de 8 abertas por pessoa. Sem atualização por 3 dias úteis a restrição é escalada. Restrição automática nasce de pacote com “fechar até” vencido e sem pedido.</div>`}
+  if(tab==='ppc'){
+    const par=pareto(),mx=Math.max(1,...par.map(x=>x[1])),espera=ab.reduce((s,r)=>s+(+r.valor||0),0);
+    b=`<div class="kpi4"><div><div class="k-l">PPC acumulado</div><div class="v">${pp.length?Math.round(pp.reduce((s,w)=>s+w.c,0)/pp.reduce((s,w)=>s+w.c+w.n,0)*100)+'%':'—'}</div></div><div><div class="k-l">Semanas medidas</div><div class="v">${pp.length}</div></div><div><div class="k-l">Custo da espera (R$ em jogo)</div><div class="v">${brl(espera,true)}</div></div><div><div class="k-l">Metas</div><div class="v" style="font-size:14px">verde ≥ 80% · amarelo ≥ 60%</div></div></div>
+    <div class="cols" style="margin-top:14px"><div class="card"><div class="in"><div class="panel-t">PPC por semana</div>${pp.length?pp.map(w=>`<div class="row" style="grid-template-columns:1fr auto"><div><h4>Semana de ${fdata(w.semana)}</h4><p>${w.c} cumpridas de ${w.c+w.n}</p></div>${ppcPill(w.ppc)}</div>`).join(''):'<div class="sub">Marque atividades como cumprida/não cumprida.</div>'}</div></div>
+    <div class="card"><div class="in"><div class="panel-t">Pareto das causas</div>${par.length?par.map(([c,n])=>`<div class="row" style="grid-template-columns:1fr 80px"><div><h4>${esc(c)}</h4><div class="bar-fecha bad"><i style="width:${n/mx*100}%"></i></div></div><b>${n}</b></div>`).join(''):'<div class="sub">Sem não cumpridas.</div>'}</div></div></div>`}
+  if(tab==='tar'){
+    const cols=[['afazer','A fazer'],['fazendo','Fazendo'],['feito','Feito']];
+    b=`<div class="cols" style="grid-template-columns:repeat(3,1fr);margin-top:12px">${cols.map(([k,l])=>`<div class="card"><div class="in"><div class="panel-t">${l} · ${T.tars.filter(t=>t.status===k).length}</div>${T.tars.filter(t=>t.status===k).map(t=>`<div class="alert" style="grid-template-columns:1fr;margin-top:8px"><div><b>${esc(t.oque)}</b><p>${esc(t.quem)} · até ${fdata(t.quando)}${t.item?' · '+t.item:''}</p><p class="mut">${esc([t.porque&&'Por quê: '+t.porque,t.onde&&'Onde: '+t.onde,t.como&&'Como: '+t.como,t.quanto&&'Quanto: '+t.quanto].filter(Boolean).join(' · '))}</p>${k!=='feito'?`<button class="btn sm" data-act="tar-mv" data-id="${t.id}" ${can('lean')?'':'disabled'}>${k==='afazer'?'Iniciar':'Concluir'}</button>`:''}</div></div>`).join('')}</div></div>`).join('')}</div>`}
+  const nb={restr:ab.length+auto.length,tar:T.tars.filter(t=>t.status!=='feito').length};
+  return `<div class="head"><div><h1>Lean e planejamento</h1><p class="lead">Pauta de segunda, lookahead de 6 semanas, restrições com dono e prazo, PPC e tarefas. Cada reunião vira lista de ações, não ata.</p></div>
+   <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" data-act="nova-atv" ${can('lean')?'':'disabled'}>Nova atividade</button><button class="btn" data-act="nova-rst" ${can('lean')?'':'disabled'}>Nova restrição</button><button class="btn dark" data-act="nova-tar" ${can('lean')?'':'disabled'}>Nova tarefa</button></div></div>
+   <div class="toolbar">${tabs('lean',[['pauta','Pauta de segunda'],['look','Lookahead'],['restr','Restrições',nb.restr],['ppc','PPC'],['tar','Tarefas',nb.tar]],tab)}</div>${b}`}
+function atvPill(a){if(a.status==='cumprida')return '<span class="pill ok">Cumprida</span>';if(a.status==='nao_cumprida')return '<span class="pill bad">Não cumprida</span>';
+  return bloqItem(a.item).length?'<span class="pill bad">Com restrição</span>':'<span class="pill ok">Pronta</span>'}
+function modalAtv(){const seg=segunda(hojeISO());
+  modal(`<h3>Nova atividade no lookahead</h3><label>Item</label><select id="v-item">${itemOptions()}</select><label>O que será feito</label><input id="v-desc"><label>Semana</label><select id="v-sem">${[-2,-1,0,1,2,3,4,5].map(k=>{const s=addDias(seg,7*k);return `<option value="${s}" ${k===0?'selected':''}>${fdata(s)}</option>`}).join('')}</select>
+   <div class="acts"><button class="btn" data-act="fechar">Cancelar</button><button class="btn dark" data-act="atv-salvar">Salvar</button></div>`)}
+function doAtv(){const d=$('#v-desc').value.trim();if(!d)return toast('Descreva a atividade');const a={id:'atv'+Date.now(),item:$('#v-item').value,desc:d,semana:$('#v-sem').value,status:'planejada',quem:user()};S.t.atvs.push(a);log('atividade',a.item,'lookahead','',d);save();closeModal();S.tab.lean='look';render()}
+function atvOk(id){const a=S.t.atvs.find(x=>x.id===id);if(bloqItem(a.item).length)return toast('Há restrição aberta neste item');a.status='cumprida';log('atividade',a.item,'status','planejada','cumprida');save();render()}
+function atvNo(id){modal(`<h3>Atividade não cumprida</h3><label>Causa</label><select id="v-causa">${CAUSAS.map(c=>`<option>${c}</option>`).join('')}</select><div class="acts"><button class="btn" data-act="fechar">Cancelar</button><button class="btn dark" data-act="atv-no-ok" data-id="${id}">Registrar</button></div>`)}
+function atvNoOk(id){const a=S.t.atvs.find(x=>x.id===id);a.status='nao_cumprida';a.causa=$('#v-causa').value;log('atividade',a.item,'status','planejada','não cumprida: '+a.causa);save();closeModal();render()}
+function modalRst(){modal(`<h3>Nova restrição</h3><div class="g2"><div><label>Tipo</label><select id="r-tipo">${TIPOS_R.map(t=>`<option>${t}</option>`).join('')}</select></div><div><label>Item (opcional)</label><select id="r-item"><option value="">—</option>${itemOptions()}</select></div></div>
+   <label>O que impede</label><input id="r-desc"><div class="g2"><div><label>Dono</label><input id="r-dono" value="${esc(user())}"></div><div><label>Prazo</label><input id="r-prazo" type="date" value="${addDias(hojeISO(),3)}"></div></div><div class="g2"><div><label>Próximo passo</label><input id="r-prox"></div><div><label>R$ em jogo</label><input id="r-val" type="number" min="0" step="any"></div></div>
+   <div class="acts"><button class="btn" data-act="fechar">Cancelar</button><button class="btn dark" data-act="rst-salvar">Registrar</button></div>`)}
+function doRst(){const d=$('#r-desc').value.trim(),dono=$('#r-dono').value.trim();if(!d||!dono)return toast('Descreva e informe o dono');if(donoAb(dono)>=8)return toast(dono+' já tem 8 restrições abertas: resolva antes de abrir outra');
+  const r={id:'rst'+Date.now(),num:nextNum('rst'),tipo:$('#r-tipo').value,item:$('#r-item').value,desc:d,dono,prazo:$('#r-prazo').value,proximo:$('#r-prox').value,valor:+$('#r-val').value||0,status:'aberta',criada:hojeISO(),atualizada:hojeISO(),replan:0,quem:user()};
+  S.t.rsts.unshift(r);log('restricao',r.num,'aberta','',d);save();closeModal();S.tab.lean='restr';render()}
+function rstOk(id){const r=S.t.rsts.find(x=>x.id===id);r.status='resolvida';r.resolvida=hojeISO();log('restricao',r.num,'status','aberta','resolvida');save();render()}
+function rstRep(id){const r=S.t.rsts.find(x=>x.id===id);const p=prompt('Novo prazo (AAAA-MM-DD)',addDias(hojeISO(),3));if(!p)return;r.prazo=p;r.replan=(r.replan||0)+1;r.atualizada=hojeISO();log('restricao',r.num,'prazo','',p);save();render()}
+function modalTar(){modal(`<h3>Nova tarefa</h3><label>O quê</label><input id="t-oque"><div class="g2"><div><label>Quem</label><input id="t-quem" value="${esc(user())}"></div><div><label>Quando</label><input id="t-quando" type="date" value="${addDias(hojeISO(),3)}"></div></div>
+   <label>Por quê</label><input id="t-por"><div class="g3"><div><label>Onde</label><input id="t-onde"></div><div><label>Como</label><input id="t-como"></div><div><label>Quanto</label><input id="t-quanto"></div></div><label>Item (opcional)</label><select id="t-item"><option value="">—</option>${itemOptions()}</select>
+   <div class="acts"><button class="btn" data-act="fechar">Cancelar</button><button class="btn dark" data-act="tar-salvar">Criar</button></div>`)}
+function doTar(){const o=$('#t-oque').value.trim();if(!o)return toast('Diga o que fazer');const t={id:'tar'+Date.now(),num:nextNum('tar'),oque:o,quem:$('#t-quem').value,quando:$('#t-quando').value,porque:$('#t-por').value,onde:$('#t-onde').value,como:$('#t-como').value,quanto:$('#t-quanto').value,item:$('#t-item').value,status:'afazer',quem0:user()};
+  S.t.tars.unshift(t);log('tarefa',t.num,'criada','',o);save();closeModal();S.tab.lean='tar';render()}
+function tarMv(id){const t=S.t.tars.find(x=>x.id===id);const n=t.status==='afazer'?'fazendo':'feito';log('tarefa',t.num,'status',t.status,n);t.status=n;save();render()}
+
 /* ============ PAINÉIS (Fase 5) ============ */
 function viewPain(X){
   const tab=S.tab.pain||'compras';
@@ -15838,11 +16381,21 @@ function viewPain(X){
     <div class="sub" style="margin-top:10px">Resultado pela meta = licitado × (1 − ${(S.D.obra.tributos_nota*100).toFixed(1)}% de tributos) − meta de custo. A divergência com o +R$ 227 mil do Estudo existe porque ele ainda soma reajuste e custos de MO/administração próprias; ver nota na seção 12 do doc.</div>
     <div class="panel-t" style="margin-top:16px">Meta por natureza</div><div class="tw"><table class="tbl"><thead><tr><th>Natureza</th><th class="r">Meta</th><th class="r">Comprometido</th><th class="r">Realizado</th></tr></thead><tbody>${Object.entries(sc).map(([k,v])=>`<tr><td>${NM[k]}</td><td class="r">${brl(v.meta)}</td><td class="r">${brl(v.comp)}</td><td class="r">${brl(v.real)}</td></tr>`).join('')}</tbody></table></div>
     <div class="panel-t" style="margin-top:16px">Itens mais consumidos da meta</div>${top.length?`<div class="tw"><table class="tbl"><tbody>${top.map(x=>`<tr class="clk" data-item="${x.i.codigo}"><td class="mono">${x.i.codigo}</td><td>${esc(x.i.descricao.slice(0,70))}</td><td class="r ${x.u>1?'neg':''}">${Math.round(x.u*100)}% da meta</td></tr>`).join('')}</tbody></table></div>`:'<div class="sub">Sem consumo ainda.</div>'}`}
+  if(tab==='prod'){
+    const m={};S.D.pacotes.forEach(p=>m[p.codigo]={p,hh:0,ref:0,custo:0,va:0,n:0});
+    prodTabela().forEach(r=>{const x=m[r.i.pacote];if(x){x.hh+=r.hh;x.ref+=r.ref;x.custo+=r.custo;x.va+=r.va;x.n++}});
+    const L=Object.values(m).filter(x=>x.n);
+    b=L.length?`<div class="tw"><table class="tbl"><thead><tr><th>Frente (pacote)</th><th class="r">Itens apontados</th><th class="r">HH real</th><th class="r">HH ref.</th><th class="r">Produtividade</th><th class="r">Custo MO</th><th class="r">Valor agregado</th></tr></thead><tbody>${L.map(x=>`<tr><td><b>${esc(x.p.nome)}</b></td><td class="r">${x.n}</td><td class="r">${num(x.hh)}</td><td class="r">${num(x.ref)}</td><td class="r">${x.hh>0&&x.ref>0?(x.ref/x.hh).toFixed(2).replace('.',','):'—'}</td><td class="r">${brl(x.custo)}</td><td class="r">${brl(x.va)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="sub" style="padding:18px">Sem apontamentos aprovados. Os dados nascem em Campo.</div>'}
+  if(tab==='lean'){
+    const ab=restAb(),pp=ppcSemanas(),porDono={};ab.forEach(r=>porDono[r.dono]=(porDono[r.dono]||0)+1);
+    b=`<div class="kpi4"><div><div class="k-l">PPC acumulado</div><div class="v">${pp.length?Math.round(pp.reduce((s,w)=>s+w.c,0)/pp.reduce((s,w)=>s+w.c+w.n,0)*100)+'%':'—'}</div></div><div><div class="k-l">Restrições abertas</div><div class="v">${ab.length}</div></div><div><div class="k-l">Escaladas</div><div class="v ${ab.filter(escalada).length?'neg':''}">${ab.filter(escalada).length}</div></div><div><div class="k-l">R$ em jogo</div><div class="v">${brl(ab.reduce((s,r)=>s+(+r.valor||0),0),true)}</div></div></div>
+    <div class="panel-t" style="margin-top:16px">Restrições por dono</div>${Object.keys(porDono).length?`<div class="tw"><table class="tbl"><tbody>${Object.entries(porDono).map(([d,n])=>`<tr><td>${esc(d)}</td><td class="r ${n>=8?'neg':''}">${n} / 8</td></tr>`).join('')}</tbody></table></div>`:'<div class="sub">Nenhuma aberta.</div>'}
+    <div class="panel-t" style="margin-top:16px">PPC por semana</div>${pp.length?pp.map(w=>`<div class="row" style="grid-template-columns:1fr auto"><div><h4>Semana de ${fdata(w.semana)}</h4></div>${ppcPill(w.ppc)}</div>`).join(''):'<div class="sub">Sem semanas medidas.</div>'}`}
   if(tab==='carteira'){
     const C=[['342','SANEAGO · UTR ETA Santo Antônio do Descoberto',3258000,'Preço global por evento','ativa'],['343','CAESB · Subadutora Sobradinho',5226634.03,'Preço unitário','linha de base pendente (Fase seguinte)'],['281','SANEAGO · Mozarlândia (consórcio)',17120015.74,'Eventograma','sem orçamento de custo; histórico a importar (08D)']];
     b=`<div class="tw"><table class="tbl"><thead><tr><th>Obra</th><th class="r">Contrato</th><th>Regime</th><th class="r">Meta</th><th class="r">Comprometido</th><th class="r">Realizado</th><th>Situação</th></tr></thead><tbody>${C.map(c=>c[0]==='342'?`<tr class="clk"><td><b>${c[0]}</b><div class="mut" style="font-size:11.5px">${c[1]}</div></td><td class="r">${brl(c[2],true)}</td><td>${c[3]}</td><td class="r">${brl(X.meta,true)}</td><td class="r">${brl(X.comp,true)}</td><td class="r">${brl(X.real,true)}</td><td><span class="pill ${S.t.frozen?'ok':'warn'}">${S.t.frozen?'base v'+S.t.versao:'base não congelada'}</span></td></tr>`:`<tr><td><b>${c[0]}</b><div class="mut" style="font-size:11.5px">${c[1]}</div></td><td class="r">${brl(c[2],true)}</td><td>${c[3]}</td><td class="r mut">—</td><td class="r mut">—</td><td class="r mut">—</td><td><span class="pill bad">${c[4]}</span></td></tr>`).join('')}</tbody></table></div><div class="sub" style="margin-top:8px">Valores de contrato lidos de TAF rev6 · 03. CONTRATOS. Obras sem linha de base não abrem compra (E01).</div>`}
   return `<div class="head"><div><h1>Painéis</h1><p class="lead">Lidos dos mesmos registros do fluxo de compra e de notas, sem exportação.</p></div></div>
-  <div class="toolbar">${tabs('pain',[['compras','Compras'],['obra','Obra'],['carteira','Carteira']],tab)}</div>${b}`;
+  <div class="toolbar">${tabs('pain',[['compras','Compras'],['obra','Obra'],['prod','Produção'],['lean','Lean'],['carteira','Carteira']],tab)}</div>${b}`;
 }
 
 /* ============ AUDITORIA ============ */
@@ -15857,7 +16410,7 @@ function render(){
   const X=derive();S.X=X;
   $('#nav').innerHTML=navItens().map(([k,l,i])=>`<button class="${S.view===k?'on':''}" data-v="${k}">${ico(i)}${l}${badgeFor(k,X)}</button>`).join('');
   $('#crumb').textContent=(navItens().find(n=>n[0]===S.view)||NAV_BASE[0])[1];
-  const V={hoje:viewHoje,eap:viewEap,pac:viewPac,compras:viewCompras,nota:viewNota,fin:viewFin,med:viewMed,plano:viewPlano,pain:viewPain,aud:viewAud,usuarios:viewUsuarios}[S.view]||viewHoje;
+  const V={campo:viewCampo,lean:viewLean,hoje:viewHoje,eap:viewEap,pac:viewPac,compras:viewCompras,nota:viewNota,fin:viewFin,med:viewMed,plano:viewPlano,pain:viewPain,aud:viewAud,usuarios:viewUsuarios}[S.view]||viewHoje;
   const keepQ=document.activeElement&&document.activeElement.id==='q';
   $('#view').innerHTML=V(X);
   if(keepQ){const q=$('#q');q.focus();q.setSelectionRange(q.value.length,q.value.length)}
@@ -15885,7 +16438,7 @@ document.addEventListener('click',e=>{
      'params-ok':()=>{S.t.par.limite=+$('#p-l').value||0;S.t.par.tol=(+$('#p-t').value||0)/100;log('parametros','alçada','limite/tolerância','',brl(S.t.par.limite)+' / '+$('#p-t').value+'%');save();closeModal();render()},
      'nova-nf':()=>modalNF(),ratear:()=>modalNF(id),'add-lin':()=>{NF.rateio.push({item:S.D.items[0].codigo,valor:0});pintaRat()},'del-lin':()=>{NF.rateio.splice(+el.dataset.k,1);pintaRat()},
      'sug-lin':()=>{const o=S.t.ocs.find(x=>x.id===NF.oc);if(!o)return toast('Escolha um pedido');NF.rateio=[{item:o.item,valor:Math.min(+NF.valor||o.valor,o.valor)}];pintaRat()},
-     'nf-ok':()=>doNF(el.dataset.modo),conciliar:doConciliar,'nova-med':modalMed,'med-ok':doMed,atestar:()=>doAtestar(id),conferir:()=>conferir(id),liberar:()=>liberar(id),pagar:()=>pagar(id),
+     'nf-ok':()=>doNF(el.dataset.modo),conciliar:doConciliar,'nova-med':modalMed,'novo-apt':modalApt,'apt-ok':doApt,'apt-conf':()=>aptConf(id),'apt-apr':()=>aptApr(id),'apt-addp':()=>{lerApt();APT.pessoas.push({funcao:FUNCOES()[0]||'',n:1,h:8});pintaApt()},'apt-delp':()=>{lerApt();APT.pessoas.splice(+el.dataset.k,1);pintaApt()},'apt-adde':()=>{lerApt();APT.equip.push({nome:'',h:8,rh:0});pintaApt()},'apt-dele':()=>{lerApt();APT.equip.splice(+el.dataset.k,1);pintaApt()},'nova-atv':modalAtv,'atv-salvar':doAtv,'atv-ok':()=>atvOk(id),'atv-no':()=>atvNo(id),'atv-no-ok':()=>atvNoOk(id),'nova-rst':modalRst,'rst-salvar':doRst,'rst-ok':()=>rstOk(id),'rst-rep':()=>rstRep(id),'nova-tar':modalTar,'tar-salvar':doTar,'tar-mv':()=>tarMv(id),'med-ok':doMed,atestar:()=>doAtestar(id),conferir:()=>conferir(id),liberar:()=>liberar(id),pagar:()=>pagar(id),
      reset:()=>{if(MODO_SB)return toast('No modo conectado nada é apagado');if(!confirm('Apagar todos os lançamentos de demonstração deste navegador?'))return;localStorage.removeItem(KEY);S.t=novoT();prep();toast('Dados restaurados');render()}};
     if(A[a])A[a]();return}
   if(el=t.closest('[data-exp]')){const c=el.dataset.exp;S.exp.has(c)?S.exp.delete(c):S.exp.add(c);return render()}

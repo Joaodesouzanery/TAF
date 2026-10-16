@@ -117,6 +117,21 @@ for e in items:
     # teto = preço licitado x (1 - 8,5%) quando a planilha não trouxe
     e.setdefault("teto_total", round(e["preco_venda_total"] * (1 - ISS_TRIB), 2))
 
+
+# --- Fase 8: banco de MO (aba 18) e HH por unidade (aba 24) -------------------------
+banco_mo = []
+for r in wb["18. BANCO MO"].iter_rows(min_row=4, values_only=True):
+    if not r[0] or r[12] in (None, ""): continue
+    try: mensal = float(r[12])
+    except (TypeError, ValueError): continue
+    banco_mo.append({"funcao": str(r[0]).strip(), "equipe": r[1], "custo_mensal": round(mensal, 2), "custo_hora": round(mensal / 220, 2)})
+hh = {}
+for r in wb["24. CPU SANEAGO - ITENS"].iter_rows(min_row=4, values_only=True):
+    if r[0] and isinstance(r[14], (int, float)) and isinstance(r[3], (int, float)) and r[3] > 0:
+        hh[str(r[0]).strip()] = round(r[14] / r[3], 4)
+for e in items:
+    if e["codigo"] in hh: e["hh_unit"] = hh[e["codigo"]]
+
 # --- Conferências ------------------------------------------------------------
 soma_venda = round(sum(e["preco_venda_total"] for e in items), 2)
 meta_pac = round(sum(p["meta"] for p in pacotes), 2)
@@ -143,7 +158,7 @@ obra = {
 (OUT / "web/data").mkdir(parents=True, exist_ok=True)
 (OUT / "web/data/obra342.json").write_text(
     json.dumps({"obra": obra, "pacotes": pacotes, "eap": eap, "relatorio": rel,
-                "plano": [{"codigo": c, "nome": n, "nivel": l, "natureza": t} for c, n, l, t in PLANO]},
+                "banco_mo": banco_mo, "plano": [{"codigo": c, "nome": n, "nivel": l, "natureza": t} for c, n, l, t in PLANO]},
                ensure_ascii=False, indent=1), encoding="utf-8")
 
 # --- SQL seed -------------------------------------------------------------

@@ -14,13 +14,13 @@ Especificação: *SaaS de Gestão de Obras TAF — Fluxo Completo do Sistema (re
 | 5 | Painéis (compras, obra, carteira) e auditoria | feita (demo) |
 | 6 | Plano de contas, composição por natureza, contas a pagar + conciliação, medição e resultado por item (lucro/prejuízo, VA, IDC, EAC) | feita (demo) |
 | 7 | Supabase real: login, papéis, RLS, documentos gravados no banco, importação da obra 342, tela Usuários | feita |
-| 8 | Apontamento diário e Lean (lookahead, restrições, PPC) | a fazer |
+| 8 | **Campo** (apontamento diário: rascunho → conferido → aprovado, HH, produtividade × CPU, custo de MO, fila offline) e **Lean** (pauta de segunda, lookahead de 6 semanas, restrições com limite de 8 por dono e escalonamento, PPC com Pareto, tarefas) | feita |
 | 9 | BM/faturamento, DRE, caixa | a fazer |
 | 10 | NF-e (XML) e exportação ao contador; integração Sankhya (API oficial) | a fazer |
 | 7b | Importar EAP da 343 e histórico da 281 | a fazer |
 
 ## Supabase (projeto "TAF")
-Migrações em `supabase/migrations/` (0001–0005) já aplicadas no projeto. `web/config.js` aponta para ele com a chave **publishable** (pública; a segurança está no RLS). A biblioteca `supabase-js` está em `web/vendor/` (sem CDN).
+Migrações em `supabase/migrations/` (0001–0006) já aplicadas no projeto. `web/config.js` aponta para ele com a chave **publishable** (pública; a segurança está no RLS). A biblioteca `supabase-js` está em `web/vendor/` (sem CDN).
 
 **Primeiro acesso:** abra o app e *Criar conta*. **O primeiro cadastro vira Administrador** e os demais ficam "Aguardando liberação" até o admin atribuir o papel em *Usuários*. Faça isso logo após publicar e, depois, desative novos cadastros em Supabase › Authentication › Sign In / Providers (*Allow new users to sign up*) se quiser fechar o acesso. Se o Supabase exigir confirmação de e-mail, confirme pelo link recebido (ou desative *Confirm email* nas mesmas configurações).
 Depois do login, o admin clica em **Importar obra 342** (orçamento, pacotes, metas e plano de contas).
@@ -55,3 +55,6 @@ Na Vercel: *Add New → Project* → importar `Joaodesouzanery/TAF` → nome do 
 
 ## Pendências do usuário
 Versão vigente da META (REV02) e do Estudo (REV13); valores de alçada em R$; plano de contas validado com o contador.
+
+## Fase 8
+Testes: `node scripts/e2e_fase8.js` (demo) e `supabase/tests/fase8.sql` (RLS dos papéis encarregado/planejamento). Banco de MO (aba 18, custo/h = mensal ÷ 220) e HH por unidade (aba 24) vêm do importador (`supabase/seed/fase8_342.sql`). Equipamentos: informe R$/h no apontamento para entrar no custo do dia.

@@ -4,7 +4,7 @@ const {chromium}=require('playwright');
 const fs=require('fs');
 const URL_SB='https://kefkgydvjjakqaonyjau.supabase.co';
 const payload=JSON.parse(fs.readFileSync(__dirname+'/../web/data/obra342.json','utf8'));
-const db={users:[],perfil:[],obra:[],pacote:[],item_eap:[],conta:[],documento:[]};
+const db={users:[],perfil:[],obra:[],pacote:[],item_eap:[],conta:[],documento:[],funcao_mo:[]};
 const log=[];
 const uid=e=>'u-'+e.split('@')[0];
 const sess=u=>({access_token:'tok-'+u.id,token_type:'bearer',expires_in:3600,expires_at:Math.floor(Date.now()/1000)+3600,refresh_token:'r-'+u.id,user:{id:u.id,aud:'authenticated',email:u.email,app_metadata:{},user_metadata:u.meta||{}}});
@@ -13,9 +13,9 @@ const json=(route,status,body,extra={})=>route.fulfill({status,headers:{...CORS,
 function filtra(rows,sp){return rows.filter(r=>[...sp.entries()].every(([k,v])=>{if(['select','order','limit','on_conflict','columns'].includes(k))return true;const m=/^eq\.(.*)$/.exec(v);return m?String(r[k])===m[1]:true}))}
 function importar(p){
   const ob={id:'ob-1',codigo:p.obra.codigo,nome:p.obra.nome,contratante:p.obra.contratante,contrato:p.obra.contrato,municipio:p.obra.municipio,valor_contrato:String(p.obra.valor_contrato),regime:p.obra.regime,tributos_nota:'0.085',estado:{}};db.obra=[ob];
-  db.conta=p.plano.map(c=>({...c}));
+  db.conta=p.plano.map(c=>({...c}));db.funcao_mo=(p.banco_mo||[]).map(f=>({...f}));
   db.pacote=p.pacotes.map(x=>({id:'pc-'+x.codigo,obra_id:ob.id,codigo:x.codigo,nome:x.nome,tipo:x.tipo,responsavel:x.responsavel,precisa_em_obra:x.precisa_em_obra,fechar_ate:x.fechar_ate,meta:String(x.meta),teto:String(x.teto),condicao_pagamento:x.condicao_pagamento,observacoes:x.observacoes}));
-  db.item_eap=p.eap.map(e=>({id:'i-'+e.codigo,obra_id:ob.id,codigo:e.codigo,descricao:e.descricao,unidade:e.unidade,qtd:e.qtd==null?null:String(e.qtd),nivel:e.nivel,pai_codigo:e.pai,eh_item:e.tipo_linha==='item',preco_venda_total:String(e.preco_venda_total),meta_total:e.meta_total==null?null:String(e.meta_total),teto_total:e.teto_total==null?null:String(e.teto_total),meta_unit:e.meta_unit==null?null:String(e.meta_unit),fonte_meta:e.fonte_meta,status_cotacao:e.status_cotacao,evento:e.evento,pacote_id:e.pacote?'pc-'+e.pacote:null,tipo:e.tipo,composicao:e.composicao,natureza:e.natureza}));
+  db.item_eap=p.eap.map(e=>({id:'i-'+e.codigo,obra_id:ob.id,codigo:e.codigo,descricao:e.descricao,unidade:e.unidade,qtd:e.qtd==null?null:String(e.qtd),nivel:e.nivel,pai_codigo:e.pai,eh_item:e.tipo_linha==='item',preco_venda_total:String(e.preco_venda_total),meta_total:e.meta_total==null?null:String(e.meta_total),teto_total:e.teto_total==null?null:String(e.teto_total),meta_unit:e.meta_unit==null?null:String(e.meta_unit),fonte_meta:e.fonte_meta,status_cotacao:e.status_cotacao,evento:e.evento,pacote_id:e.pacote?'pc-'+e.pacote:null,tipo:e.tipo,composicao:e.composicao,natureza:e.natureza,hh_unit:e.hh_unit==null?null:String(e.hh_unit)}));
 }
 async function mock(page){
   await page.route(URL_SB+'/**',async route=>{
@@ -66,6 +66,18 @@ async function mock(page){
   await p.reload();await p.waitForSelector('.big');
   ok('sessão persiste e estado volta do banco (linha de base congelada)',!(await T(p,'compras bloqueadas')));
   await p.click('#nav button[data-v=compras]');ok('SC-0001 volta do banco',await T(p,'SC-0001'));
+  // Fase 8: apontamento grava em documento (tipo apt) e usa o banco de MO
+  await p.click('#nav button[data-v=campo]');await p.click('[data-act=novo-apt]');
+  const ci=await p.evaluate(()=>S.D.items.find(i=>i.hh_unit&&i.qtd>=10).codigo);
+  await p.selectOption('#a-item',ci);await p.fill('#a-q','4');await p.click('[data-act=apt-ok]');await p.waitForTimeout(800);
+  const apt=db.documento.find(d=>d.tipo==='apt');ok('apontamento gravado em documento (tipo apt)',!!apt&&apt.dados.num==='AP-0001'&&apt.dados.pessoas.length===1);
+  ok('banco de MO carregado do banco (funcao_mo)',await p.evaluate(()=>S.D.banco_mo.length>20&&custoHora('Pedreiro')>0));
+  // offline: a gravação falha por rede, fica na fila local e sobe depois
+  await p.route('**/rest/v1/documento**',r=>r.abort('failed'));
+  await p.click('[data-act=apt-conf]');await p.waitForTimeout(900);
+  ok('sem rede: registro guardado na fila do aparelho',await p.evaluate(()=>!!localStorage.getItem(filaKey())));
+  await p.unroute('**/rest/v1/documento**');await p.evaluate(()=>sbSync());await p.waitForTimeout(900);
+  ok('com rede: fila sobe e é limpa',await p.evaluate(()=>!localStorage.getItem(filaKey()))&&db.documento.find(d=>d.tipo==='apt').dados.status==='conferido');
   // usuários: libera o segundo
   await p.click('#nav button[data-v=usuarios]');await p.waitForTimeout(200);
   await p.screenshot({path:out+'/usuarios.png'});
