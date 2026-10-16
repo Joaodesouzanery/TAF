@@ -18,7 +18,7 @@ const {chromium}=require('playwright');
  ok('bloqueado sem linha de base',(await p.textContent('#s-sem')).includes('BLOQUEADO'));
  await p.click('[data-act=fechar]');
  // 2. congelar (gestão)
- await role('gestao');await nav('eap');await p.click('[data-act=congelar]');ok('congelou v1',await T('congelada'));
+ await role('gestao');await nav('eap');await p.click('[data-act=congelar]');await p.click('[data-act=ask-ok]');ok('congelou v1',await T('congelada'));
  // 3. solicitação verde: meta 1790,30 p/ 2 un -> 2*800=1600 verde
  await role('engenheiro');await p.fill('#q','B.3.1.7.1');await p.click('tr[data-item="B.3.1.7.1"]');await p.click('[data-act=nova-sol]');
  await p.fill('#s-desc','Curva 22 30 DN300');await p.fill('#s-qtd','2');await p.fill('#s-pu','800');

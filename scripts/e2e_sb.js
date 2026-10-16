@@ -56,7 +56,7 @@ async function mock(page){
   ok('obra 342 importada e carregada (346 itens)',await T(p,'Bom dia, Administrador!')&&db.item_eap.filter(i=>i.eh_item).length===346);
   ok('menu Usuários só para admin',await p.isVisible('#nav button[data-v=usuarios]'));
   // fluxo gravando no banco
-  await p.click('#nav button[data-v=eap]');await p.click('[data-act=congelar]');await p.waitForTimeout(600);
+  await p.click('#nav button[data-v=eap]');await p.click('[data-act=congelar]');await p.click('[data-act=ask-ok]');await p.waitForTimeout(600);
   ok('congelar grava obra.estado',db.obra[0].estado&&db.obra[0].estado.frozen===true);
   await p.fill('#q','B.3.1.7.1');await p.click('tr[data-item="B.3.1.7.1"]');await p.click('[data-act=nova-sol]');
   await p.fill('#s-desc','Curva 22 30');await p.fill('#s-qtd','2');await p.fill('#s-pu','800');await p.click('[data-act=sol-ok]');await p.waitForTimeout(800);
