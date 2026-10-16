@@ -1,6 +1,7 @@
 -- Testa as regras do semáforo e do "nada é apagado". Rodar após migração + seed 342.
 -- psql -d taf -v ON_ERROR_STOP=1 -f supabase/tests/semaforo.sql
 begin;
+update obra set linha_base_congelada = true;
 create temp table t as
   select id, obra_id, qtd, meta_total m, teto_total tt from item_eap
   where eh_item and meta_total < teto_total and qtd > 1 order by meta_total desc limit 1;
@@ -22,6 +23,12 @@ insert into ordem_compra(obra_id,item_id,qtd,preco_unit) select obra_id,id,1,10 
 do $$ begin
   begin delete from ordem_compra; raise exception 'delete deveria falhar';
   exception when others then assert sqlerrm like 'Nada é apagado%', sqlerrm; end;
+end $$;
+-- nota só fecha com rateio 100%
+insert into nota_fiscal(valor,status) values (100,'lancada');
+do $$ begin
+  begin update nota_fiscal set status='rateada'; raise exception 'deveria falhar';
+  exception when others then assert sqlerrm like 'Rateio%', sqlerrm; end;
 end $$;
 -- auditoria de meta
 create temp table antes as select count(*) n from evento_auditoria where campo='meta_total';

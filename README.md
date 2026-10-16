@@ -8,10 +8,13 @@ Especificação: *SaaS de Gestão de Obras TAF — Fluxo Completo do Sistema (re
 | Fase | Conteúdo | Situação |
 |---|---|---|
 | 1 | Schema, importador da 342, design system, tela **Hoje** | feita |
-| 2 | Orçamento (EAP), pacotes, linha de base | a fazer |
-| 3 | Solicitação → cotação → OC com semáforo e alçadas | a fazer |
-| 4 | Nota fiscal e rateio, saldos por item | a fazer |
-| 5 | Painéis e histórico da 281 / EAP da 343 | a fazer |
+| 2 | Orçamento (EAP em árvore), pacotes, congelar linha de base, remanejar saldo | feita |
+| 3 | Solicitação → mapa de cotação → OC com semáforo, alçadas e recebimento | feita |
+| 4 | Nota fiscal, rateio fechando 100%, conferência, liberação e pagamento | feita |
+| 5 | Painéis (compras, obra, carteira) e auditoria | feita (demo); falta importar 281 e 343 |
+
+## Arquivo único
+`python3 -I scripts/build_html.py` gera `dist/tafadmin.html` (dados embutidos, abre sem servidor). Na versão demo, os lançamentos ficam no `localStorage` do navegador; o motor de regras em JS espelha as regras SQL (`0001`/`0002`). A próxima etapa é ligar o app ao Supabase (mesmo schema).
 
 ## Rodar
 ```bash
@@ -30,8 +33,8 @@ psql -d taf -f supabase/tests/semaforo.sql      # deve imprimir "OK: todas as re
 ```
 Regras já no banco: semáforo (`calc_semaforo`), teto vale sempre (meta > teto nasce vermelho), nada é apagado, auditoria de meta/teto/preço, views de saldo por item e pacote.
 
-## Deploy
-Vercel: projeto estático, `outputDirectory = web` (ver `vercel.json`).
+## Deploy (tafadmin.vercel.app)
+Na Vercel: *Add New → Project* → importar `Joaodesouzanery/TAF` → nome do projeto `tafadmin` → *Framework: Other*, sem build. O `vercel.json` já aponta `outputDirectory = web`.
 
 ## Pendências do usuário
 Versão vigente da META (REV02) e do Estudo (REV13); valores de alçada em R$; plano de contas validado com o contador.

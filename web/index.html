@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>TAF Obras</title>
+<title>TAF Admin</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%278%27 fill=%27%23141416%27/%3E%3Ctext x=%2716%27 y=%2722%27 font-size=%2718%27 font-family=%27Arial%27 font-weight=%27700%27 text-anchor=%27middle%27 fill=%27white%27%3ET%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
@@ -104,170 +104,516 @@ h1{font-size:30px;font-weight:500;letter-spacing:-.02em;margin:26px 0 6px}
 .err{padding:40px;text-align:center;color:var(--bad)}
 @media (max-width:1100px){.cols,.kpis{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:820px){.app{grid-template-columns:1fr;padding:8px}.side{position:static;height:auto}.main{padding:16px}.row{grid-template-columns:44px 1fr auto}.row .val{display:none}}
+
+.tbl{width:100%;border-collapse:separate;border-spacing:0 6px;font-size:13px}
+.tbl th{font:500 10.5px var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);text-align:left;padding:6px 10px;background:var(--panel-2)}
+.tbl th:first-child{border-radius:8px 0 0 8px}.tbl th:last-child{border-radius:0 8px 8px 0}
+.tbl td{padding:9px 10px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--panel);vertical-align:middle}
+.tbl td:first-child{border-left:1px solid var(--line);border-radius:10px 0 0 10px}.tbl td:last-child{border-right:1px solid var(--line);border-radius:0 10px 10px 0}
+.tbl tr.grp td{background:var(--panel-2);font-weight:500}.tbl tr.clk{cursor:pointer}.tbl tr.clk:hover td{background:var(--panel-2)}
+.r{text-align:right;white-space:nowrap}.mut{color:var(--ink-3)}.neg{color:var(--bad)}.pos{color:var(--ok)}
+.tw{overflow:auto;margin-top:8px}
+.bar{height:6px;border-radius:3px;background:var(--tick-off);overflow:hidden;min-width:70px;display:flex}
+.bar i{display:block;height:100%}.bar .a{background:var(--info)}.bar .b{background:var(--ink)}.bar .c{background:var(--bad)}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:8px 10px;width:100%}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--info);outline-offset:-1px}
+label{display:block;font:500 10.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);margin:12px 0 4px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;place-items:start center;padding:5vh 16px;z-index:40;overflow:auto}
+.modal.open{display:grid}.mbox{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px;width:min(720px,100%);box-shadow:0 30px 80px rgba(0,0,0,.25)}
+.mbox h3{margin:0 0 4px;font-weight:500;font-size:18px}.acts{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap}
+.btn[disabled]{opacity:.45;cursor:not-allowed}.btn.sm{padding:5px 10px;font-size:12.5px;border-radius:8px}.btn.ok{background:var(--ok-bg);color:var(--ok);border-color:transparent}.btn.no{background:var(--bad-bg);color:var(--bad);border-color:transparent}
+.sem{display:flex;gap:10px;align-items:center;padding:12px;border-radius:12px;margin-top:12px;border:1px solid var(--line)}
+.sem.verde{background:var(--ok-bg);color:var(--ok)}.sem.amarelo{background:var(--warn-bg);color:var(--warn)}.sem.vermelho,.sem.bloqueado{background:var(--bad-bg);color:var(--bad)}
+.sem b{font-weight:600}.sem span{color:var(--ink-2);font-size:12.5px}
+.who{width:100%}.search{max-width:280px}
+.bar-fecha{height:10px;border-radius:5px;background:var(--tick-off);overflow:hidden;margin-top:8px}.bar-fecha i{display:block;height:100%;background:var(--ok);transition:width .15s}
+.bar-fecha.bad i{background:var(--bad)}
+.toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin:14px 0 4px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--btn);color:var(--btn-ink);padding:10px 16px;border-radius:10px;z-index:60;font-weight:500;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.chev{display:inline-block;width:14px;color:var(--ink-3)}
+.kpi4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px}.kpi4>div{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--panel)}
+.kpi4 .v{font-size:22px;font-weight:500;letter-spacing:-.02em;margin-top:3px}
+@media (max-width:820px){.g2,.g3,.kpi4{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
 <div class="app">
   <aside class="side">
-    <div class="brand"><div class="logo">T</div>TAF Obras</div>
+    <div class="brand"><div class="logo">T</div>TAF Admin</div>
     <div class="obra-sel"><div class="av" id="obra-av">342</div><div><b id="obra-nome">Carregando…</b><span id="obra-sub">Centro de custo</span></div></div>
     <div class="sec">Workspace</div>
     <nav class="nav" id="nav"></nav>
     <div class="foot">
-      <div class="note"><b><span class="dot"></span><span id="src-label">Dados locais</span></b><span id="src-sub">Planilhas importadas</span></div>
+      <div><label style="margin-top:0">Entrar como</label><select id="role"></select></div>
+      <div class="note"><b><span class="dot"></span><span id="src-label"></span></b><span id="src-sub"></span></div>
     </div>
   </aside>
   <main class="main">
     <div class="top">
       <svg class="ic" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
       <span id="crumb">Hoje</span><span class="sp"></span><span id="today"></span>
-      <button class="icon-btn" id="bell" aria-label="Notificações"><svg class="ic" viewBox="0 0 24 24"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg><span class="pip" id="pip"></span></button>
+      <button class="icon-btn" id="bell" aria-label="Alertas"><svg class="ic" viewBox="0 0 24 24"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg><span class="pip" id="pip"></span></button>
     </div>
     <div id="view"></div>
   </main>
 </div>
 <div class="scrim" id="scrim"></div>
-<aside class="drawer" id="drawer"><header>Alertas da obra<button class="btn" id="close" style="padding:4px 10px">Fechar</button></header><div class="list" id="alerts"></div></aside>
+<aside class="drawer" id="drawer"><header>Alertas da obra<button class="btn sm" id="close">Fechar</button></header><div class="list" id="alerts"></div></aside>
+<div class="modal" id="modal"><div class="mbox" id="mbox"></div></div>
 
 <script src="config.js"></script>
 <script>
+/* ============ util ============ */
 const $=s=>document.querySelector(s);
-const brl=(v,c=false)=>c&&Math.abs(v)>=1e6?'R$ '+(v/1e6).toFixed(2).replace('.',',')+' mi':c&&Math.abs(v)>=1e3?'R$ '+Math.round(v/1e3).toLocaleString('pt-BR')+' mil':(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
-const pct=v=>(v*100).toFixed(1).replace('.',',')+'%';
-const ICON={
- hoje:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const brl=(v,c=false)=>{v=+v||0;return c&&Math.abs(v)>=1e6?'R$ '+(v/1e6).toFixed(2).replace('.',',')+' mi':c&&Math.abs(v)>=1e3?'R$ '+Math.round(v/1e3).toLocaleString('pt-BR')+' mil':v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})};
+const num=v=>(+v||0).toLocaleString('pt-BR',{maximumFractionDigits:2});
+const r2=v=>Math.round((+v||0)*100)/100;
+const hojeISO=()=>new Date().toISOString().slice(0,10);
+const diasAte=s=>s?Math.round((new Date(s+'T00:00:00')-new Date(hojeISO()+'T00:00:00'))/864e5):null;
+const fdata=s=>s?s.split('-').reverse().join('/'):'—';
+const ico=n=>`<svg class="ic" viewBox="0 0 24 24">${ICON[n]||''}</svg>`;
+const ICON={hoje:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
  eap:'<path d="M4 6h16M4 12h10M4 18h6"/>',pac:'<path d="M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8"/>',
  compras:'<path d="M5 6h15l-1.5 9h-12zM5 6L4 3H2M9 20a1 1 0 1 0 0 .01M17 20a1 1 0 1 0 0 .01"/>',
- nota:'<path d="M7 3h8l4 4v14H7zM15 3v4h4M10 12h6M10 16h6"/>',pain:'<path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/>'};
-const NAV=[['hoje','Hoje','hoje'],['eap','Orçamento (EAP)','eap',2],['pac','Pacotes','pac',2],['compras','Compras','compras',3],['nota','Notas e rateio','nota',4],['pain','Painéis','pain',5]];
-let S={view:'hoje',tab:'fechar',data:null};
+ nota:'<path d="M7 3h8l4 4v14H7zM15 3v4h4M10 12h6M10 16h6"/>',pain:'<path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/>',aud:'<path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/>'};
 
-async function load(){
-  const C=window.TAF_CONFIG;
-  if(C&&C.supabaseUrl&&C.supabaseKey){
-    const h={apikey:C.supabaseKey,Authorization:'Bearer '+C.supabaseKey};
-    const g=t=>fetch(`${C.supabaseUrl}/rest/v1/${t}`,{headers:h}).then(r=>{if(!r.ok)throw new Error(t+' '+r.status);return r.json()});
-    const [obra,pacotes,eap]=await Promise.all([g('obra?select=*&limit=1'),g('pacote?select=*'),g('item_eap?select=*&order=codigo&limit=2000')]);
-    const pc=Object.fromEntries(pacotes.map(p=>[p.id,p.codigo]));
-    eap.forEach(e=>{e.pacote=pc[e.pacote_id];e.pai=e.pai_codigo;e.tipo_linha=e.eh_item?'item':'grupo';[ 'meta_total','teto_total','preco_venda_total'].forEach(k=>e[k]=e[k]==null?e[k]:+e[k])});
-    pacotes.forEach(p=>{p.meta=+p.meta;p.teto=+p.teto});
-    S.src=['Supabase','Banco conectado'];
-    return {obra:obra[0],pacotes,eap,relatorio:{}};
-  }
-  const r=await fetch('data/obra342.json');if(!r.ok)throw new Error('data/obra342.json '+r.status);
-  S.src=['Dados locais','Planilhas importadas (demo)'];
-  return r.json();
+/* ============ papéis ============ */
+const ROLES={gestao:{n:'Gestão da carteira',u:'Felipe'},diretoria:{n:'Diretoria',u:'Thadeu'},gerente:{n:'Gerente de contrato',u:'Tiago Marinho'},
+ engenheiro:{n:'Engenheiro residente',u:'Marko Aurélio'},compras:{n:'Compras e suprimentos',u:'Compras'},almox:{n:'Almoxarife',u:'Almoxarife'},
+ adm:{n:'Administrativo de obra',u:'Administrativo'},financeiro:{n:'Financeiro',u:'Financeiro'}};
+const CAN={congelar:['gestao','diretoria'],solicitar:['engenheiro','gerente'],cotar:['compras'],receber:['almox','engenheiro'],
+ nota:['adm','engenheiro'],liberar:['financeiro'],remanejar:['gerente','diretoria'],param:['diretoria','gestao']};
+const can=a=>CAN[a].includes(S.role);
+const user=()=>ROLES[S.role].u;
+
+/* ============ estado ============ */
+const KEY='taf_admin_v2';
+let S={view:'hoje',tab:{},role:'engenheiro',D:null,t:null,exp:new Set(),q:''};
+const novoT=()=>({frozen:false,versao:1,hist:[],metaOv:{},sols:[],ocs:[],notas:[],aud:[],seq:{sol:0,oc:0,nf:0},par:{tol:0.02,limite:100000}});
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify({...S.t,role:S.role}))}catch(e){}};
+function loadT(){try{const j=JSON.parse(localStorage.getItem(KEY)||'null');if(j){S.role=j.role||S.role;delete j.role;return {...novoT(),...j}}}catch(e){}return novoT()}
+const log=(ent,ref,campo,antes,depois,motivo='')=>S.t.aud.unshift({q:new Date().toISOString(),quem:user()+' ('+ROLES[S.role].n+')',ent,ref,campo,antes:String(antes??''),depois:String(depois??''),motivo});
+function toast(m){document.querySelectorAll('.toast').forEach(x=>x.remove());const e=document.createElement('div');e.className='toast';e.textContent=m;document.body.appendChild(e);setTimeout(()=>e.remove(),2600)}
+
+/* ============ motor de regras (espelha o SQL) ============ */
+const byCod=()=>S.byCod;
+const dominante=i=>{const n=i.natureza||{};const k=Object.keys(n).sort((a,b)=>n[b]-n[a])[0];
+  if(n[k]>0)return k;return /material/.test(i.tipo||'')?'MAT':'TER'};
+function prep(){
+  const D=S.D;D.items=D.eap.filter(e=>e.tipo_linha==='item');
+  D.items.forEach(i=>{i.meta_base=i.meta_base??i.meta_total;if(S.t.metaOv[i.codigo]!=null)i.meta_total=S.t.metaOv[i.codigo];else i.meta_total=i.meta_base;i.nat=dominante(i)});
+  S.byCod=Object.fromEntries(D.eap.map(e=>[e.codigo,e]));
+  D.pacotes.forEach(p=>p._it=D.items.filter(i=>i.pacote===p.codigo));
+}
+function saldos(){
+  const m={};S.D.items.forEach(i=>m[i.codigo]={comp:0,real:0});
+  const fat={};
+  S.t.notas.forEach(n=>{if(n.status==='lancada')return;n.rateio.forEach(l=>{m[l.item]&&(m[l.item].real+=+l.valor);if(n.oc)fat[n.oc+'|'+l.item]=(fat[n.oc+'|'+l.item]||0)+ +l.valor})});
+  S.t.ocs.forEach(o=>{if(['aprovada','recebida_parcial','recebida'].includes(o.status)&&m[o.item])m[o.item].comp+=Math.max(0,o.valor-(fat[o.id+'|'+o.item]||0))});
+  S.sd=m;S.D.items.forEach(i=>{const s=m[i.codigo];s.meta=i.meta_total;s.teto=i.teto_total;s.livre=r2(i.meta_total-s.comp-s.real)});
+  return m;
+}
+function semaforo(cod,total,pendId){
+  const i=S.byCod[cod];
+  if(!S.t.frozen)return ['bloqueado','Linha de base não congelada','Obra sem linha de base não abre compra (E01). Peça à Gestão para congelar a versão 1 em Orçamento.'];
+  if(!i||i.tipo_linha!=='item'||i.meta_total==null)return ['bloqueado','Fora da planilha do contrato','Sem item com meta não há compra: abra pedido de inclusão ou aditivo.'];
+  const s=S.sd[i.codigo];
+  if(i.teto_total!=null&&s.comp+s.real+total>i.teto_total)return ['vermelho','Acima do teto','Teto '+brl(i.teto_total)+' (margem zero). Só a Diretoria aprova.'];
+  if(total<=s.livre)return ['verde','Cabe no saldo da meta','Saldo livre '+brl(s.livre)+'. Vira pedido sem alçada.'];
+  return ['amarelo','Acima da meta, até o teto','Saldo livre '+brl(s.livre)+'. O Gerente de contrato aprova com justificativa.'];
+}
+const SEM_CLASS={verde:'ok',amarelo:'warn',vermelho:'bad',bloqueado:'bad'};
+const semPill=s=>`<span class="pill ${SEM_CLASS[s]||'mute'}">${s||'—'}</span>`;
+const nextNum=k=>{S.t.seq[k]++;return {sol:'SC',oc:'OC',nf:'NF'}[k]+'-'+String(S.t.seq[k]).padStart(4,'0')};
+const ocFat=oc=>S.t.notas.filter(n=>n.oc===oc.id&&n.status!=='lancada').reduce((s,n)=>s+n.rateio.reduce((a,l)=>a+ +l.valor,0),0);
+const ocRecebido=oc=>r2(oc.preco*(oc.recebido||0));
+
+/* ============ derivados ============ */
+function derive(){
+  const D=S.D,X={};saldos();
+  const it=D.items;
+  X.meta=it.reduce((s,i)=>s+i.meta_total,0);X.venda=it.reduce((s,i)=>s+i.preco_venda_total,0);X.teto=it.reduce((s,i)=>s+i.teto_total,0);
+  X.comp=it.reduce((s,i)=>s+S.sd[i.codigo].comp,0);X.real=it.reduce((s,i)=>s+S.sd[i.codigo].real,0);
+  X.aCotar=it.filter(i=>i.status_cotacao==='A cotar');X.semFolga=it.filter(i=>i.meta_total>i.teto_total);
+  D.pacotes.forEach(p=>{p._dias=diasAte(p.fechar_ate);p._cot=p._it.filter(i=>i.status_cotacao==='A cotar').length;p._pctCot=p._it.length?1-p._cot/p._it.length:1;
+    p._semFolga=p._it.filter(i=>i.meta_total>i.teto_total).length;p._acima=p.meta>p.teto;
+    p._meta=p._it.reduce((s,i)=>s+i.meta_total,0);p._comp=p._it.reduce((s,i)=>s+S.sd[i.codigo].comp,0);p._real=p._it.reduce((s,i)=>s+S.sd[i.codigo].real,0);
+    p._temOC=S.t.ocs.some(o=>S.byCod[o.item]?.pacote===p.codigo&&o.status!=='cancelada'&&o.status!=='reprovada')});
+  X.vencidos=D.pacotes.filter(p=>p._dias!=null&&p._dias<0&&p._it.length&&!p._temOC);
+  X.pendAprov=S.t.ocs.filter(o=>o.status==='em_alcada');
+  X.semRateio=S.t.notas.filter(n=>n.status==='lancada');
+  X.semPedido=S.t.notas.filter(n=>!n.oc);
+  X.economia=S.t.ocs.filter(o=>['aprovada','recebida_parcial','recebida'].includes(o.status)).reduce((s,o)=>{const i=S.byCod[o.item];return s+(i.meta_unit*o.qtd-o.valor)},0);
+  return X;
 }
 
-function derive(D){
-  const items=D.eap.filter(e=>e.tipo_linha==='item');
-  const hoje=new Date();hoje.setHours(0,0,0,0);
-  const dias=s=>s?Math.round((new Date(s+'T00:00:00')-hoje)/864e5):null;
-  const semFolga=items.filter(i=>i.meta_total>i.teto_total);
-  const aCotar=items.filter(i=>i.status_cotacao==='A cotar');
-  const porPac={};items.forEach(i=>(porPac[i.pacote]=porPac[i.pacote]||[]).push(i));
-  D.pacotes.forEach(p=>{const it=porPac[p.codigo]||[];p._it=it;p._dias=dias(p.fechar_ate);
-    p._cot=it.filter(i=>i.status_cotacao==='A cotar').length;p._pctCot=it.length?1-p._cot/it.length:1;p._semFolga=it.filter(i=>i.meta_total>i.teto_total).length;
-    p._acima=p.meta>p.teto});
-  const meta=items.reduce((s,i)=>s+i.meta_total,0),teto=items.reduce((s,i)=>s+i.teto_total,0),venda=items.reduce((s,i)=>s+i.preco_venda_total,0);
-  const vencidos=D.pacotes.filter(p=>p._dias!=null&&p._dias<0&&p._it.length);
-  const prox=D.pacotes.filter(p=>p._dias!=null&&p._dias>=0&&p._dias<=30);
-  return {items,semFolga,aCotar,meta,teto,venda,vencidos,prox,dias};
-}
-
-function alerts(D,X){
+/* ============ alertas ============ */
+function alertas(X){
   const a=[];
-  if(!D.obra.linha_base_congelada&&!(D.obra.linha_base&&D.obra.linha_base.congelada))
-    a.push(['bad','Linha de base não congelada','Sem linha de base congelada a obra não deve abrir compra (E01). Congele a versão 1 na Fase 2.']);
-  X.vencidos.forEach(p=>a.push(['bad',`Pacote ${p.codigo}: fechar até ${p.fechar_ate} vencido`,`Venceu há ${-p._dias} dia(s), ${brl(p.meta,true)} de meta. Vira restrição na frente que depende dele.`]));
-  D.pacotes.filter(p=>p._acima).forEach(p=>a.push(['bad',`Pacote ${p.codigo}: meta acima do teto`,`Meta ${brl(p.meta)} × teto ${brl(p.teto)}. A solicitação nasce vermelha e só a diretoria aprova.`]));
-  a.push(['warn',`${X.aCotar.length} itens sem cotação`,`${brl(X.aCotar.reduce((s,i)=>s+i.meta_total,0),true)} do custo-meta ainda é estimativa.`]);
-  a.push(['warn',`${X.semFolga.length} itens com meta acima do teto`,'Sem folga: qualquer compra nesses itens fica vermelha.']);
-  const r=D.relatorio||{};
-  if(r.diferenca_contrato)a.push(['info','Soma da EAP diverge do contrato',`Diferença de ${brl(r.diferenca_contrato)} entre a soma dos itens e o valor do contrato.`]);
-  if(r.aviso)a.push(['info','Versão da META a confirmar',r.aviso]);
+  if(!S.t.frozen)a.push(['bad','Linha de base não congelada','Compras bloqueadas até a Gestão congelar a versão 1 (E01).']);
+  X.vencidos.forEach(p=>a.push(['bad',`Pacote ${p.codigo}: fechar até ${fdata(p.fechar_ate)} vencido`,`${-p._dias} dia(s) de atraso, sem pedido. ${brl(p.meta,true)} de meta; vira restrição na frente.`]));
+  S.D.pacotes.filter(p=>p._acima).forEach(p=>a.push(['bad',`Pacote ${p.codigo}: meta acima do teto`,`Meta ${brl(p.meta)} × teto ${brl(p.teto)}. Solicitação nasce vermelha.`]));
+  X.pendAprov.forEach(o=>a.push([o.alcada==='diretoria'?'bad':'warn',`${o.num} aguarda ${ROLES[o.alcada].n}`,`${brl(o.valor)} · ${o.item} · ${esc(o.forn)}`]));
+  X.semRateio.forEach(n=>a.push(['warn',`${n.num} sem rateio`,`${esc(n.emitente)} · ${brl(n.valor)}. Não entra no custo do item.`]));
+  X.semPedido.filter(n=>n.status!=='paga').forEach(n=>a.push(['warn',`${n.num} sem pedido`,`Alerta de governança: ${esc(n.justSemOC||'sem justificativa')}`]));
+  S.t.notas.filter(n=>n.status==='divergente').forEach(n=>a.push(['bad',`${n.num} divergente do pedido`,'Pagamento bloqueado até Compras resolver.']));
+  a.push(['warn',`${X.aCotar.length} itens sem cotação`,`${brl(X.aCotar.reduce((s,i)=>s+i.meta_total,0),true)} do custo-meta é estimativa.`]);
+  a.push(['warn',`${X.semFolga.length} itens com meta acima do teto`,'Sem folga: qualquer compra neles fica vermelha.']);
+  if(S.D.relatorio?.aviso)a.push(['info','Versão da META a confirmar',S.D.relatorio.aviso]);
   return a;
 }
 
-const svg=n=>`<svg class="ic" viewBox="0 0 24 24">${ICON[n]||''}</svg>`;
-function renderNav(D,X){
-  $('#nav').innerHTML=NAV.map(([k,l,i,f])=>`<button class="${S.view===k?'on':''}" data-v="${k}">${svg(i)}${l}${f?`<span class="badge">F${f}</span>`:''}</button>`).join('');
-  $('#nav').onclick=e=>{const b=e.target.closest('button');if(!b)return;S.view=b.dataset.v;render()};
-}
-function ticks(items){
-  return items.map(i=>`<i class="${i.meta_total>i.teto_total?'r':i.status_cotacao==='A cotar'?'w':''}" title="${i.codigo}"></i>`).join('');
-}
+/* ============ componentes ============ */
+const NAV=[['hoje','Hoje','hoje'],['eap','Orçamento (EAP)','eap'],['pac','Pacotes','pac'],['compras','Compras','compras'],['nota','Notas e rateio','nota'],['pain','Painéis','pain'],['aud','Auditoria','aud']];
+function badgeFor(k,X){return k==='compras'?(X.pendAprov.length?`<span class="badge hot">${X.pendAprov.length}</span>`:''):k==='nota'?(X.semRateio.length?`<span class="badge hot">${X.semRateio.length}</span>`:''):''}
+function ticks(items){return items.map(i=>`<i class="${i.meta_total>i.teto_total?'r':i.status_cotacao==='A cotar'?'w':''}" title="${i.codigo}"></i>`).join('')}
 function ring(p,c){return `<div class="ring" style="--p:${Math.round(p*100)};--c:${c}"><span>${Math.round(p*100)}</span></div>`}
-function pacRow(p,X){
-  const d=p._dias;
-  const pill=d==null?'':d<0?`<span class="pill bad">Vencido ${-d}d</span>`:d<=7?`<span class="pill warn">Em ${d} dias</span>`:`<span class="pill ok">Em ${d} dias</span>`;
-  const c=p._acima?'var(--bad)':p._cot?'var(--warn)':'var(--ok)';
-  return `<div class="row">${ring(p._pctCot,c)}
-   <div><h4>${p.nome}<span class="mono">${p.codigo}</span></h4>
-   <p>${p._it.length} ${p._it.length===1?'item':'itens'} · ${p._cot?p._cot+' sem cotação':'todos cotados'}${p._semFolga?` · ${p._semFolga} sem folga`:''}</p></div>
-   <div>${p._acima?'<span class="pill bad">Meta &gt; teto</span> ':''}${pill}</div>
-   <div class="val"><b>${brl(p.meta,true)}</b><span>teto ${brl(p.teto,true)}</span></div></div>`;
-}
-function viewHoje(D,X){
-  const ord=[...D.pacotes].filter(p=>p._it.length).sort((a,b)=>(a.fechar_ate||'9').localeCompare(b.fechar_ate||'9'));
-  const lists={fechar:ord.filter(p=>p._dias!=null&&p._dias<=30),todos:ord,cotar:ord.filter(p=>p._cot)};
-  const nf=lists.fechar.length;
-  const rows=(lists[S.tab]||[]).map(p=>pacRow(p,X)).join('')||'<div class="sub" style="padding:18px">Nada por aqui.</div>';
-  const folga=X.items.reduce((s,i)=>s+Math.max(0,i.teto_total-i.meta_total),0);
-  const mx=ord.slice(0,6).map(p=>`<div class="mx"><h5>${p.nome}<small>${p._semFolga?`<b>${p._semFolga} sem folga</b> · `:''}${p._it.length-p._cot}/${p._it.length}</small></h5><div class="sq">${ticks(p._it).replace(/<i/g,'<i')}</div></div>`).join('');
-  return `
-  <div class="head"><div><h1>Bom dia</h1>
-   <p class="lead"><b>${X.vencidos.length} pacotes</b> com data de fechar vencida, <b>${X.aCotar.length} itens</b> ainda sem cotação (${brl(X.aCotar.reduce((s,i)=>s+i.meta_total,0),true)}) e <b>${X.semFolga.length} itens</b> com meta acima do teto na obra ${D.obra.codigo}.</p></div>
-   <button class="btn dark" data-v="alert">Ver alertas ${S.n?`<span class="badge hot">${S.n}</span>`:''}</button></div>
-  <div class="card" style="margin-top:22px"><div class="in kpis">
-   <div><div class="k-l">Meta de custo</div><div class="big">${brl(X.meta,true).replace('R$ ','')}</div>
-    <span class="pill ${folga>0?'ok':'bad'}">Folga ${brl(folga,true)}</span> <span class="sub">entre a meta e o teto, nos ${X.items.length-X.semFolga.length} itens com folga</span></div>
-   <div><div class="stats">
-     <div><div class="k-l">Itens</div><div class="v">${X.items.length}</div></div>
-     <div><div class="k-l">Preço licitado</div><div class="v">${brl(X.venda,true)}</div></div>
-     <div><div class="k-l">Teto (margem zero)</div><div class="v" style="color:var(--ink)">${brl(X.teto,true)}</div></div>
-     <div><div class="k-l">Sem cotação</div><div class="v" style="color:var(--warn)">${X.aCotar.length}</div></div></div>
-    <div class="ticks">${ticks(X.items)}</div>
-    <div class="legend"><span><i style="background:var(--ink)"></i>Cotado / orçado</span><span><i style="background:var(--warn)"></i>Estimado, sem cotação</span><span><i style="background:var(--bad)"></i>Meta acima do teto</span><span style="margin-left:auto">Cada marca é um item da EAP</span></div></div>
-  </div></div>
-  <div class="cols">
-   <div class="card"><div class="in">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-     <div class="tabs" id="tabs"><button data-t="fechar" class="${S.tab==='fechar'?'on':''}">A fechar em 30 dias <em>${nf}</em></button><button data-t="cotar" class="${S.tab==='cotar'?'on':''}">Sem cotação</button><button data-t="todos" class="${S.tab==='todos'?'on':''}">Todos ${ord.length}</button></div>
-     <span class="sub">Por data de fechar</span></div>${rows}</div></div>
-   <div class="card"><div class="in mx"><div class="panel-t">Matriz de metas por pacote</div><div class="sub">Um quadrado por item · próximos pacotes a fechar</div>${mx}</div></div>
-  </div>`;
-}
-function viewSoon(k){
-  const [,l,,f]=NAV.find(n=>n[0]===k);
-  const t={2:'Árvore da EAP, pacotes e versões da linha de base.',3:'Solicitação, cotação e OC com semáforo e alçadas.',4:'Nota fiscal, rateio fechando 100% e saldos por item.',5:'Painéis de compras, obra e carteira.'}[f];
-  return `<div class="soon"><div><span class="pill info">Fase ${f}</span></div><h2>${l}</h2><div>${t}</div></div>`;
-}
-function render(){
-  const D=S.data,X=S.X;renderNav(D,X);
-  $('#crumb').textContent=(NAV.find(n=>n[0]===S.view)||NAV[0])[1];
-  $('#view').innerHTML=S.view==='hoje'?viewHoje(D,X):viewSoon(S.view);
-  const t=$('#tabs');if(t)t.onclick=e=>{const b=e.target.closest('button');if(b){S.tab=b.dataset.t;render()}};
-  const bt=document.querySelector('[data-v=alert]');if(bt)bt.onclick=openDrawer;
-}
-function openDrawer(){$('#drawer').classList.add('open');$('#scrim').classList.add('open')}
-function closeDrawer(){$('#drawer').classList.remove('open');$('#scrim').classList.remove('open')}
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer()});
-$('#bell').onclick=openDrawer;$('#close').onclick=closeDrawer;$('#scrim').onclick=closeDrawer;
+function bar(a,b,tot){const w=x=>tot>0?Math.min(100,Math.max(0,x/tot*100)):0;return `<div class="bar" title="comprometido ${brl(a)} · realizado ${brl(b)} · meta ${brl(tot)}"><i class="b" style="width:${w(b)}%"></i><i class="a" style="width:${Math.min(w(a),100-w(b))}%"></i></div>`}
+function tabs(id,list,cur){return `<div class="tabs" data-tabs="${id}">${list.map(([k,l,n])=>`<button data-t="${k}" class="${cur===k?'on':''}">${l}${n?` <em>${n}</em>`:''}</button>`).join('')}</div>`}
+function modal(html){$('#mbox').innerHTML=html;$('#modal').classList.add('open')}
+function closeModal(){$('#modal').classList.remove('open')}
+const itemOptions=(sel)=>S.D.items.map(i=>`<option value="${i.codigo}" ${sel===i.codigo?'selected':''}>${i.codigo} · ${esc(i.descricao.slice(0,70))}</option>`).join('');
 
+/* ============ HOJE ============ */
+function pacRow(p){
+  const d=p._dias;const pill=p._temOC?'<span class="pill ok">Com pedido</span>':d==null?'':d<0?`<span class="pill bad">Vencido ${-d}d</span>`:d<=7?`<span class="pill warn">Em ${d} dias</span>`:`<span class="pill ok">Em ${d} dias</span>`;
+  const c=p._acima?'var(--bad)':p._cot?'var(--warn)':'var(--ok)';
+  return `<div class="row">${ring(p._pctCot,c)}<div><h4>${esc(p.nome)}<span class="mono">${p.codigo}</span></h4><p>${p._it.length} ${p._it.length===1?'item':'itens'} · ${p._cot?p._cot+' sem cotação':'todos cotados'}${p._semFolga?` · ${p._semFolga} sem folga`:''}</p></div>
+   <div>${p._acima?'<span class="pill bad">Meta &gt; teto</span> ':''}${pill}</div><div class="val"><b>${brl(p.meta,true)}</b><span>teto ${brl(p.teto,true)}</span></div></div>`}
+function minhaFila(X){
+  const f=[];
+  if(!S.t.frozen&&can('congelar'))f.push(['bad','Congelar a linha de base v1','Libera a abertura de compras na obra.','eap']);
+  if(['gerente','diretoria'].includes(S.role))X.pendAprov.filter(o=>o.alcada===S.role||(S.role==='diretoria'&&o.alcada==='gerente')).forEach(o=>f.push([o.alcada==='diretoria'?'bad':'warn',`Aprovar ${o.num} · ${brl(o.valor)}`,`${o.item} · ${esc(o.forn)}`,'compras']));
+  if(S.role==='compras')S.t.sols.filter(s=>s.status==='enviada'||s.status==='em_cotacao').forEach(s=>f.push(['warn',`Cotar ${s.num}`,`${esc(s.desc)} · ${s.item}`,'compras']));
+  if(S.role==='almox')S.t.ocs.filter(o=>['aprovada','recebida_parcial'].includes(o.status)).forEach(o=>f.push(['info',`Receber ${o.num}`,`${esc(o.forn)} · ${num(o.qtd-(o.recebido||0))} ${S.byCod[o.item].unidade||''} a receber`,'compras']));
+  if(S.role==='adm')X.semRateio.forEach(n=>f.push(['warn',`Ratear ${n.num}`,`${esc(n.emitente)} · ${brl(n.valor)}`,'nota']));
+  if(S.role==='financeiro')S.t.notas.filter(n=>n.status==='conferida'||n.status==='liberada').forEach(n=>f.push(['info',`${n.status==='conferida'?'Liberar':'Pagar'} ${n.num}`,`${esc(n.emitente)} · ${brl(n.valor)}`,'nota']));
+  return f;
+}
+function viewHoje(X){
+  const ord=[...S.D.pacotes].filter(p=>p._it.length).sort((a,b)=>(a.fechar_ate||'9').localeCompare(b.fechar_ate||'9'));
+  const tab=S.tab.hoje||'fechar';
+  const L={fechar:ord.filter(p=>p._dias!=null&&p._dias<=30&&!p._temOC),cotar:ord.filter(p=>p._cot),todos:ord};
+  const rows=(L[tab]||[]).map(pacRow).join('')||'<div class="sub" style="padding:18px">Nada por aqui.</div>';
+  const folga=S.D.items.reduce((s,i)=>s+Math.max(0,i.teto_total-i.meta_total),0);
+  const fila=minhaFila(X);
+  const mx=ord.slice(0,6).map(p=>`<div class="mx"><h5>${esc(p.nome)}<small>${p._semFolga?`<b>${p._semFolga} sem folga</b> · `:''}${p._it.length-p._cot}/${p._it.length}</small></h5><div class="sq">${ticks(p._it)}</div></div>`).join('');
+  return `<div class="head"><div><h1>Bom dia, ${esc(user())}</h1>
+   <p class="lead"><b>${X.vencidos.length} pacotes</b> com data de fechar vencida e sem pedido, <b>${X.aCotar.length} itens</b> sem cotação (${brl(X.aCotar.reduce((s,i)=>s+i.meta_total,0),true)}) e <b>${X.semFolga.length} itens</b> com meta acima do teto.${S.t.frozen?'':' <b style="color:var(--bad)">Linha de base ainda não congelada: compras bloqueadas.</b>'}</p></div>
+   <button class="btn dark" data-act="alertas">Ver alertas</button></div>
+  <div class="card" style="margin-top:22px"><div class="in kpis">
+   <div><div class="k-l">Meta de custo</div><div class="big">${brl(X.meta,true).replace('R$ ','')}</div><span class="pill ok">Folga ${brl(folga,true)}</span> <span class="sub">entre meta e teto</span></div>
+   <div><div class="stats"><div><div class="k-l">Comprometido</div><div class="v" style="color:var(--info)">${brl(X.comp,true)}</div></div><div><div class="k-l">Realizado</div><div class="v">${brl(X.real,true)}</div></div>
+    <div><div class="k-l">Saldo livre</div><div class="v">${brl(X.meta-X.comp-X.real,true)}</div></div><div><div class="k-l">Economia em OCs</div><div class="v ${X.economia>=0?'pos':'neg'}">${brl(X.economia,true)}</div></div></div>
+    <div class="ticks">${ticks(S.D.items)}</div>
+    <div class="legend"><span><i style="background:var(--ink)"></i>Cotado / orçado</span><span><i style="background:var(--warn)"></i>Estimado</span><span><i style="background:var(--bad)"></i>Meta acima do teto</span><span style="margin-left:auto">Cada marca é um item da EAP</span></div></div></div></div>
+  ${fila.length?`<div class="card" style="margin-top:18px"><div class="in"><div class="panel-t">Aguardando você · ${ROLES[S.role].n}</div>${fila.slice(0,6).map(f=>`<div class="row" style="grid-template-columns:28px 1fr auto"><span class="pill ${f[0]}">!</span><div><h4>${f[1]}</h4><p>${f[2]}</p></div><button class="btn sm" data-go="${f[3]}">Abrir</button></div>`).join('')}</div></div>`:''}
+  <div class="cols"><div class="card"><div class="in"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+   ${tabs('hoje',[['fechar','A fechar em 30 dias',L.fechar.length],['cotar','Sem cotação'],['todos','Todos '+ord.length]],tab)}<span class="sub">Por data de fechar</span></div>${rows}</div></div>
+   <div class="card"><div class="in mx"><div class="panel-t">Matriz de metas por pacote</div><div class="sub">Um quadrado por item</div>${mx}</div></div></div>`;
+}
+
+/* ============ ORÇAMENTO (Fase 2) ============ */
+function viewEap(X){
+  const q=S.q.toLowerCase();
+  const rows=[];
+  const agg=g=>{const its=S.D.items.filter(i=>i.codigo.startsWith(g.codigo+'.'));return {venda:its.reduce((s,i)=>s+i.preco_venda_total,0),meta:its.reduce((s,i)=>s+i.meta_total,0),comp:its.reduce((s,i)=>s+S.sd[i.codigo].comp,0),real:its.reduce((s,i)=>s+S.sd[i.codigo].real,0),teto:its.reduce((s,i)=>s+i.teto_total,0)}};
+  const vis=e=>{if(q)return (e.codigo+' '+e.descricao).toLowerCase().includes(q)||S.D.items.some(i=>i.codigo.startsWith(e.codigo+'.')&&(i.codigo+' '+i.descricao).toLowerCase().includes(q));
+    let p=e.pai;while(p){if(!S.exp.has(p))return false;p=S.byCod[p]?.pai}return true};
+  S.D.eap.forEach(e=>{if(!vis(e))return;
+    if(e.tipo_linha==='grupo'){const a=agg(e);const open=q||S.exp.has(e.codigo);
+      rows.push(`<tr class="grp clk" data-exp="${e.codigo}"><td><span class="chev">${open?'▾':'▸'}</span><span class="mono">${e.codigo}</span></td><td style="padding-left:${(e.nivel-1)*14+10}px">${esc(e.descricao)}</td><td class="r mut">${brl(a.venda,true)}</td><td class="r">${brl(a.meta,true)}</td><td class="r">${brl(a.teto,true)}</td><td class="r">${brl(a.comp,true)}</td><td class="r">${brl(a.real,true)}</td><td>${bar(a.comp,a.real,a.meta)}</td><td></td></tr>`)}
+    else{const s=S.sd[e.codigo];
+      rows.push(`<tr class="clk" data-item="${e.codigo}"><td><span class="mono">${e.codigo}</span></td><td style="padding-left:${(e.nivel-1)*14+10}px">${esc(e.descricao.slice(0,90))}<div class="mut" style="font-size:11.5px">${num(e.qtd)} ${e.unidade||''} · ${e.pacote||'—'}</div></td><td class="r mut">${brl(e.preco_venda_total)}</td><td class="r">${brl(e.meta_total)}</td><td class="r ${e.meta_total>e.teto_total?'neg':''}">${brl(e.teto_total)}</td><td class="r">${brl(s.comp)}</td><td class="r">${brl(s.real)}</td><td>${bar(s.comp,s.real,e.meta_total)}</td><td>${e.status_cotacao==='A cotar'?'<span class="pill warn">estimado</span>':e.meta_total>e.teto_total?'<span class="pill bad">sem folga</span>':''}</td></tr>`)}});
+  return `<div class="head"><div><h1>Orçamento (EAP)</h1><p class="lead">Cada item guarda meta, teto e saldos. Clique num item para ver detalhes, solicitar compra ou remanejar saldo.</p></div>
+   <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><span class="pill ${S.t.frozen?'ok':'bad'}">Linha de base v${S.t.versao} ${S.t.frozen?'congelada':'não congelada'}</span>
+   ${S.t.frozen?'':`<button class="btn dark" data-act="congelar" ${can('congelar')?'':'disabled title="Só Gestão ou Diretoria"'}>Congelar v1</button>`}<button class="btn" data-act="remanejar" ${can('remanejar')&&S.t.frozen?'':'disabled'}>Remanejar saldo</button></div></div>
+  <div class="toolbar"><input class="search" id="q" placeholder="Buscar código ou descrição…" value="${esc(S.q)}"><span class="sub">${S.D.items.length} itens · soma do licitado ${brl(X.venda)}${S.D.relatorio?.diferenca_contrato?` · difere do contrato em ${brl(S.D.relatorio.diferenca_contrato)}`:''}</span></div>
+  <div class="tw"><table class="tbl"><thead><tr><th>Código</th><th>Descrição</th><th class="r">Licitado</th><th class="r">Meta</th><th class="r">Teto</th><th class="r">Comprom.</th><th class="r">Realizado</th><th>Consumo</th><th></th></tr></thead><tbody>${rows.join('')}</tbody></table></div>
+  ${S.t.hist.length?`<div class="sub" style="margin-top:10px">Histórico da linha de base: ${S.t.hist.map(h=>`v${h.versao} (${h.motivo})`).join(' · ')}</div>`:''}`;
+}
+function modalItem(cod){
+  const i=S.byCod[cod],s=S.sd[cod];
+  const ocs=S.t.ocs.filter(o=>o.item===cod);const rat=S.t.notas.flatMap(n=>n.rateio.filter(l=>l.item===cod).map(l=>({n,l})));
+  modal(`<h3>${cod} <span class="mut">${esc(i.unidade||'')}</span></h3><div class="sub">${esc(i.descricao)}</div>
+   <div class="kpi4"><div><div class="k-l">Meta</div><div class="v">${brl(i.meta_total)}</div></div><div><div class="k-l">Teto</div><div class="v ${i.meta_total>i.teto_total?'neg':''}">${brl(i.teto_total)}</div></div><div><div class="k-l">Comprometido</div><div class="v">${brl(s.comp)}</div></div><div><div class="k-l">Saldo livre</div><div class="v ${s.livre<0?'neg':''}">${brl(s.livre)}</div></div></div>
+   <div class="sub" style="margin-top:10px">Pacote ${i.pacote||'—'} · evento ${i.evento||'—'} · natureza ${i.nat} · fonte da meta: ${esc(i.fonte_meta||'—')} · ${esc(i.status_cotacao||'')}</div>
+   ${ocs.length?`<div class="panel-t" style="margin-top:14px">Pedidos</div>${ocs.map(o=>`<div class="sub">${o.num} · ${esc(o.forn)} · ${brl(o.valor)} · ${o.status}</div>`).join('')}`:''}
+   ${rat.length?`<div class="panel-t" style="margin-top:14px">Notas rateadas</div>${rat.map(x=>`<div class="sub">${x.n.num} · ${esc(x.n.emitente)} · ${brl(x.l.valor)}</div>`).join('')}`:''}
+   <div class="acts"><button class="btn" data-act="fechar">Fechar</button><button class="btn dark" data-act="nova-sol" data-item="${cod}" ${can('solicitar')?'':'disabled title="Só Engenheiro ou Gerente"'}>Solicitar compra</button></div>`);
+}
+function modalRemanejar(){
+  modal(`<h3>Remanejar saldo entre itens</h3><div class="sub">Tira meta de um item e coloca em outro. O total da obra não muda; gera nova versão da linha de base com antes e depois.</div>
+   <label>De (item)</label><select id="rm-de">${itemOptions()}</select><label>Para (item)</label><select id="rm-para">${itemOptions()}</select>
+   <div class="g2"><div><label>Valor (R$)</label><input id="rm-v" type="number" step="0.01" min="0.01"></div><div><label>Motivo</label><input id="rm-m" placeholder="obrigatório"></div></div><div id="rm-msg" class="sub" style="margin-top:8px"></div>
+   <div class="acts"><button class="btn" data-act="fechar">Cancelar</button><button class="btn dark" data-act="rm-ok">Aprovar remanejamento</button></div>`);
+}
+function doRemanejar(){
+  const de=$('#rm-de').value,pa=$('#rm-para').value,v=r2($('#rm-v').value),m=$('#rm-m').value.trim(),msg=$('#rm-msg');
+  const err=t=>{msg.innerHTML=`<span class="neg">${t}</span>`};
+  if(de===pa)return err('Escolha itens diferentes.');if(!(v>0))return err('Informe o valor.');if(!m)return err('Motivo obrigatório.');
+  const a=S.byCod[de],b=S.byCod[pa],sa=S.sd[de];
+  if(a.meta_total-v<sa.comp+sa.real)return err('O item de origem não tem saldo livre suficiente ('+brl(sa.livre)+').');
+  const t0=S.D.items.reduce((s,i)=>s+i.meta_total,0);
+  log('item_eap',de,'meta_total',a.meta_total,r2(a.meta_total-v),m);log('item_eap',pa,'meta_total',b.meta_total,r2(b.meta_total+v),m);
+  S.t.metaOv[de]=r2(a.meta_total-v);S.t.metaOv[pa]=r2(b.meta_total+v);S.t.versao++;S.t.hist.push({versao:S.t.versao,motivo:`${de} → ${pa} ${brl(v)}: ${m}`,quando:new Date().toISOString(),quem:user()});
+  prep();const X=derive();if(Math.abs(X.meta-t0)>0.01)console.warn('total mudou');
+  save();closeModal();toast('Remanejado · linha de base v'+S.t.versao);render();
+}
+
+/* ============ PACOTES ============ */
+function viewPac(X){
+  const tab=S.tab.pac||'todos';
+  let L=[...S.D.pacotes].filter(p=>p._it.length).sort((a,b)=>(a.fechar_ate||'9').localeCompare(b.fechar_ate||'9'));
+  if(tab==='cotar')L=L.filter(p=>p._cot);if(tab==='acima')L=L.filter(p=>p._acima||p._semFolga);if(tab==='venc')L=L.filter(p=>X.vencidos.includes(p));
+  const folgaOutros=S.D.pacotes.filter(p=>p.codigo!=='ADM').reduce((s,p)=>s+(p.teto-p.meta),0);
+  return `<div class="head"><div><h1>Pacotes</h1><p class="lead">Itens agrupados para comprar em escala. Sem o ADM, os demais pacotes têm folga de <b>${brl(folgaOutros,true)}</b> entre meta e teto.</p></div></div>
+  <div class="toolbar">${tabs('pac',[['todos','Todos '+L.length],['venc','Vencidos',X.vencidos.length],['cotar','Sem cotação'],['acima','Meta ≥ teto']],tab)}</div>
+  <div class="tw"><table class="tbl"><thead><tr><th>Pacote</th><th class="r">Itens</th><th class="r">Meta</th><th class="r">Teto</th><th class="r">Comprom.</th><th class="r">Realizado</th><th>Consumo</th><th>Fechar até</th><th>Situação</th></tr></thead><tbody>
+  ${L.map(p=>{const d=p._dias;const st=p._temOC?'<span class="pill ok">com pedido</span>':d<0?`<span class="pill bad">vencido ${-d}d</span>`:d<=30?`<span class="pill warn">em ${d}d</span>`:`<span class="pill ok">em ${d}d</span>`;
+   return `<tr class="clk" data-pac="${p.codigo}"><td><b>${esc(p.nome)}</b><div class="mono mut">${p.codigo} · ${esc(p.responsavel||'')}</div></td><td class="r">${p._it.length}${p._cot?`<div class="pill warn" style="margin-top:3px">${p._cot} s/ cotação</div>`:''}</td><td class="r">${brl(p._meta)}</td><td class="r ${p._acima?'neg':''}">${brl(p.teto)}</td><td class="r">${brl(p._comp)}</td><td class="r">${brl(p._real)}</td><td>${bar(p._comp,p._real,p._meta)}</td><td>${fdata(p.fechar_ate)}</td><td>${st}</td></tr>`}).join('')}</tbody></table></div>`;
+}
+function modalPac(cod){
+  const p=S.D.pacotes.find(x=>x.codigo===cod);
+  modal(`<h3>${esc(p.nome)} <span class="mono mut">${p.codigo}</span></h3><div class="sub">Precisa em obra ${fdata(p.precisa_em_obra)} · fechar até ${fdata(p.fechar_ate)} · ${esc(p.condicao_pagamento||'')}</div>
+   ${p.observacoes?`<div class="sub" style="margin-top:6px">${esc(p.observacoes)}</div>`:''}
+   <div class="tw" style="max-height:50vh"><table class="tbl"><thead><tr><th>Item</th><th class="r">Meta</th><th class="r">Teto</th><th class="r">Saldo</th><th></th></tr></thead><tbody>
+   ${p._it.map(i=>`<tr class="clk" data-item="${i.codigo}"><td><span class="mono">${i.codigo}</span><div class="mut" style="font-size:11.5px">${esc(i.descricao.slice(0,60))}</div></td><td class="r">${brl(i.meta_total)}</td><td class="r ${i.meta_total>i.teto_total?'neg':''}">${brl(i.teto_total)}</td><td class="r">${brl(S.sd[i.codigo].livre)}</td><td>${i.status_cotacao==='A cotar'?'<span class="pill warn">estimado</span>':''}</td></tr>`).join('')}</tbody></table></div>
+   <div class="acts"><button class="btn" data-act="fechar">Fechar</button></div>`);
+}
+
+/* ============ COMPRAS (Fase 3) ============ */
+function semBox(r){return `<div class="sem ${r[0]}"><b>${r[0].toUpperCase()}</b><div><b>${r[1]}</b><br><span>${r[2]}</span></div></div>`}
+function modalSol(cod){
+  modal(`<h3>Nova solicitação de compra</h3><div class="sub">Nasce dentro de um item do orçamento. O preço é comparado com o saldo, a meta e o teto do item.</div>
+   <label>Item do orçamento</label><select id="s-item">${itemOptions(cod)}</select><label>O que comprar</label><input id="s-desc" placeholder="ex.: Tubo K-7 DN300, 76 m">
+   <div class="g3"><div><label>Quantidade</label><input id="s-qtd" type="number" step="any" min="0"></div><div><label>Preço unitário achado (R$)</label><input id="s-pu" type="number" step="any" min="0"></div><div><label>Necessária em</label><input id="s-dt" type="date"></div></div>
+   <label>Motivo</label><input id="s-mot" placeholder="opcional"><div id="s-sem"></div>
+   <div class="acts"><button class="btn" data-act="fechar">Cancelar</button><button class="btn dark" data-act="sol-ok">Enviar solicitação</button></div>`);
+  const upd=()=>{const i=S.byCod[$('#s-item').value],q=+$('#s-qtd').value,p=+$('#s-pu').value;
+    if(i&&!$('#s-qtd').value&&i.qtd)$('#s-qtd').placeholder='orçado: '+num(i.qtd);if(i&&!$('#s-pu').value)$('#s-pu').placeholder='meta unit.: '+num(i.meta_unit);
+    $('#s-sem').innerHTML=q>0&&p>0?semBox(semaforo(i.codigo,q*p)):`<div class="sub" style="margin-top:10px">Informe quantidade e preço para ver o semáforo. Saldo livre do item: <b>${brl(S.sd[i.codigo].livre)}</b></div>`};
+  ['s-item','s-qtd','s-pu'].forEach(id=>$('#'+id).oninput=upd);upd();
+}
+function doSol(){
+  const cod=$('#s-item').value,q=+$('#s-qtd').value,p=+$('#s-pu').value,desc=$('#s-desc').value.trim();
+  if(!desc||!(q>0)||!(p>=0))return toast('Preencha descrição, quantidade e preço');
+  const sem=semaforo(cod,q*p);if(sem[0]==='bloqueado'){toast(sem[1]);return}
+  const s={id:'s'+Date.now(),num:nextNum('sol'),item:cod,desc,qtd:q,preco:p,data:$('#s-dt').value,mot:$('#s-mot').value,solicitante:user(),status:'enviada',sem:sem[0],cots:[],criado:hojeISO()};
+  S.t.sols.unshift(s);log('solicitacao',s.num,'criada','',brl(q*p)+' · '+sem[0]);save();closeModal();toast(s.num+' enviada · '+sem[0]);S.view='compras';S.tab.compras='sols';render();
+}
+function viewCompras(X){
+  const tab=S.tab.compras||'sols';
+  const sols=S.t.sols,ocs=S.t.ocs;
+  const nAprov=X.pendAprov.length;
+  let body='';
+  if(tab==='sols')body=sols.length?`<table class="tbl"><thead><tr><th>Nº</th><th>Item</th><th>O que</th><th class="r">Total est.</th><th>Semáforo</th><th>Status</th><th></th></tr></thead><tbody>${sols.map(s=>`<tr><td class="mono">${s.num}</td><td class="mono">${s.item}</td><td>${esc(s.desc)}<div class="mut" style="font-size:11.5px">${esc(s.solicitante)} · ${fdata(s.criado)}</div></td><td class="r">${brl(s.qtd*s.preco)}</td><td>${semPill(s.sem)}</td><td><span class="pill mute">${s.status.replace('_',' ')}</span></td><td class="r">${['enviada','em_cotacao'].includes(s.status)?`<button class="btn sm" data-act="mapa" data-id="${s.id}" ${can('cotar')?'':'disabled title="Só Compras"'}>Mapa de cotação</button>`:''}</td></tr>`).join('')}</tbody></table>`:empty('Nenhuma solicitação ainda.','Abra um item em Orçamento e clique em “Solicitar compra”.');
+  if(tab==='ocs')body=ocs.length?`<table class="tbl"><thead><tr><th>OC</th><th>Item / Fornecedor</th><th class="r">Valor</th><th>Semáforo</th><th>Status</th><th>Receb.</th><th></th></tr></thead><tbody>${ocs.map(o=>{const i=S.byCod[o.item];return `<tr><td class="mono">${o.num}</td><td><span class="mono">${o.item}</span> · ${esc(o.forn)}<div class="mut" style="font-size:11.5px">${num(o.qtd)} ${i.unidade||''} × ${brl(o.preco)}${o.emergencia?' · EMERGÊNCIA':''}</div></td><td class="r">${brl(o.valor)}</td><td>${semPill(o.sem)}</td><td><span class="pill ${o.status==='aprovada'||o.status==='recebida'?'ok':o.status==='em_alcada'?'warn':o.status==='reprovada'||o.status==='cancelada'?'bad':'mute'}">${o.status.replace('_',' ')}</span></td><td class="mono">${num(o.recebido||0)}/${num(o.qtd)}</td>
+   <td class="r">${o.status==='em_alcada'?aprovBtns(o):''}${['aprovada','recebida_parcial'].includes(o.status)?`<button class="btn sm" data-act="receber" data-id="${o.id}" ${can('receber')?'':'disabled title="Só Almoxarife"'}>Receber</button> <button class="btn sm no" data-act="cancelar-oc" data-id="${o.id}">Cancelar</button>`:''}</td></tr>`}).join('')}</tbody></table>`:empty('Nenhuma OC ainda.','A OC nasce no mapa de cotação, depois da escolha do fornecedor.');
+  if(tab==='aprov')body=nAprov?`<table class="tbl"><thead><tr><th>OC</th><th>Item</th><th class="r">Valor</th><th>Alçada</th><th>Justificativa</th><th></th></tr></thead><tbody>${X.pendAprov.map(o=>`<tr><td class="mono">${o.num}</td><td><span class="mono">${o.item}</span> · ${esc(o.forn)}</td><td class="r">${brl(o.valor)}</td><td>${semPill(o.sem)} <span class="mut">${ROLES[o.alcada].n}</span></td><td>${esc(o.just||'—')}</td><td class="r">${aprovBtns(o)}</td></tr>`).join('')}</tbody></table>`:empty('Nada aguardando aprovação.','Compras acima da meta ou do teto aparecem aqui.');
+  return `<div class="head"><div><h1>Compras</h1><p class="lead">Solicitação → cotação (3 preços) → OC. Verde passa direto; amarelo vai ao Gerente; vermelho, à Diretoria; fora da planilha, bloqueado.</p></div>
+   <div style="display:flex;gap:8px"><button class="btn" data-act="params" ${can('param')?'':'disabled title="Só Diretoria ou Gestão"'}>Parâmetros</button><button class="btn dark" data-act="nova-sol" ${can('solicitar')?'':'disabled title="Só Engenheiro ou Gerente"'}>Nova solicitação</button></div></div>
+   <div class="toolbar">${tabs('compras',[['sols','Solicitações '+sols.length],['ocs','Ordens de compra '+ocs.length],['aprov','Aprovações',nAprov]],tab)}<span class="sub">Verde sem confirmação até ${brl(S.t.par.limite)} · tolerância nota×pedido ${(S.t.par.tol*100).toFixed(1)}%</span></div><div class="tw">${body}</div>`;
+}
+const empty=(a,b)=>`<div class="soon" style="min-height:200px"><h2 style="font-size:16px">${a}</h2><div>${b}</div></div>`;
+function aprovBtns(o){
+  const ok=can_aprovar(o);return `<button class="btn sm ok" data-act="aprovar" data-id="${o.id}" ${ok?'':'disabled title="Sem alçada ou é o próprio solicitante"'}>Aprovar</button> <button class="btn sm no" data-act="reprovar" data-id="${o.id}" ${ok?'':'disabled'}>Reprovar</button>`}
+function can_aprovar(o){if(o.solicitante===user())return false;if(o.alcada==='diretoria')return S.role==='diretoria';return ['gerente','diretoria'].includes(S.role)}
+function modalMapa(id){
+  const s=S.t.sols.find(x=>x.id===id),i=S.byCod[s.item];
+  const L=s.cots.map((c,k)=>`<tr><td><input type="radio" name="esc" value="${k}" ${s.escolhida===k?'checked':''}></td><td>${esc(c.forn)}</td><td class="r">${brl(c.preco)}</td><td>${esc(c.prazo||'—')}</td><td class="r">${brl(c.preco*s.qtd)}</td><td>${c.preco===Math.min(...s.cots.map(x=>x.preco))?'<span class="pill ok">menor</span>':''}</td></tr>`).join('');
+  modal(`<h3>Mapa de cotação · ${s.num}</h3><div class="sub"><span class="mono">${s.item}</span> · ${esc(s.desc)} · ${num(s.qtd)} ${i.unidade||''} · meta unitária ${brl(i.meta_unit)}</div>
+   <div class="tw"><table class="tbl"><thead><tr><th></th><th>Fornecedor</th><th class="r">Preço unit.</th><th>Prazo</th><th class="r">Total</th><th></th></tr></thead><tbody>${L||'<tr><td colspan="6" class="mut">Sem propostas.</td></tr>'}</tbody></table></div>
+   <div class="g3"><div><label>Fornecedor</label><input id="c-f"></div><div><label>Preço unit. (R$)</label><input id="c-p" type="number" step="any" min="0"></div><div><label>Prazo / condição</label><input id="c-z"></div></div>
+   <div style="margin-top:8px"><button class="btn sm" data-act="add-cot" data-id="${id}">Adicionar proposta</button></div>
+   <label>Justificativa (obrigatória se escolher fora da menor ou com menos de 3 propostas)</label><input id="c-j" value="${esc(s.just||'')}">
+   <label style="display:flex;gap:8px;align-items:center;text-transform:none;font-family:inherit;letter-spacing:0"><input type="checkbox" id="c-em" style="width:auto"> Compra de emergência (frente parada): permite OC sem 3 cotações; regularizar em 2 dias úteis</label>
+   <div id="c-sem"></div><div class="acts"><button class="btn" data-act="fechar">Fechar</button><button class="btn dark" data-act="emitir-oc" data-id="${id}">Emitir OC</button></div>`);
+  const upd=()=>{const r=document.querySelector('input[name=esc]:checked');if(!r){$('#c-sem').innerHTML='';return}const c=s.cots[+r.value];$('#c-sem').innerHTML=semBox(semaforo(s.item,s.qtd*c.preco))};
+  document.querySelectorAll('input[name=esc]').forEach(e=>e.onchange=upd);upd();
+}
+function addCot(id){const s=S.t.sols.find(x=>x.id===id);const f=$('#c-f').value.trim(),p=+$('#c-p').value;if(!f||!(p>0))return toast('Informe fornecedor e preço');
+  s.cots.push({forn:f,preco:p,prazo:$('#c-z').value});s.status='em_cotacao';s.just=$('#c-j').value;save();modalMapa(id)}
+function emitirOC(id){
+  const s=S.t.sols.find(x=>x.id===id);const r=document.querySelector('input[name=esc]:checked');if(!r)return toast('Escolha uma proposta');
+  const c=s.cots[+r.value],menor=Math.min(...s.cots.map(x=>x.preco)),just=$('#c-j').value.trim(),em=$('#c-em').checked;
+  if(!em&&s.cots.length<3&&!just)return toast('Menos de 3 propostas: justifique ou marque emergência');
+  if(c.preco>menor&&!just)return toast('Escolheu fora da menor: justifique');
+  const total=r2(s.qtd*c.preco),sem=semaforo(s.item,total);if(sem[0]==='bloqueado')return toast(sem[1]);
+  let st='aprovada',alc=null;
+  if(sem[0]==='verde'){if(total>S.t.par.limite){st='em_alcada';alc='gerente'}}else if(sem[0]==='amarelo'){st='em_alcada';alc='gerente';if(!just)return toast('Acima da meta: justificativa escrita é obrigatória')}else{st='em_alcada';alc='diretoria';if(!just)return toast('Acima do teto: justificativa é obrigatória')}
+  const o={id:'o'+Date.now(),num:nextNum('oc'),sol:s.id,item:s.item,forn:c.forn,qtd:s.qtd,preco:c.preco,valor:total,sem:sem[0],status:st,alcada:alc,just,emergencia:em,solicitante:s.solicitante,recebido:0,criado:hojeISO()};
+  S.t.ocs.unshift(o);s.status='atendida';s.oc=o.num;log('ordem_compra',o.num,'emitida','',brl(total)+' · '+sem[0]+' · '+st,just);save();closeModal();toast(o.num+(st==='aprovada'?' aprovada (verde)':' aguarda '+ROLES[alc].n));S.tab.compras='ocs';render();
+}
+function decidir(id,ok){const o=S.t.ocs.find(x=>x.id===id);if(!can_aprovar(o))return toast('Sem alçada');
+  let m='';if(!ok){m=prompt('Motivo da reprovação (volta para renegociar ou remanejar saldo):');if(!m)return}
+  const a=o.status;o.status=ok?'aprovada':'reprovada';o.aprovador=user();log('ordem_compra',o.num,'status',a,o.status,m);save();toast(o.num+(ok?' aprovada':' reprovada'));render()}
+function modalReceber(id){const o=S.t.ocs.find(x=>x.id===id),i=S.byCod[o.item],falta=o.qtd-(o.recebido||0);
+  modal(`<h3>Receber ${o.num}</h3><div class="sub">${esc(o.forn)} · ${num(o.qtd)} ${i.unidade||''} pedidos · ${num(o.recebido||0)} já recebidos</div><label>Quantidade recebida agora</label><input id="rc-q" type="number" step="any" value="${falta}" min="0" max="${falta}">
+   <div class="acts"><button class="btn" data-act="fechar">Cancelar</button><button class="btn dark" data-act="rc-ok" data-id="${id}">Confirmar recebimento</button></div>`)}
+function doReceber(id){const o=S.t.ocs.find(x=>x.id===id),q=+$('#rc-q').value;if(!(q>0)||q>o.qtd-(o.recebido||0)+1e-9)return toast('Quantidade inválida');
+  const a=o.recebido||0;o.recebido=a+q;o.status=o.recebido>=o.qtd-1e-9?'recebida':'recebida_parcial';log('ordem_compra',o.num,'recebido',a,o.recebido);save();closeModal();toast('Recebimento registrado');render()}
+function cancelarOC(id){const o=S.t.ocs.find(x=>x.id===id);const m=prompt('Motivo do cancelamento (obrigatório):');if(!m)return;
+  const a=o.status;o.status='cancelada';o.motivo=m;log('ordem_compra',o.num,'status',a,'cancelada',m);save();toast('OC cancelada · comprometido liberado');render()}
+function modalParams(){modal(`<h3>Parâmetros</h3><div class="sub">Valores de alçada ainda são decisão da Diretoria (seção 18 do doc). Os padrões abaixo são sugestão.</div>
+  <div class="g2"><div><label>Verde sem confirmação até (R$)</label><input id="p-l" type="number" value="${S.t.par.limite}"></div><div><label>Tolerância nota × pedido (%)</label><input id="p-t" type="number" step="0.1" value="${S.t.par.tol*100}"></div></div>
+  <div class="acts"><button class="btn" data-act="fechar">Cancelar</button><button class="btn dark" data-act="params-ok">Salvar</button></div>`)}
+
+/* ============ NOTAS E RATEIO (Fase 4) ============ */
+let NF=null;
+function viewNota(X){
+  const tab=S.tab.nota||'notas';const N=S.t.notas;
+  const pill=n=>`<span class="pill ${{lancada:'warn',rateada:'info',conferida:'info',liberada:'ok',paga:'ok',divergente:'bad'}[n.status]}">${n.status}</span>`;
+  const acao=n=>{
+    if(n.status==='lancada')return `<button class="btn sm" data-act="ratear" data-id="${n.id}" ${can('nota')?'':'disabled title="Só Administrativo"'}>Ratear</button>`;
+    if(n.status==='rateada')return `<button class="btn sm" data-act="conferir" data-id="${n.id}" ${can('nota')?'':'disabled'}>Conferir</button>`;
+    if(n.status==='divergente')return `<button class="btn sm" data-act="conferir" data-id="${n.id}" ${can('nota')?'':'disabled'}>Reconferir</button>`;
+    if(n.status==='conferida')return `<button class="btn sm ok" data-act="liberar" data-id="${n.id}" ${can('liberar')?'':'disabled title="Só Financeiro"'}>Liberar</button>`;
+    if(n.status==='liberada')return `<button class="btn sm ok" data-act="pagar" data-id="${n.id}" ${can('liberar')?'':'disabled'}>Pagar</button>`;return ''};
+  const list=tab==='sem'?N.filter(n=>n.status==='lancada'||!n.oc):N;
+  const body=list.length?`<table class="tbl"><thead><tr><th>Nota</th><th>Emitente</th><th>OC</th><th class="r">Valor</th><th>Rateio</th><th>Status</th><th></th></tr></thead><tbody>${list.map(n=>{const soma=n.rateio.reduce((s,l)=>s+ +l.valor,0);return `<tr><td class="mono">${n.num}<div class="mut">${esc(n.chave||'')}</div></td><td>${esc(n.emitente)}<div class="mut" style="font-size:11.5px">${fdata(n.emissao)}</div></td><td class="mono">${n.ocNum||'<span class="pill warn">sem pedido</span>'}</td><td class="r">${brl(n.valor)}</td><td class="r ${Math.abs(soma-n.valor)<.005?'pos':'neg'}">${Math.round(soma/n.valor*100)}%</td><td>${pill(n)}${n.diverg?`<div class="neg" style="font-size:11.5px">${esc(n.diverg)}</div>`:''}</td><td class="r">${acao(n)}</td></tr>`}).join('')}</tbody></table>`:empty('Nenhuma nota ainda.','Lance a nota recebida para ratear nos itens.');
+  return `<div class="head"><div><h1>Notas e rateio</h1><p class="lead">A nota é rateada à mão entre itens e obras. A soma tem que fechar <b>100%</b>; linha sem item não grava; pagamento só com recebimento confirmado.</p></div>
+   <button class="btn dark" data-act="nova-nf" ${can('nota')?'':'disabled title="Só Administrativo ou Engenheiro"'}>Lançar nota</button></div>
+   <div class="toolbar">${tabs('nota',[['notas','Todas '+N.length],['sem','Sem rateio / sem pedido',X.semRateio.length+X.semPedido.filter(n=>n.status!=='lancada').length]],tab)}</div><div class="tw">${body}</div>`;
+}
+function modalNF(id){
+  const ex=id?S.t.notas.find(n=>n.id===id):null;
+  NF=ex?{...ex,rateio:ex.rateio.map(l=>({...l}))}:{id:'n'+Date.now(),oc:'',rateio:[],valor:0,emitente:'',chave:'',emissao:hojeISO()};
+  const ocsOk=S.t.ocs.filter(o=>['aprovada','recebida_parcial','recebida'].includes(o.status));
+  modal(`<h3>${ex?'Ratear '+ex.num:'Lançar nota fiscal'}</h3><div class="sub">O XML da NF-e chegaria sozinho (Fase seguinte); aqui o administrativo confere e rateia.</div>
+   <div class="g2"><div><label>Emitente</label><input id="n-e" value="${esc(NF.emitente)}" ${ex?'disabled':''}></div><div><label>Chave / número</label><input id="n-c" value="${esc(NF.chave)}" ${ex?'disabled':''}></div></div>
+   <div class="g3"><div><label>Valor da nota (R$)</label><input id="n-v" type="number" step="0.01" value="${NF.valor||''}" ${ex?'disabled':''}></div><div><label>Emissão</label><input id="n-d" type="date" value="${NF.emissao}" ${ex?'disabled':''}></div>
+   <div><label>Pedido (OC)</label><select id="n-o" ${ex?'disabled':''}><option value="">Sem pedido</option>${ocsOk.map(o=>`<option value="${o.id}" ${NF.oc===o.id?'selected':''}>${o.num} · ${esc(o.forn)} · ${brl(o.valor)}</option>`).join('')}</select></div></div>
+   <div id="n-js" style="display:none"><label>Justificativa (nota sem pedido)</label><input id="n-j" value="${esc(NF.justSemOC||'')}"></div>
+   <div class="panel-t" style="margin-top:16px">Rateio</div><div id="n-rat"></div><div style="margin-top:8px;display:flex;gap:8px"><button class="btn sm" data-act="add-lin">+ Linha</button><button class="btn sm" data-act="sug-lin">Sugerir pelo pedido</button></div>
+   <div class="bar-fecha" id="n-bar"><i></i></div><div class="sub" id="n-fecha" style="margin-top:6px"></div>
+   <div class="acts"><button class="btn" data-act="fechar">Cancelar</button><button class="btn" data-act="nf-ok" data-modo="lancada">Salvar sem ratear</button><button class="btn dark" data-act="nf-ok" data-modo="rateada">Salvar rateio</button></div>`);
+  $('#n-o').onchange=()=>{NF.oc=$('#n-o').value;$('#n-js').style.display=NF.oc?'none':'block'};$('#n-js').style.display=NF.oc?'none':'block';
+  $('#n-v').oninput=()=>{NF.valor=+$('#n-v').value;pintaRat()};if(!NF.rateio.length)NF.rateio.push({item:S.D.items[0].codigo,valor:0});pintaRat();
+}
+function pintaRat(){
+  $('#n-rat').innerHTML=NF.rateio.map((l,k)=>{const i=S.byCod[l.item],s=S.sd[l.item];
+   return `<div class="g3" style="grid-template-columns:2fr 1fr .6fr auto;align-items:end;margin-top:8px"><div><label style="margin-top:0">Item</label><select data-lin="${k}" data-f="item">${itemOptions(l.item)}</select></div><div><label style="margin-top:0">Valor (R$)</label><input type="number" step="0.01" data-lin="${k}" data-f="valor" value="${l.valor||''}"></div><div><label style="margin-top:0">Natureza</label><span class="pill info" title="vem do cadastro do insumo">${i.nat}</span></div><button class="btn sm no" data-act="del-lin" data-k="${k}">×</button>
+   <div class="sub" style="grid-column:1/-1;margin-top:-4px">saldo livre do item ${brl(s.livre)}${l.valor>s.livre?' · <b class="neg">acima da meta</b>':''}</div></div>`}).join('');
+  document.querySelectorAll('[data-lin]').forEach(e=>e.oninput=e.onchange=()=>{const l=NF.rateio[+e.dataset.lin];l[e.dataset.f]=e.dataset.f==='valor'?+e.value:e.value;if(e.dataset.f==='item')pintaRat();else fechaBar()});fechaBar();
+}
+function fechaBar(){const soma=r2(NF.rateio.reduce((s,l)=>s+(+l.valor||0),0)),v=r2(NF.valor);const p=v>0?Math.min(100,soma/v*100):0;
+  $('#n-bar').className='bar-fecha'+(Math.abs(soma-v)>.004?(soma>v?' bad':''):'');$('#n-bar i').style.width=p+'%';
+  $('#n-fecha').innerHTML=Math.abs(soma-v)<.005&&v>0?`<b class="pos">Fecha 100%</b> · ${brl(soma)}`:`Rateado ${brl(soma)} de ${brl(v)} · falta <b class="${soma>v?'neg':''}">${brl(v-soma)}</b>`}
+function doNF(modo){
+  const ex=S.t.notas.find(n=>n.id===NF.id);
+  NF.emitente=ex?ex.emitente:$('#n-e').value.trim();NF.valor=ex?ex.valor:r2($('#n-v').value);NF.chave=ex?ex.chave:$('#n-c').value.trim();NF.emissao=ex?ex.emissao:$('#n-d').value;NF.oc=ex?ex.oc:$('#n-o').value;
+  if(!NF.emitente||!(NF.valor>0))return toast('Informe emitente e valor');
+  if(!NF.oc){const j=$('#n-j').value.trim();if(!j)return toast('Nota sem pedido: justifique');NF.justSemOC=j}
+  const lin=NF.rateio.filter(l=>+l.valor>0);
+  if(modo==='rateada'){if(!lin.length||lin.some(l=>!l.item))return toast('Toda linha precisa de obra e item');
+    if(Math.abs(r2(lin.reduce((s,l)=>s+ +l.valor,0))-NF.valor)>.004)return toast('O rateio não fecha 100% da nota')}
+  const n={...NF,rateio:lin.map(l=>({item:l.item,valor:r2(l.valor),nat:S.byCod[l.item].nat})),status:modo,ocNum:NF.oc?S.t.ocs.find(o=>o.id===NF.oc).num:''};
+  if(ex){Object.assign(ex,n)}else{n.num=nextNum('nf');S.t.notas.unshift(n)}
+  log('nota_fiscal',n.num||ex.num,'status','',modo+' · '+brl(NF.valor));save();closeModal();toast('Nota '+(modo==='rateada'?'rateada':'lançada (fila sem rateio)'));render();
+}
+function conferir(id){
+  const n=S.t.notas.find(x=>x.id===id);n.diverg='';
+  if(n.oc){const o=S.t.ocs.find(x=>x.id===n.oc);
+    const outras=S.t.notas.filter(x=>x.oc===o.id&&x.id!==n.id&&x.status!=='lancada').reduce((s,x)=>s+x.valor,0);
+    const esperado=r2(ocRecebido(o)-outras);
+    if(esperado<=0){n.status='divergente';n.diverg='Sem recebimento registrado para esta nota';}
+    else if(Math.abs(n.valor-esperado)/esperado>S.t.par.tol){n.status='divergente';n.diverg=`Nota ${brl(n.valor)} × esperado ${brl(esperado)} (tolerância ${(S.t.par.tol*100).toFixed(1)}%)`}
+    else n.status='conferida'}
+  else n.status='conferida';
+  log('nota_fiscal',n.num,'status','rateada',n.status,n.diverg);save();toast(n.status==='conferida'?'Conferida':'Divergente: volta para Compras');render()}
+function liberar(id){const n=S.t.notas.find(x=>x.id===id);
+  if(n.oc){const o=S.t.ocs.find(x=>x.id===n.oc);if(!(o.recebido>0))return toast('Pagamento só com recebimento confirmado (E19)')}
+  n.status='liberada';log('nota_fiscal',n.num,'status','conferida','liberada');save();toast('Liberada para pagamento');render()}
+function pagar(id){const n=S.t.notas.find(x=>x.id===id);n.status='paga';n.pago=hojeISO();log('nota_fiscal',n.num,'status','liberada','paga');save();toast('Pago');render()}
+
+/* ============ PAINÉIS (Fase 5) ============ */
+function viewPain(X){
+  const tab=S.tab.pain||'compras';
+  let b='';
+  if(tab==='compras'){
+    const L=S.D.pacotes.filter(p=>p._it.length).sort((a,b)=>(b._comp+b._real)-(a._comp+a._real));
+    b=`<div class="kpi4"><div><div class="k-l">Comprometido</div><div class="v">${brl(X.comp,true)}</div></div><div><div class="k-l">Realizado</div><div class="v">${brl(X.real,true)}</div></div><div><div class="k-l">Economia nas OCs</div><div class="v ${X.economia>=0?'pos':'neg'}">${brl(X.economia,true)}</div></div><div><div class="k-l">Aprovações paradas</div><div class="v ${X.pendAprov.length?'neg':''}">${X.pendAprov.length}</div></div></div>
+    <div class="tw"><table class="tbl"><thead><tr><th>Pacote</th><th class="r">Meta</th><th class="r">Comprometido</th><th class="r">Realizado</th><th class="r">Saldo</th><th>Consumo</th><th>A fechar</th></tr></thead><tbody>${L.map(p=>`<tr><td><b>${esc(p.nome)}</b><div class="mono mut">${p.codigo}</div></td><td class="r">${brl(p._meta)}</td><td class="r">${brl(p._comp)}</td><td class="r">${brl(p._real)}</td><td class="r ${p._meta-p._comp-p._real<0?'neg':''}">${brl(p._meta-p._comp-p._real)}</td><td>${bar(p._comp,p._real,p._meta)}</td><td>${p._temOC?'<span class="pill ok">com pedido</span>':p._dias<0?`<span class="pill bad">vencido ${-p._dias}d</span>`:p._dias<=30?`<span class="pill warn">${p._dias}d</span>`:fdata(p.fechar_ate)}</td></tr>`).join('')}</tbody></table></div>`}
+  if(tab==='obra'){
+    const sc={};S.D.items.forEach(i=>{const k=i.nat;sc[k]=sc[k]||{meta:0,comp:0,real:0};sc[k].meta+=i.meta_total;sc[k].comp+=S.sd[i.codigo].comp;sc[k].real+=S.sd[i.codigo].real});
+    const NM={MO:'Mão de obra',MAT:'Material e equipamento',EQP:'Máquinas e veículos',TER:'Terceiros',ADM:'Indireto da obra'};
+    const top=[...S.D.items].map(i=>({i,u:(S.sd[i.codigo].comp+S.sd[i.codigo].real)/i.meta_total})).filter(x=>x.u>0).sort((a,b)=>b.u-a.u).slice(0,10);
+    const resultado=X.venda*(1-S.D.obra.tributos_nota)-X.meta;
+    b=`<div class="kpi4"><div><div class="k-l">Preço licitado</div><div class="v">${brl(X.venda,true)}</div></div><div><div class="k-l">Meta de custo</div><div class="v">${brl(X.meta,true)}</div></div><div><div class="k-l">Resultado pela meta</div><div class="v ${resultado>=0?'pos':'neg'}">${brl(resultado,true)}</div></div><div><div class="k-l">Previsto (comp.+real.)</div><div class="v">${brl(X.comp+X.real,true)}</div></div></div>
+    <div class="sub" style="margin-top:10px">Resultado pela meta = licitado × (1 − ${(S.D.obra.tributos_nota*100).toFixed(1)}% de tributos) − meta de custo. A divergência com o +R$ 227 mil do Estudo existe porque ele ainda soma reajuste e custos de MO/administração próprias; ver nota na seção 12 do doc.</div>
+    <div class="panel-t" style="margin-top:16px">Meta por natureza</div><div class="tw"><table class="tbl"><thead><tr><th>Natureza</th><th class="r">Meta</th><th class="r">Comprometido</th><th class="r">Realizado</th></tr></thead><tbody>${Object.entries(sc).map(([k,v])=>`<tr><td>${NM[k]}</td><td class="r">${brl(v.meta)}</td><td class="r">${brl(v.comp)}</td><td class="r">${brl(v.real)}</td></tr>`).join('')}</tbody></table></div>
+    <div class="panel-t" style="margin-top:16px">Itens mais consumidos da meta</div>${top.length?`<div class="tw"><table class="tbl"><tbody>${top.map(x=>`<tr class="clk" data-item="${x.i.codigo}"><td class="mono">${x.i.codigo}</td><td>${esc(x.i.descricao.slice(0,70))}</td><td class="r ${x.u>1?'neg':''}">${Math.round(x.u*100)}% da meta</td></tr>`).join('')}</tbody></table></div>`:'<div class="sub">Sem consumo ainda.</div>'}`}
+  if(tab==='carteira'){
+    const C=[['342','SANEAGO · UTR ETA Santo Antônio do Descoberto',3258000,'Preço global por evento','ativa'],['343','CAESB · Subadutora Sobradinho',5226634.03,'Preço unitário','linha de base pendente (Fase seguinte)'],['281','SANEAGO · Mozarlândia (consórcio)',17120015.74,'Eventograma','sem orçamento de custo; histórico a importar (08D)']];
+    b=`<div class="tw"><table class="tbl"><thead><tr><th>Obra</th><th class="r">Contrato</th><th>Regime</th><th class="r">Meta</th><th class="r">Comprometido</th><th class="r">Realizado</th><th>Situação</th></tr></thead><tbody>${C.map(c=>c[0]==='342'?`<tr class="clk"><td><b>${c[0]}</b><div class="mut" style="font-size:11.5px">${c[1]}</div></td><td class="r">${brl(c[2],true)}</td><td>${c[3]}</td><td class="r">${brl(X.meta,true)}</td><td class="r">${brl(X.comp,true)}</td><td class="r">${brl(X.real,true)}</td><td><span class="pill ${S.t.frozen?'ok':'warn'}">${S.t.frozen?'base v'+S.t.versao:'base não congelada'}</span></td></tr>`:`<tr><td><b>${c[0]}</b><div class="mut" style="font-size:11.5px">${c[1]}</div></td><td class="r">${brl(c[2],true)}</td><td>${c[3]}</td><td class="r mut">—</td><td class="r mut">—</td><td class="r mut">—</td><td><span class="pill bad">${c[4]}</span></td></tr>`).join('')}</tbody></table></div><div class="sub" style="margin-top:8px">Valores de contrato lidos de TAF rev6 · 03. CONTRATOS. Obras sem linha de base não abrem compra (E01).</div>`}
+  return `<div class="head"><div><h1>Painéis</h1><p class="lead">Lidos dos mesmos registros do fluxo de compra e de notas, sem exportação.</p></div></div>
+  <div class="toolbar">${tabs('pain',[['compras','Compras'],['obra','Obra'],['carteira','Carteira']],tab)}</div>${b}`;
+}
+
+/* ============ AUDITORIA ============ */
+function viewAud(){
+  const A=S.t.aud;
+  return `<div class="head"><div><h1>Auditoria</h1><p class="lead">Quem mudou o quê, quando e por quê. Nada se apaga: cancelar muda o status e grava o motivo.</p></div><button class="btn" data-act="reset">Restaurar dados de demonstração</button></div>
+  <div class="tw">${A.length?`<table class="tbl"><thead><tr><th>Quando</th><th>Quem</th><th>Registro</th><th>Campo</th><th>Antes</th><th>Depois</th><th>Motivo</th></tr></thead><tbody>${A.slice(0,200).map(a=>`<tr><td class="mono">${a.q.slice(0,19).replace('T',' ')}</td><td>${esc(a.quem)}</td><td class="mono">${esc(a.ref)}</td><td>${esc(a.campo)}</td><td>${esc(a.antes)}</td><td>${esc(a.depois)}</td><td>${esc(a.motivo)}</td></tr>`).join('')}</tbody></table>`:empty('Sem eventos ainda.','Cada ação do fluxo aparece aqui.')}</div>`;
+}
+
+/* ============ render / eventos ============ */
+function render(){
+  const X=derive();S.X=X;
+  $('#nav').innerHTML=NAV.map(([k,l,i])=>`<button class="${S.view===k?'on':''}" data-v="${k}">${ico(i)}${l}${badgeFor(k,X)}</button>`).join('');
+  $('#crumb').textContent=NAV.find(n=>n[0]===S.view)[1];
+  const V={hoje:viewHoje,eap:viewEap,pac:viewPac,compras:viewCompras,nota:viewNota,pain:viewPain,aud:viewAud}[S.view];
+  const keepQ=document.activeElement&&document.activeElement.id==='q';
+  $('#view').innerHTML=V(X);
+  if(keepQ){const q=$('#q');q.focus();q.setSelectionRange(q.value.length,q.value.length)}
+  const al=alertas(X);const nb=al.filter(a=>a[0]==='bad').length;$('#pip').style.display=nb?'block':'none';
+  const G={bad:'var(--bad)',warn:'var(--warn)',info:'var(--info)'};
+  $('#alerts').innerHTML=al.map(([k,t,p])=>`<div class="alert"><div class="g" style="color:${G[k]}"><svg class="ic" viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div><b>${t}</b><p>${p}</p><span class="pill ${k}">${k==='bad'?'Crítico':k==='warn'?'Atenção':'Info'}</span></div></div>`).join('');
+  $('#role').value=S.role;
+}
+const openDrawer=()=>{$('#drawer').classList.add('open');$('#scrim').classList.add('open')},closeDrawer=()=>{$('#drawer').classList.remove('open');$('#scrim').classList.remove('open')};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDrawer();closeModal()}});
+$('#bell').onclick=openDrawer;$('#close').onclick=closeDrawer;$('#scrim').onclick=closeDrawer;
+$('#modal').onclick=e=>{if(e.target.id==='modal')closeModal()};
+$('#role').innerHTML=Object.entries(ROLES).map(([k,v])=>`<option value="${k}">${v.n} · ${v.u}</option>`).join('');
+$('#role').onchange=e=>{S.role=e.target.value;save();render()};
+
+document.addEventListener('input',e=>{if(e.target.id==='q'){S.q=e.target.value;render()}});
+document.addEventListener('click',e=>{
+  const t=e.target;let el;
+  if(el=t.closest('[data-tabs] button')){S.tab[el.parentNode.dataset.tabs]=el.dataset.t;return render()}
+  if(el=t.closest('#nav button')){S.view=el.dataset.v;return render()}
+  if(el=t.closest('[data-go]')){S.view=el.dataset.go;return render()}
+  if(el=t.closest('[data-act]')){const a=el.dataset.act,id=el.dataset.id;if(el.disabled)return;
+    const A={alertas:openDrawer,fechar:closeModal,congelar:()=>{if(!can('congelar'))return;const m=prompt('Congelar a linha de base v1. Confirma? (motivo/observação)','Estudo REV10 + META da aba 11/12');if(m===null)return;S.t.frozen=true;S.t.hist.push({versao:1,motivo:m||'congelada',quando:new Date().toISOString(),quem:user()});log('obra','342','linha_base','aberta','v1 congelada',m);save();toast('Linha de base v1 congelada · compras liberadas');render()},
+     remanejar:modalRemanejar,'rm-ok':doRemanejar,'nova-sol':()=>modalSol(el.dataset.item),'sol-ok':doSol,mapa:()=>modalMapa(id),'add-cot':()=>addCot(id),'emitir-oc':()=>emitirOC(id),
+     aprovar:()=>decidir(id,true),reprovar:()=>decidir(id,false),receber:()=>modalReceber(id),'rc-ok':()=>doReceber(id),'cancelar-oc':()=>cancelarOC(id),params:modalParams,
+     'params-ok':()=>{S.t.par.limite=+$('#p-l').value||0;S.t.par.tol=(+$('#p-t').value||0)/100;log('parametros','alçada','limite/tolerância','',brl(S.t.par.limite)+' / '+$('#p-t').value+'%');save();closeModal();render()},
+     'nova-nf':()=>modalNF(),ratear:()=>modalNF(id),'add-lin':()=>{NF.rateio.push({item:S.D.items[0].codigo,valor:0});pintaRat()},'del-lin':()=>{NF.rateio.splice(+el.dataset.k,1);pintaRat()},
+     'sug-lin':()=>{const o=S.t.ocs.find(x=>x.id===NF.oc);if(!o)return toast('Escolha um pedido');NF.rateio=[{item:o.item,valor:Math.min(+NF.valor||o.valor,o.valor)}];pintaRat()},
+     'nf-ok':()=>doNF(el.dataset.modo),conferir:()=>conferir(id),liberar:()=>liberar(id),pagar:()=>pagar(id),
+     reset:()=>{if(!confirm('Apagar todos os lançamentos de demonstração deste navegador?'))return;localStorage.removeItem(KEY);S.t=novoT();prep();toast('Dados restaurados');render()}};
+    if(A[a])A[a]();return}
+  if(el=t.closest('[data-exp]')){const c=el.dataset.exp;S.exp.has(c)?S.exp.delete(c):S.exp.add(c);return render()}
+  if(el=t.closest('[data-item]')){return modalItem(el.dataset.item)}
+  if(el=t.closest('[data-pac]')){return modalPac(el.dataset.pac)}
+});
+
+async function load(){
+  if(window.TAF_DATA){S.src=['Arquivo único','Dados embutidos (demo)'];return window.TAF_DATA}
+  const r=await fetch('data/obra342.json');if(!r.ok)throw new Error('data/obra342.json '+r.status);S.src=['Demonstração','Dados da planilha · estado salvo neste navegador'];return r.json()
+}
 (async()=>{
   $('#today').textContent=new Date().toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'short',year:'numeric'});
   try{
-    const D=await load();S.data=D;S.X=derive(D);
-    $('#obra-av').textContent=D.obra.codigo;$('#obra-nome').textContent=`${D.obra.contratante||''} · ${D.obra.nome}`.replace(/^ · /,'');
-    $('#obra-sub').textContent='Centro de custo '+D.obra.codigo;
-    $('#src-label').textContent=S.src[0];$('#src-sub').textContent=S.src[1];
-    const al=alerts(D,S.X);S.n=al.filter(a=>a[0]==='bad').length;
-    $('#pip').style.display=S.n?'block':'none';
-    const G={bad:'var(--bad)',warn:'var(--warn)',info:'var(--info)'};
-    $('#alerts').innerHTML=al.map(([k,t,p])=>`<div class="alert"><div class="g" style="color:${G[k]}"><svg class="ic" viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div><b>${t}</b><p>${p}</p><span class="pill ${k==='info'?'info':k}">${k==='bad'?'Crítico':k==='warn'?'Atenção':'Info'}</span></div></div>`).join('');
-    render();
-  }catch(e){$('#view').innerHTML=`<div class="err">Não consegui carregar os dados: ${e.message}<br><span class="sub">Rode um servidor estático em <code>web/</code> (ex.: <code>python3 -m http.server</code>).</span></div>`}
+    S.D=await load();S.t=loadT();prep();
+    S.D.eap.filter(e=>e.nivel<=2).forEach(e=>S.exp.add(e.codigo));
+    $('#obra-av').textContent=S.D.obra.codigo;$('#obra-nome').textContent=S.D.obra.contratante+' · '+S.D.obra.nome;$('#obra-sub').textContent='Centro de custo '+S.D.obra.codigo;
+    $('#src-label').textContent=S.src[0];$('#src-sub').textContent=S.src[1];render();
+  }catch(e){$('#view').innerHTML=`<div class="err">Não consegui carregar os dados: ${esc(e.message)}<br><span class="sub">Rode um servidor estático em <code>web/</code> ou use o arquivo único.</span></div>`}
 })();
 </script>
 </body>
