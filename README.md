@@ -11,7 +11,9 @@ Especificação: *SaaS de Gestão de Obras TAF — Fluxo Completo do Sistema (re
 | 2 | Orçamento (EAP em árvore), pacotes, congelar linha de base, remanejar saldo | feita |
 | 3 | Solicitação → mapa de cotação → OC com semáforo, alçadas e recebimento | feita |
 | 4 | Nota fiscal, rateio fechando 100%, conferência, liberação e pagamento | feita |
-| 5 | Painéis (compras, obra, carteira) e auditoria | feita (demo); falta importar 281 e 343 |
+| 5 | Painéis (compras, obra, carteira) e auditoria | feita (demo) |
+| 6 | Plano de contas, composição por natureza, contas a pagar + conciliação, medição e resultado por item (lucro/prejuízo, VA, IDC, EAC) | feita (demo) |
+| 7 | Supabase real com login por papel, importar 343 e 281, apontamento diário | a fazer |
 
 ## Arquivo único
 `python3 -I scripts/build_html.py` gera `dist/tafadmin.html` (dados embutidos, abre sem servidor). Na versão demo, os lançamentos ficam no `localStorage` do navegador; o motor de regras em JS espelha as regras SQL (`0001`/`0002`). A próxima etapa é ligar o app ao Supabase (mesmo schema).
@@ -27,9 +29,11 @@ Para ler do Supabase, preencha `web/config.js` com a URL e a chave **pública** 
 
 ## Banco
 ```bash
-psql -d taf -f supabase/migrations/0001_core.sql
-psql -d taf -f supabase/seed/342.sql
-psql -d taf -f supabase/tests/semaforo.sql      # deve imprimir "OK: todas as regras passaram"
+psql -d taf -f supabase/migrations/0001_core.sql -f supabase/migrations/0002_semaforo_saldo.sql -f supabase/migrations/0003_fase6.sql
+psql -d taf -f supabase/seed/342.sql -f supabase/seed/plano_contas.sql
+psql -d taf -f supabase/tests/semaforo.sql      # "OK: todas as regras passaram"
+psql -d taf -f supabase/tests/fase6.sql         # "OK: fase 6 passou"
+node scripts/e2e.js                             # teste de ponta a ponta no navegador (Playwright)
 ```
 Regras já no banco: semáforo (`calc_semaforo`), teto vale sempre (meta > teto nasce vermelho), nada é apagado, auditoria de meta/teto/preço, views de saldo por item e pacote.
 

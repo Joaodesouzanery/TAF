@@ -55,6 +55,21 @@ const {chromium}=require('playwright');
  await p.fill('#c-j','sem alternativa');await p.check('#c-em');await p.check('input[name=esc][value="0"]');await p.click('[data-act=emitir-oc]');
  await role('gerente');await p.click('.tabs button[data-t=aprov]');ok('gerente NÃO aprova vermelho',await p.isDisabled('[data-act=aprovar]'));
  await role('diretoria');await p.click('.tabs button[data-t=aprov]');await p.click('[data-act=aprovar]');ok('diretoria aprova',true);
+ // ---- Fase 6 ----
+ await role('engenheiro');await nav('hoje');ok('saudação Administrador',(await p.textContent('h1')).includes('Bom dia, Administrador!'));
+ await nav('fin');ok('OC aprovada gerou título',(await p.textContent('#view')).includes('OC-0001'));
+ await role('financeiro');await nav('fin');await p.click('.tabs button[data-t=conc]');await p.fill('#ofx','16/11/2026;PIX Forn A;-1600,00');await p.click('[data-act=conciliar]');ok('conciliação bancária',(await p.textContent('#view')).includes('1 conciliado'));
+ await nav('fin');ok('título pago após pagamento da nota',(await p.textContent('#view')).includes('pago'));
+ await nav('plano');ok('plano de contas mostra 4.2.01 com R$ 1.600',(await p.textContent('#view')).includes('4.2.01')&&(await p.textContent('#view')).includes('1.600,00'));
+ // medição -> resultado por item (lucro/prejuízo)
+ await role('engenheiro');await nav('med');await p.click('[data-act=nova-med]');await p.selectOption('#m-item','B.3.1.7.1');await p.fill('#m-q','2');await p.click('[data-act=med-ok]');
+ ok('BM lançada aguarda atesto',(await p.textContent('#view')).includes('BM-0001'));
+ ok('engenheiro não atesta',await p.isDisabled('[data-act=atestar]'));
+ await role('gerente');await nav('med');await p.click('.tabs button[data-t=bm]');await p.click('[data-act=atestar]');
+ await p.click('.tabs button[data-t=res]');const rt=await p.textContent('#view');
+ ok('resultado por item: receita 2 x licitado, custo R$ 1.600, IDC',rt.includes('B.3.1.7.1')&&rt.includes('1.600,00')&&/IDC da obra/.test(rt));
+ await nav('med');await p.click('[data-act=nova-med]');await p.selectOption('#m-item','B.3.1.7.1');await p.fill('#m-q','5');await p.click('[data-act=med-ok]');ok('medido acima do orçado rejeitado',await p.isVisible('#modal.open'));
+ await p.click('[data-act=fechar]');
  // painéis e auditoria
  for(const v of ['pain','aud','pac','hoje'])await nav(v);
  await nav('pain');await p.click('.tabs button[data-t=carteira]');ok('carteira lista 342/343/281',(await T('343'))&&(await T('281')));
