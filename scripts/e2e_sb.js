@@ -47,7 +47,7 @@ async function mock(page){
 
   // ---- admin: primeiro cadastro ----
   let {ctx,p}=await novo();
-  await p.goto('file:///home/user/TAF/dist/tafadmin.html');await p.waitForSelector('#login.open');
+  await p.goto('file:///home/user/TAF/dist/tafadmin.html?sb=1');await p.waitForSelector('#login.open');
   ok('abre na tela de login (modo conectado)',await p.isVisible('#login.open #l-e'));
   await entrar(p,'admin@taf.com',false);await p.waitForSelector('#l-msg');ok('login inexistente recusado',(await p.textContent('#l-msg')).includes('incorretos'));
   await entrar(p,'admin@taf.com',true);
@@ -82,7 +82,7 @@ async function mock(page){
   await p.click('#nav button[data-v=usuarios]');await p.waitForTimeout(200);
   await p.screenshot({path:out+'/usuarios.png'});
   // ---- segundo usuário: pendente ----
-  const seg=await novo();await seg.p.goto('file:///home/user/TAF/dist/tafadmin.html');await seg.p.waitForSelector('#login.open');
+  const seg=await novo();await seg.p.goto('file:///home/user/TAF/dist/tafadmin.html?sb=1');await seg.p.waitForSelector('#login.open');
   await entrar(seg.p,'eng@taf.com',true);await seg.p.waitForSelector('.soon');
   ok('novo usuário fica aguardando liberação',await T(seg.p,'Aguardando liberação'));
   await seg.ctx.close();
@@ -91,7 +91,7 @@ async function mock(page){
   await p.selectOption('select[data-perfil="u-eng"]','engenheiro');await p.waitForTimeout(500);
   ok('admin atribui papel (grava perfil)',db.perfil.find(x=>x.user_id==='u-eng').papel==='engenheiro');
   // ---- engenheiro entra e vê a SC, sem menu Usuários ----
-  const e2=await novo();await e2.p.goto('file:///home/user/TAF/dist/tafadmin.html');await e2.p.waitForSelector('#login.open');
+  const e2=await novo();await e2.p.goto('file:///home/user/TAF/dist/tafadmin.html?sb=1');await e2.p.waitForSelector('#login.open');
   await entrar(e2.p,'eng@taf.com',false);await e2.p.waitForSelector('.big');
   ok('engenheiro entra, vê o estado compartilhado e não vê Usuários',!(await e2.p.isVisible('#nav button[data-v=usuarios]'))&&(await e2.p.textContent('#userbox')).includes('Engenheiro'));
   await e2.p.click('#nav button[data-v=compras]');ok('engenheiro vê SC-0001 criada pelo admin',await T(e2.p,'SC-0001'));
