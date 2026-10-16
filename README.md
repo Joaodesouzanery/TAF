@@ -1,5 +1,7 @@
 # TAF Obras
 
+> **Quem for continuar o projeto: leia [`docs/COMECE_AQUI.md`](docs/COMECE_AQUI.md).** As planilhas e documentos de origem ficam em `fontes/` assim que o repositório for privado (hoje ele é público).
+
 Gestão de obras onde cada real entra amarrado a **obra + item do orçamento + natureza**: compra travada na meta e no teto do item, nota com rateio fechando 100%, saldos meta / comprometido / realizado.
 
 Especificação: *SaaS de Gestão de Obras TAF — Fluxo Completo do Sistema (rev01)*.
@@ -16,11 +18,11 @@ Especificação: *SaaS de Gestão de Obras TAF — Fluxo Completo do Sistema (re
 | 7 | Supabase real: login, papéis, RLS, documentos gravados no banco, importação da obra 342, tela Usuários | feita |
 | 8 | **Campo** (apontamento diário: rascunho → conferido → aprovado, HH, produtividade × CPU, custo de MO, fila offline) e **Lean** (pauta de segunda, lookahead de 6 semanas, restrições com limite de 8 por dono e escalonamento, PPC com Pareto, tarefas) | feita |
 | 9 | **Faturamento e caixa**: boletim ao cliente (medições atestadas + reajuste, aprovação com glosa), NF de serviço, recebimento e conciliação de extrato, caixa mensal; **DRE** por obra e visão medido × executado × meta | feita |
-| 10 | NF-e (XML) e exportação ao contador; integração Sankhya (API oficial) | a fazer |
+| 10 | **Importar XML de NF-e** (chave única, sugestão de OC), **fechamento mensal ao contador** (CSV), arquivo de apoio Sankhya; API do Sankhya e provedor de NF-e aguardam credenciais | feita (sem integrações externas) |
 | 7b | Importar EAP da 343 e histórico da 281 | a fazer |
 
 ## Supabase (projeto "TAF")
-Migrações em `supabase/migrations/` (0001–0007) já aplicadas no projeto. `web/config.js` aponta para ele com a chave **publishable** (pública; a segurança está no RLS). A biblioteca `supabase-js` está em `web/vendor/` (sem CDN).
+Migrações em `supabase/migrations/` (0001–0008) já aplicadas no projeto. `web/config.js` aponta para ele com a chave **publishable** (pública; a segurança está no RLS). A biblioteca `supabase-js` está em `web/vendor/` (sem CDN).
 
 **Primeiro acesso:** abra o app e *Criar conta*. **O primeiro cadastro vira Administrador** e os demais ficam "Aguardando liberação" até o admin atribuir o papel em *Usuários*. Faça isso logo após publicar e, depois, desative novos cadastros em Supabase › Authentication › Sign In / Providers (*Allow new users to sign up*) se quiser fechar o acesso. Se o Supabase exigir confirmação de e-mail, confirme pelo link recebido (ou desative *Confirm email* nas mesmas configurações).
 Depois do login, o admin clica em **Importar obra 342** (orçamento, pacotes, metas e plano de contas).

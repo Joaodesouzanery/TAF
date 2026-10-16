@@ -1,5 +1,7 @@
 -- RLS por papel. Requer usuários criados (1=admin, 2=engenheiro, 3=pendente) e a obra importada.
 -- Em Supabase: os ids devem existir em auth.users; aqui usamos set_config para simular o JWT.
+insert into auth.users(id,email) values ('00000000-0000-0000-0000-000000000001','admin@x'),('00000000-0000-0000-0000-000000000002','eng@x'),('00000000-0000-0000-0000-000000000003','pend@x') on conflict do nothing;
+insert into perfil(user_id,nome,papel) values ('00000000-0000-0000-0000-000000000001','admin','admin'),('00000000-0000-0000-0000-000000000002','eng','engenheiro'),('00000000-0000-0000-0000-000000000003','pend','pendente') on conflict (user_id) do update set papel=excluded.papel;
 create or replace procedure _como(p_user text) language plpgsql as $$ begin perform set_config('request.jwt.claim.sub', p_user, false); end $$;
 do $$
 declare ob uuid; n int; falhou boolean;

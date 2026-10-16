@@ -15683,7 +15683,7 @@ const CFG=window.TAF_CONFIG||{};
 const MODO_SB=!!(CFG.supabaseUrl&&CFG.supabaseKey)&&(CFG.modo==='supabase'||/[?&]sb=1/.test(location.search))&&!/[?&]demo=1/.test(location.search);
 const SB={c:null,user:null,perfil:null,obraId:null,sync:{},estado:'',timer:null,busy:false,perfis:[]};
 let S={view:'hoje',tab:{},role:'engenheiro',D:null,t:null,exp:new Set(),q:''};
-const novoT=()=>({titulos:[],frozen:false,versao:1,hist:[],metaOv:{},sols:[],ocs:[],notas:[],aud:[],meds:[],conc:[],apts:[],rsts:[],atvs:[],tars:[],bcs:[],fats:[],recs:[],lans:[],seq:{sol:0,oc:0,nf:0,bm:0},par:{tol:0.02,limite:100000}});
+const novoT=()=>({titulos:[],frozen:false,versao:1,hist:[],metaOv:{},sols:[],ocs:[],notas:[],aud:[],meds:[],conc:[],apts:[],rsts:[],atvs:[],tars:[],bcs:[],fats:[],recs:[],lans:[],fechs:[],seq:{sol:0,oc:0,nf:0,bm:0},par:{tol:0.02,limite:100000}});
 const save=()=>{if(MODO_SB){sbSyncSoon();return}try{localStorage.setItem(KEY,JSON.stringify({...S.t,role:S.role}))}catch(e){}};
 function loadT(){try{const j=JSON.parse(localStorage.getItem(KEY)||'null');if(j){S.role=j.role||S.role;delete j.role;return {...novoT(),...j}}}catch(e){}return novoT()}
 const log=(ent,ref,campo,antes,depois,motivo='')=>S.t.aud.unshift({id:'a'+Date.now()+Math.random().toString(36).slice(2,6),q:new Date().toISOString(),quem:user()+' ('+ROLES[S.role].n+')',ent,ref,campo,antes:String(antes??''),depois:String(depois??''),motivo});
@@ -15694,7 +15694,7 @@ function toast(m){document.querySelectorAll('.toast').forEach(x=>x.remove());con
 const cmpCod=(a,b)=>{const x=a.split('.'),y=b.split('.');for(let i=0;i<Math.max(x.length,y.length);i++){const p=x[i],q=y[i];if(p===undefined)return -1;if(q===undefined)return 1;
   const n=/^\d+$/.test(p)&&/^\d+$/.test(q);const d=n?(+p)-(+q):p.localeCompare(q);if(d)return d}return 0};
 const estadoObra=()=>({frozen:S.t.frozen,versao:S.t.versao,hist:S.t.hist,metaOv:S.t.metaOv,par:S.t.par});
-const DOCS=[['sols','sol'],['ocs','oc'],['notas','nf'],['titulos','tit'],['meds','med'],['aud','aud'],['apts','apt'],['rsts','rst'],['atvs','atv'],['tars','tar'],['bcs','bc'],['fats','fat'],['recs','rec'],['lans','lan']];
+const DOCS=[['sols','sol'],['ocs','oc'],['notas','nf'],['titulos','tit'],['meds','med'],['aud','aud'],['apts','apt'],['rsts','rst'],['atvs','atv'],['tars','tar'],['bcs','bc'],['fats','fat'],['recs','rec'],['lans','lan'],['fechs','fech']];
 function sbDocs(){const out=[];DOCS.forEach(([k,tipo])=>(S.t[k]||[]).forEach(o=>{if(!o.id)o.id=tipo+Date.now()+Math.random().toString(36).slice(2,6);out.push({id:o.id,obra_id:SB.obraId,tipo,dados:o})}));return out}
 function sbSyncSoon(){clearTimeout(SB.timer);SB.timer=setTimeout(()=>{SB.timer=null;sbSync()},250)}
 const filaKey=()=>'taf_fila_'+SB.obraId;
@@ -15717,11 +15717,11 @@ async function sbSync(){
   SB.busy=false;
 }
 function aplicaDocs(est,docs){
-  const t={...novoT(),...(est&&Object.keys(est).length?est:{})};const map={sol:'sols',oc:'ocs',nf:'notas',tit:'titulos',med:'meds',aud:'aud',apt:'apts',rst:'rsts',atv:'atvs',tar:'tars',bc:'bcs',fat:'fats',rec:'recs',lan:'lans'};
-  ['sols','ocs','notas','titulos','meds','aud','apts','rsts','atvs','tars','bcs','fats','recs','lans'].forEach(k=>t[k]=[]);SB.sync={};
+  const t={...novoT(),...(est&&Object.keys(est).length?est:{})};const map={sol:'sols',oc:'ocs',nf:'notas',tit:'titulos',med:'meds',aud:'aud',apt:'apts',rst:'rsts',atv:'atvs',tar:'tars',bc:'bcs',fat:'fats',rec:'recs',lan:'lans',fech:'fechs'};
+  ['sols','ocs','notas','titulos','meds','aud','apts','rsts','atvs','tars','bcs','fats','recs','lans','fechs'].forEach(k=>t[k]=[]);SB.sync={};
   docs.forEach(r=>{if(!map[r.tipo])return;t[map[r.tipo]].push(r.dados);SB.sync[r.id]=JSON.stringify(r.dados)});
   const key=o=>parseInt(String(o.id||'').replace(/\D/g,'').slice(0,13))||0;
-  ['sols','ocs','notas','titulos','meds','apts','rsts','atvs','tars','bcs','fats','recs','lans'].forEach(k=>t[k].sort((a,b)=>key(b)-key(a)));t.aud.sort((a,b)=>String(b.q).localeCompare(String(a.q)));
+  ['sols','ocs','notas','titulos','meds','apts','rsts','atvs','tars','bcs','fats','recs','lans','fechs'].forEach(k=>t[k].sort((a,b)=>key(b)-key(a)));t.aud.sort((a,b)=>String(b.q).localeCompare(String(a.q)));
   filaMerge(t);S.t=t;if(S.D)prep();SB.estado=JSON.stringify(estadoObra());
 }
 async function sbPull(){
@@ -16106,14 +16106,14 @@ function viewNota(X){
   const list=tab==='sem'?N.filter(n=>n.status==='lancada'||!n.oc):N;
   const body=list.length?`<table class="tbl"><thead><tr><th>Nota</th><th>Emitente</th><th>OC</th><th class="r">Valor</th><th>Rateio</th><th>Status</th><th></th></tr></thead><tbody>${list.map(n=>{const soma=n.rateio.reduce((s,l)=>s+ +l.valor,0);return `<tr><td class="mono">${n.num}<div class="mut">${esc(n.chave||'')}</div></td><td>${esc(n.emitente)}<div class="mut" style="font-size:11.5px">${fdata(n.emissao)}</div></td><td class="mono">${n.ocNum||'<span class="pill warn">sem pedido</span>'}</td><td class="r">${brl(n.valor)}</td><td class="r ${Math.abs(soma-n.valor)<.005?'pos':'neg'}">${Math.round(soma/n.valor*100)}%</td><td>${pill(n)}${n.diverg?`<div class="neg" style="font-size:11.5px">${esc(n.diverg)}</div>`:''}</td><td class="r">${acao(n)}</td></tr>`}).join('')}</tbody></table>`:empty('Nenhuma nota ainda.','Lance a nota recebida para ratear nos itens.');
   return `<div class="head"><div><h1>Notas e rateio</h1><p class="lead">A nota é rateada à mão entre itens e obras. A soma tem que fechar <b>100%</b>; linha sem item não grava; pagamento só com recebimento confirmado.</p></div>
-   <button class="btn dark" data-act="nova-nf" ${can('nota')?'':'disabled title="Só Administrativo ou Engenheiro"'}>Lançar nota</button></div>
+   <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" data-act="xml-novo" ${can('nota')?'':'disabled title="Só Administrativo ou Engenheiro"'}>Importar XML</button><button class="btn dark" data-act="nova-nf" ${can('nota')?'':'disabled title="Só Administrativo ou Engenheiro"'}>Lançar nota</button></div></div>
    <div class="toolbar">${tabs('nota',[['notas','Todas '+N.length],['sem','Sem rateio / sem pedido',X.semRateio.length+X.semPedido.filter(n=>n.status!=='lancada').length]],tab)}</div><div class="tw">${body}</div>`;
 }
 function modalNF(id){
   const ex=id?S.t.notas.find(n=>n.id===id):null;
   NF=ex?{...ex,rateio:ex.rateio.map(l=>({...l}))}:{id:'n'+Date.now(),oc:'',rateio:[],valor:0,emitente:'',chave:'',emissao:hojeISO()};
   const ocsOk=S.t.ocs.filter(o=>['aprovada','recebida_parcial','recebida'].includes(o.status));
-  modal(`<h3>${ex?'Ratear '+ex.num:'Lançar nota fiscal'}</h3><div class="sub">O XML da NF-e chegaria sozinho (Fase seguinte); aqui o administrativo confere e rateia.</div>
+  modal(`<h3>${ex?'Ratear '+ex.num:'Lançar nota fiscal'}</h3><div class="sub">Prefira “Importar XML”, que traz emitente, chave e valor da NF-e; aqui o administrativo confere e rateia.</div>
    <div class="g2"><div><label>Emitente</label><input id="n-e" value="${esc(NF.emitente)}" ${ex?'disabled':''}></div><div><label>Chave / número</label><input id="n-c" value="${esc(NF.chave)}" ${ex?'disabled':''}></div></div>
    <div class="g3"><div><label>Valor da nota (R$)</label><input id="n-v" type="number" step="0.01" value="${NF.valor||''}" ${ex?'disabled':''}></div><div><label>Emissão</label><input id="n-d" type="date" value="${NF.emissao}" ${ex?'disabled':''}></div>
    <div><label>Pedido (OC)</label><select id="n-o" ${ex?'disabled':''}><option value="">Sem pedido</option>${ocsOk.map(o=>`<option value="${o.id}" ${NF.oc===o.id?'selected':''}>${o.num} · ${esc(o.forn)} · ${brl(o.valor)}</option>`).join('')}</select></div></div>
@@ -16138,6 +16138,7 @@ function doNF(modo){
   const ex=S.t.notas.find(n=>n.id===NF.id);
   NF.emitente=ex?ex.emitente:$('#n-e').value.trim();NF.valor=ex?ex.valor:r2($('#n-v').value);NF.chave=ex?ex.chave:$('#n-c').value.trim();NF.emissao=ex?ex.emissao:$('#n-d').value;NF.oc=ex?ex.oc:$('#n-o').value;
   if(!NF.emitente||!(NF.valor>0))return toast('Informe emitente e valor');
+  if(!ex&&/^\d{44}$/.test(NF.chave)&&S.t.notas.some(n=>n.chave===NF.chave))return toast('Esta chave de acesso já foi lançada');
   if(!NF.oc){const j=$('#n-j').value.trim();if(!j)return toast('Nota sem pedido: justifique');NF.justSemOC=j}
   const lin=NF.rateio.filter(l=>+l.valor>0);
   if(modo==='rateada'){if(!lin.length||lin.some(l=>!l.item))return toast('Toda linha precisa de obra e item');
@@ -16175,13 +16176,14 @@ function viewFin(X){
     const aberto=T.filter(t=>!t.cancelado).reduce((s,t)=>s+tituloInfo(t).saldo,0),venc=T.filter(t=>!t.cancelado&&t.venc<hojeISO()&&tituloInfo(t).saldo>0).length;
     b=`<div class="kpi4"><div><div class="k-l">Títulos</div><div class="v">${T.length}</div></div><div><div class="k-l">A pagar (saldo)</div><div class="v">${brl(aberto,true)}</div></div><div><div class="k-l">Vencidos</div><div class="v ${venc?'neg':''}">${venc}</div></div><div><div class="k-l">Notas sem pedido</div><div class="v ${avulsas.length?'neg':''}">${avulsas.length}</div></div></div>
     <div class="tw">${T.length?`<table class="tbl"><thead><tr><th>Título</th><th>Fornecedor</th><th>Vence</th><th class="r">Valor</th><th class="r">Pago</th><th class="r">Saldo</th><th>Situação</th><th>Nota(s)</th></tr></thead><tbody>${T.map(t=>{const i=tituloInfo(t);return `<tr><td class="mono">${t.ocNum}</td><td>${esc(t.forn)}</td><td class="${t.venc<hojeISO()&&i.saldo>0&&!t.cancelado?'neg':''}">${fdata(t.venc)}</td><td class="r">${brl(t.valor)}</td><td class="r">${brl(i.pago)}</td><td class="r">${brl(i.saldo)}</td><td><span class="pill ${i.st==='pago'?'ok':i.st==='cancelado'?'bad':i.st==='previsto'?'mute':'warn'}">${i.st}</span></td><td class="mono">${i.notas.map(n=>n.num).join(', ')||'—'}</td></tr>`}).join('')}</tbody></table>`:empty('Nenhum título ainda.','Toda OC aprovada gera o título; depois a nota é alocada a ele.')}</div>`}
+  if(tab==='fech')b=viewFiscal();
   if(tab==='conc'){
     b=`<div class="sub">Cole as linhas do extrato (<span class="mono">dd/mm/aaaa;descrição;valor</span>). O valor pago casa com a nota paga de mesmo valor.</div>
     <textarea id="ofx" rows="5" placeholder="16/11/2026;PIX Forn A;-1600,00"></textarea><div style="margin-top:8px"><button class="btn dark" data-act="conciliar" ${can('liberar')?'':'disabled title="Só Financeiro"'}>Conciliar</button></div>
     <div id="conc-msg" class="sub" style="margin-top:8px">${S.msgConc||''}</div>
     <div class="tw">${pagas.length?`<table class="tbl"><thead><tr><th>Nota</th><th>Emitente</th><th class="r">Valor</th><th>Pago em</th><th>Banco</th></tr></thead><tbody>${pagas.map(n=>`<tr><td class="mono">${n.num}</td><td>${esc(n.emitente)}</td><td class="r">${brl(n.valor)}</td><td>${fdata(n.pago)}</td><td>${n.conc?`<span class="pill ok">conciliado ${fdata(n.conc)}</span>`:'<span class="pill warn">pendente</span>'}</td></tr>`).join('')}</tbody></table>`:empty('Nenhum pagamento ainda.','Pague uma nota em Notas e rateio.')}</div>`}
   return `<div class="head"><div><h1>Financeiro</h1><p class="lead">A OC aprovada gera a conta a pagar; a nota é alocada a ela, o pagamento baixa o título e o extrato concilia.</p></div></div>
-   <div class="toolbar">${tabs('fin',[['tit','Contas a pagar '+T.length],['conc','Conciliação bancária']],tab)}</div>${b}`}
+   <div class="toolbar">${tabs('fin',[['tit','Contas a pagar '+T.length],['conc','Conciliação bancária'],['fech','Fechamento e integrações']],tab)}</div>${b}`}
 function doConciliar(){
   const linhas=($('#ofx').value||'').split('\n').map(l=>l.trim()).filter(Boolean);let ok=0;const sem=[];
   linhas.forEach(l=>{const c=l.split(';');const v=Math.abs(parseFloat((c[2]||'').replace(/\./g,'').replace(',','.')));if(!(v>0))return sem.push(l);
@@ -16460,6 +16462,73 @@ function modalLan(){modal(`<h3>Lançamento manual de caixa</h3><div class="sub">
 function doLan(){const v=+$('#l-v').value,t=$('#l-t').value.trim();if(!v||!t)return toast('Informe valor e descrição');const l={id:'ln'+Date.now(),data:$('#l-d').value||hojeISO(),valor:r2(v),desc:t,quem:user()};
   S.t.lans.unshift(l);log('caixa',t,'lançamento','',brl(v));save();closeModal();S.tab.fat='caixa';render()}
 
+/* ============ FISCAL: XML de NF-e, fechamento ao contador e integrações (Fase 10) ============ */
+const FISCAL={provedor:null};   // provedor externo (ex.: Focus NFe) ainda não contratado: nada é chamado sem credencial
+const SANKHYA={url:'',appkey:'',token:''};   // API oficial; credenciais só do administrador do Sankhya (docs/INTEGRACOES.md)
+const norm=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
+function xmlTxt(doc,tag){const e=doc.getElementsByTagName(tag)[0];return e?e.textContent.trim():''}
+function parseNFe(txt){
+  const doc=new DOMParser().parseFromString(txt,'application/xml');
+  if(doc.getElementsByTagName('parsererror').length)throw new Error('XML inválido');
+  const inf=doc.getElementsByTagName('infNFe')[0];if(!inf)throw new Error('Não é uma NF-e (sem infNFe)');
+  const chave=(inf.getAttribute('Id')||'').replace(/\D/g,'');
+  const emit=doc.getElementsByTagName('emit')[0],ide=doc.getElementsByTagName('ide')[0];
+  const g=(p,t)=>{const e=p&&p.getElementsByTagName(t)[0];return e?e.textContent.trim():''};
+  const dh=g(ide,'dhEmi')||g(ide,'dEmi');
+  const itens=[...doc.getElementsByTagName('det')].map(d=>({desc:g(d,'xProd'),qtd:+g(d,'qCom')||0,valor:+g(d,'vProd')||0}));
+  const v=+xmlTxt(doc,'vNF')||0;
+  return {chave,num:g(ide,'nNF'),serie:g(ide,'serie'),emissao:dh.slice(0,10),emitente:g(emit,'xNome'),cnpj:g(emit,'CNPJ')||g(emit,'CPF'),valor:r2(v),itens,
+    inss:r2(+xmlTxt(doc,'vRetPrev')||0),iss:r2(+xmlTxt(doc,'vISSRet')||+xmlTxt(doc,'vISS')||0)}}
+function sugereOC(x){
+  const ocs=S.t.ocs.filter(o=>['aprovada','recebida_parcial','recebida'].includes(o.status)&&norm(o.forn)&&(norm(x.emitente).includes(norm(o.forn))||norm(o.forn).includes(norm(x.emitente))));
+  const bons=ocs.filter(o=>Math.abs(o.valor-x.valor)/Math.max(o.valor,1)<=S.t.par.tol);return bons.length===1?bons[0]:null}
+function importaXmls(textos){
+  const res={ok:[],dup:[],erro:[]};
+  textos.forEach(([nome,t])=>{try{const x=parseNFe(t);
+    if(x.chave&&S.t.notas.some(n=>n.chave===x.chave)){res.dup.push(nome+' (chave já lançada)');return}
+    if(!(x.valor>0)){res.erro.push(nome+': sem valor');return}
+    const o=sugereOC(x);
+    const n={id:'n'+Date.now()+Math.random().toString(36).slice(2,5),num:nextNum('nf'),emitente:x.emitente,cnpj:x.cnpj,chave:x.chave||x.num,nfNum:x.num,valor:x.valor,emissao:x.emissao||hojeISO(),oc:o?o.id:'',ocNum:o?o.num:'',rateio:[],status:'lancada',origemXml:true,itensXml:x.itens,retInss:x.inss,retIss:x.iss,justSemOC:o?'':'Importada de XML sem pedido correspondente'};
+    S.t.notas.unshift(n);log('nota_fiscal',n.num,'importada_xml','',x.emitente+' · '+brl(x.valor)+(o?' · sugerida '+o.num:''));res.ok.push(n.num+' '+x.emitente+' '+brl(x.valor)+(o?' → '+o.num:' (sem pedido)'))}
+   catch(e){res.erro.push(nome+': '+e.message)}});
+  save();return res}
+function modalXml(){modal(`<h3>Importar XML de NF-e</h3><div class="sub">Escolha um ou mais arquivos .xml, ou cole o conteúdo. A nota entra em “Sem rateio”; o rateio continua manual e precisa fechar 100%. Chave já lançada é recusada.</div>
+  <label>Arquivos</label><input id="x-f" type="file" accept=".xml,text/xml" multiple><label>Ou cole o XML</label><textarea id="x-t" rows="5"></textarea><div id="x-r" class="sub" style="margin-top:8px"></div>
+  <div class="acts"><button class="btn" data-act="fechar">Fechar</button><button class="btn dark" data-act="xml-ok">Importar</button></div>`)}
+async function doXml(){
+  const T=[];const f=$('#x-f').files;for(const a of f)T.push([a.name,await a.text()]);const t=$('#x-t').value.trim();if(t)T.push(['texto colado',t]);
+  if(!T.length)return toast('Escolha um arquivo ou cole o XML');
+  const r=importaXmls(T);S.msgXml=r;
+  $('#x-r').innerHTML=`<b>${r.ok.length} importada(s)</b>${r.ok.map(x=>'<div>• '+esc(x)+'</div>').join('')}${r.dup.length?'<div class="neg">'+r.dup.map(esc).join('<br>')+'</div>':''}${r.erro.length?'<div class="neg">'+r.erro.map(esc).join('<br>')+'</div>':''}`;render()}
+/* fechamento mensal */
+const csvCel=v=>{const s=String(v??'');return /[;"\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s};
+const csvNum=v=>(+v||0).toFixed(2).replace('.',',');
+function linhasFechamento(comp){
+  const L=[];S.t.notas.filter(n=>n.status!=='lancada'&&mesDe(n.emissao)===comp).forEach(n=>{
+    const bruto=n.rateio.reduce((s,l)=>s+ +l.valor,0)||n.valor;
+    n.rateio.forEach(l=>{const i=S.byCod[l.item]||{};const k=bruto?l.valor/bruto:0;
+      L.push([n.emissao,comp,n.emitente,n.cnpj||'',n.nfNum||n.num,n.chave||'',csvNum(n.valor),csvNum(l.valor),csvNum((n.retInss||0)*k),csvNum((n.retIss||0)*k),S.D.obra.codigo,S.t.par.cno||'',l.item,i.descricao||'',l.conta,l.nat,n.status,n.pago||''])})});
+  return L}
+const CAB_FECH=['emissao','competencia','fornecedor','cnpj','nota','chave','valor_nota','valor_rateado','retencao_inss','retencao_iss','obra','cno','item_eap','descricao_item','conta_plano','natureza','status','pago_em'];
+const montaCsv=(cab,L)=>'﻿'+[cab,...L].map(r=>r.map(csvCel).join(';')).join('\r\n');
+function csvSankhya(comp){
+  const L=[];S.t.notas.filter(n=>n.status!=='lancada'&&mesDe(n.emissao)===comp).forEach(n=>n.rateio.forEach(l=>L.push([S.D.obra.codigo,l.conta,n.cnpj||'',n.emitente,n.nfNum||n.num,n.emissao,csvNum(l.valor)])));
+  return montaCsv(['centro_resultado','natureza_conta','parceiro_cnpj','parceiro_nome','numero_nota','data','valor'],L)}
+function viewFiscal(){
+  const comp=S.comp||mesDe(hojeISO()),L=linhasFechamento(comp),sem=S.t.notas.filter(n=>n.status==='lancada'&&mesDe(n.emissao)===comp);
+  const tot=L.reduce((s,r)=>s+parseFloat(String(r[7]).replace(',','.')),0);
+  const fe=S.t.fechs.find(f=>f.comp===comp);
+  return `<div class="g3" style="grid-template-columns:1fr 1fr 2fr;margin-top:12px"><div><label style="margin-top:0">Competência</label><input id="f-comp" type="month" value="${comp}"></div><div><label style="margin-top:0">CNO da obra</label><input id="f-cno" value="${esc(S.t.par.cno||'')}" placeholder="ex.: 90.123.45678/12"></div><div><label style="margin-top:0">Município de execução</label><input id="f-mun" value="${esc(S.t.par.mun||S.D.obra.municipio||'')}"></div></div>
+  <div class="kpi4"><div><div class="k-l">Notas rateadas no mês</div><div class="v">${new Set(L.map(r=>r[4]+r[5])).size}</div></div><div><div class="k-l">Valor rateado</div><div class="v">${brl(tot,true)}</div></div><div><div class="k-l">Ainda sem rateio</div><div class="v ${sem.length?'neg':''}">${sem.length}</div></div><div><div class="k-l">Situação</div><div class="v" style="font-size:16px">${fe?'Fechada em '+fdata(fe.quando.slice(0,10)):'Aberta'}</div></div></div>
+  ${sem.length?`<div class="alert" style="margin-top:12px"><div class="g" style="color:var(--warn)">!</div><div><b>${sem.length} nota(s) do mês sem rateio</b><p>Não entram no arquivo do contador até serem rateadas.</p></div></div>`:''}
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button class="btn dark" data-act="fech-csv" ${L.length?'':'disabled'}>Gerar arquivo do contador</button><button class="btn" data-act="fech-sk" ${L.length?'':'disabled'}>Arquivo de apoio para o Sankhya</button><button class="btn ok" data-act="fech-fechar" ${L.length&&!fe&&can('recFat')?'':'disabled title="Só Financeiro, Adm ou Diretoria, com notas no mês"'}>Fechar competência</button></div>
+  ${S.csvOut?`<label>Arquivo gerado (copie ou baixe)</label><textarea id="f-out" rows="6" readonly>${esc(S.csvOut.replace('﻿',''))}</textarea><div style="display:flex;gap:8px;margin-top:8px"><button class="btn" data-act="fech-copy">Copiar</button><a class="btn" id="f-dl" download="${S.csvNome||'fechamento.csv'}" href="${'data:text/csv;charset=utf-8,'+encodeURIComponent(S.csvOut)}">Baixar .csv</a></div>`:''}
+  <div class="sub" style="margin-top:10px">Cada linha é um item da EAP com sua conta do plano, para o contador conciliar custo por obra e CNO. O arquivo do Sankhya traz as colunas básicas (centro de resultado, natureza, parceiro, nota, valor); o layout final depende da rotina de importação configurada lá.</div>
+  <div class="panel-t" style="margin-top:18px">Integrações</div><div class="tw"><table class="tbl"><tbody><tr><td><b>Provedor de NF-e</b><div class="mut" style="font-size:11.5px">Baixa o XML das notas emitidas contra o CNPJ da TAF</div></td><td><span class="pill ${FISCAL.provedor?'ok':'mute'}">${FISCAL.provedor?'Configurado':'Não contratado'}</span></td><td class="mut">Enquanto isso, importe o XML manualmente em Notas e rateio.</td></tr>
+  <tr><td><b>Sankhya (API oficial)</b><div class="mut" style="font-size:11.5px">Naturezas, centros de resultado e lançamentos financeiros</div></td><td><span class="pill ${SANKHYA.token?'ok':'mute'}">${SANKHYA.token?'Configurado':'Aguardando credenciais'}</span></td><td class="mut">O administrador do Sankhya gera o acesso; veja docs/INTEGRACOES.md.</td></tr></tbody></table></div>`}
+function fechGerar(sk){const comp=S.comp||mesDe(hojeISO());S.csvOut=sk?csvSankhya(comp):montaCsv(CAB_FECH,linhasFechamento(comp));S.csvNome=(sk?'sankhya_':'contador_')+S.D.obra.codigo+'_'+comp+'.csv';log('fechamento',comp,sk?'arquivo_sankhya':'arquivo_contador','','gerado');render()}
+function fechFechar(){const comp=S.comp||mesDe(hojeISO());if(S.t.fechs.some(f=>f.comp===comp))return;const L=linhasFechamento(comp);
+  S.t.fechs.push({id:'fe'+Date.now(),comp,quando:new Date().toISOString(),quem:user(),linhas:L.length});log('fechamento',comp,'competência','aberta','fechada · '+L.length+' linhas');save();toast('Competência '+comp+' fechada');render()}
 /* ============ PAINÉIS (Fase 5) ============ */
 function viewPain(X){
   const tab=S.tab.pain||'compras';
@@ -16528,6 +16597,7 @@ $('#bell').onclick=openDrawer;$('#close').onclick=closeDrawer;$('#scrim').onclic
 $('#modal').onclick=e=>{if(e.target.id==='modal')closeModal()};
 $('#role').onchange=e=>{S.role=e.target.value;save();render()};
 
+document.addEventListener('change',e=>{const t=e.target;if(t.id==='f-comp'){S.comp=t.value;S.csvOut='';render()}else if(t.id==='f-cno'){S.t.par.cno=t.value.trim();save()}else if(t.id==='f-mun'){S.t.par.mun=t.value.trim();save()}});
 document.addEventListener('input',e=>{if(e.target.id==='q'){S.q=e.target.value;render()}});
 document.addEventListener('click',e=>{
   const t=e.target;let el;
@@ -16541,7 +16611,7 @@ document.addEventListener('click',e=>{
      'params-ok':()=>{S.t.par.limite=+$('#p-l').value||0;S.t.par.tol=(+$('#p-t').value||0)/100;log('parametros','alçada','limite/tolerância','',brl(S.t.par.limite)+' / '+$('#p-t').value+'%');save();closeModal();render()},
      'nova-nf':()=>modalNF(),ratear:()=>modalNF(id),'add-lin':()=>{NF.rateio.push({item:S.D.items[0].codigo,valor:0});pintaRat()},'del-lin':()=>{NF.rateio.splice(+el.dataset.k,1);pintaRat()},
      'sug-lin':()=>{const o=S.t.ocs.find(x=>x.id===NF.oc);if(!o)return toast('Escolha um pedido');NF.rateio=[{item:o.item,valor:Math.min(+NF.valor||o.valor,o.valor)}];pintaRat()},
-     'nf-ok':()=>doNF(el.dataset.modo),conciliar:doConciliar,'nova-med':modalMed,'ask-ok':askOk,'bc-novo':modalBc,'bc-ok':doBc,'bc-env':()=>bcEnv(id),'bc-apr':()=>bcAprModal(id),'bc-apr-ok':()=>bcAprOk(id),'bc-fat':()=>bcFat(id),'rec-novo':()=>modalRec(id),'rec-ok':()=>doRec(id),'conc-ent':concEnt,'lan-novo':modalLan,'lan-ok':doLan,'novo-apt':modalApt,'apt-ok':doApt,'apt-conf':()=>aptConf(id),'apt-apr':()=>aptApr(id),'apt-addp':()=>{lerApt();APT.pessoas.push({funcao:FUNCOES()[0]||'',n:1,h:8});pintaApt()},'apt-delp':()=>{lerApt();APT.pessoas.splice(+el.dataset.k,1);pintaApt()},'apt-adde':()=>{lerApt();APT.equip.push({nome:'',h:8,rh:0});pintaApt()},'apt-dele':()=>{lerApt();APT.equip.splice(+el.dataset.k,1);pintaApt()},'nova-atv':modalAtv,'atv-salvar':doAtv,'atv-ok':()=>atvOk(id),'atv-no':()=>atvNo(id),'atv-no-ok':()=>atvNoOk(id),'nova-rst':modalRst,'rst-salvar':doRst,'rst-ok':()=>rstOk(id),'rst-rep':()=>rstRep(id),'nova-tar':modalTar,'tar-salvar':doTar,'tar-mv':()=>tarMv(id),'med-ok':doMed,atestar:()=>doAtestar(id),conferir:()=>conferir(id),liberar:()=>liberar(id),pagar:()=>pagar(id),
+     'nf-ok':()=>doNF(el.dataset.modo),conciliar:doConciliar,'nova-med':modalMed,'ask-ok':askOk,'xml-novo':modalXml,'xml-ok':doXml,'fech-csv':()=>fechGerar(false),'fech-sk':()=>fechGerar(true),'fech-fechar':fechFechar,'fech-copy':()=>{const t=$('#f-out');t.select();try{navigator.clipboard.writeText(t.value).then(()=>toast('Copiado'),()=>toast('Selecionado: use Ctrl+C'))}catch(e){toast('Selecionado: use Ctrl+C')}},'bc-novo':modalBc,'bc-ok':doBc,'bc-env':()=>bcEnv(id),'bc-apr':()=>bcAprModal(id),'bc-apr-ok':()=>bcAprOk(id),'bc-fat':()=>bcFat(id),'rec-novo':()=>modalRec(id),'rec-ok':()=>doRec(id),'conc-ent':concEnt,'lan-novo':modalLan,'lan-ok':doLan,'novo-apt':modalApt,'apt-ok':doApt,'apt-conf':()=>aptConf(id),'apt-apr':()=>aptApr(id),'apt-addp':()=>{lerApt();APT.pessoas.push({funcao:FUNCOES()[0]||'',n:1,h:8});pintaApt()},'apt-delp':()=>{lerApt();APT.pessoas.splice(+el.dataset.k,1);pintaApt()},'apt-adde':()=>{lerApt();APT.equip.push({nome:'',h:8,rh:0});pintaApt()},'apt-dele':()=>{lerApt();APT.equip.splice(+el.dataset.k,1);pintaApt()},'nova-atv':modalAtv,'atv-salvar':doAtv,'atv-ok':()=>atvOk(id),'atv-no':()=>atvNo(id),'atv-no-ok':()=>atvNoOk(id),'nova-rst':modalRst,'rst-salvar':doRst,'rst-ok':()=>rstOk(id),'rst-rep':()=>rstRep(id),'nova-tar':modalTar,'tar-salvar':doTar,'tar-mv':()=>tarMv(id),'med-ok':doMed,atestar:()=>doAtestar(id),conferir:()=>conferir(id),liberar:()=>liberar(id),pagar:()=>pagar(id),
      reset:()=>{if(MODO_SB)return toast('No modo conectado nada é apagado');if(!S.confirmReset){S.confirmReset=1;return toast('Clique de novo em Restaurar para apagar tudo');}S.confirmReset=0;localStorage.removeItem(KEY);S.t=novoT();prep();toast('Dados restaurados');render()}};
     if(A[a])A[a]();return}
   if(el=t.closest('[data-exp]')){const c=el.dataset.exp;S.exp.has(c)?S.exp.delete(c):S.exp.add(c);return render()}
