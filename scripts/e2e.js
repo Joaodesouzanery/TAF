@@ -4,7 +4,7 @@ const {chromium}=require('playwright');
  const p=await b.newPage({viewport:{width:1480,height:1000}});
  const errs=[];p.on('pageerror',e=>errs.push('PAGE '+e.message));p.on('console',m=>m.type()==='error'&&errs.push(m.text()));
  p.on('dialog',d=>d.accept(d.type()==='prompt'?'ok motivo':undefined));
- await p.goto('file:///home/user/TAF/dist/tafadmin.html');await p.waitForSelector('.big');
+ await p.goto('file:///home/user/TAF/dist/tafadmin.html?demo=1');await p.waitForSelector('.big');
  const T=async s=>(await p.textContent('body')).includes(s);
  const role=async r=>{await p.selectOption('#role',r)};
  const nav=async v=>p.click(`#nav button[data-v=${v}]`);

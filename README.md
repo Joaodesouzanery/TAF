@@ -13,7 +13,20 @@ Especificação: *SaaS de Gestão de Obras TAF — Fluxo Completo do Sistema (re
 | 4 | Nota fiscal, rateio fechando 100%, conferência, liberação e pagamento | feita |
 | 5 | Painéis (compras, obra, carteira) e auditoria | feita (demo) |
 | 6 | Plano de contas, composição por natureza, contas a pagar + conciliação, medição e resultado por item (lucro/prejuízo, VA, IDC, EAC) | feita (demo) |
-| 7 | Supabase real com login por papel, importar 343 e 281, apontamento diário | a fazer |
+| 7 | Supabase real: login, papéis, RLS, documentos gravados no banco, importação da obra 342, tela Usuários | feita |
+| 8 | Apontamento diário e Lean (lookahead, restrições, PPC) | a fazer |
+| 9 | BM/faturamento, DRE, caixa | a fazer |
+| 10 | NF-e (XML) e exportação ao contador; integração Sankhya (API oficial) | a fazer |
+| 7b | Importar EAP da 343 e histórico da 281 | a fazer |
+
+## Supabase (projeto "TAF")
+Migrações em `supabase/migrations/` (0001–0005) já aplicadas no projeto. `web/config.js` aponta para ele com a chave **publishable** (pública; a segurança está no RLS). A biblioteca `supabase-js` está em `web/vendor/` (sem CDN).
+
+**Primeiro acesso:** abra o app e *Criar conta*. **O primeiro cadastro vira Administrador** e os demais ficam "Aguardando liberação" até o admin atribuir o papel em *Usuários*. Faça isso logo após publicar e, depois, desative novos cadastros em Supabase › Authentication › Sign In / Providers (*Allow new users to sign up*) se quiser fechar o acesso. Se o Supabase exigir confirmação de e-mail, confirme pelo link recebido (ou desative *Confirm email* nas mesmas configurações).
+Depois do login, o admin clica em **Importar obra 342** (orçamento, pacotes, metas e plano de contas).
+
+Papéis: admin, gestão, diretoria, gerente, engenheiro, compras, almoxarife, administrativo, financeiro. Os documentos do fluxo (solicitação, OC, nota, título, medição, auditoria) ficam na tabela `documento`; o RLS impede apagar e impede editar a auditoria. As regras de negócio (semáforo, alçadas, rateio 100%) rodam no app; as travas SQL das migrações 0001–0003 valem para o modelo relacional futuro.
+Testes: `supabase/tests/rls.sql`, `node scripts/e2e.js` (demo, abre com `?demo=1`) e `node scripts/e2e_sb.js` (modo conectado contra um Auth/PostgREST simulado).
 
 ## Arquivo único
 `python3 -I scripts/build_html.py` gera `dist/tafadmin.html` (dados embutidos, abre sem servidor). Na versão demo, os lançamentos ficam no `localStorage` do navegador; o motor de regras em JS espelha as regras SQL (`0001`/`0002`). A próxima etapa é ligar o app ao Supabase (mesmo schema).

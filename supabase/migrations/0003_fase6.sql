@@ -72,7 +72,7 @@ end $$;
 create trigger t_valida_medicao before insert or update on medicao for each row execute function valida_medicao();
 
 -- Resultado por item: lucro ou prejuízo (receita medida e atestada x custo realizado), VA e IDC
-create or replace view v_resultado_item as
+create or replace view v_resultado_item with (security_invoker = true) as
 select i.id as item_id, i.obra_id, i.codigo, i.pacote_id,
        coalesce(m.q,0) as qtd_medida,
        round(coalesce(m.q,0) * i.preco_venda_total / nullif(i.qtd,0), 2) as receita_medida,

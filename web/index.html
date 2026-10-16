@@ -145,6 +145,7 @@ label{display:block;font:500 10.5px var(--mono);letter-spacing:.06em;text-transf
     <div class="sec">Workspace</div>
     <nav class="nav" id="nav"></nav>
     <div class="foot">
+      <div id="userbox" style="display:none"></div>
       <div><label style="margin-top:0">Entrar como</label><select id="role"></select></div>
       <div class="note"><b><span class="dot"></span><span id="src-label"></span></b><span id="src-sub"></span></div>
     </div>
@@ -161,7 +162,9 @@ label{display:block;font:500 10.5px var(--mono);letter-spacing:.06em;text-transf
 <div class="scrim" id="scrim"></div>
 <aside class="drawer" id="drawer"><header>Alertas da obra<button class="btn sm" id="close">Fechar</button></header><div class="list" id="alerts"></div></aside>
 <div class="modal" id="modal"><div class="mbox" id="mbox"></div></div>
+<div class="modal" id="login" style="z-index:80;background:var(--bg)"><div class="mbox" id="lbox" style="width:min(420px,100%)"></div></div>
 
+<script src="vendor/supabase.js"></script>
 <script src="config.js"></script>
 <script>
 /* ============ util ============ */
@@ -182,20 +185,126 @@ const ICON={hoje:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" 
 /* ============ papéis ============ */
 const ROLES={gestao:{n:'Gestão da carteira',u:'Felipe'},diretoria:{n:'Diretoria',u:'Thadeu'},gerente:{n:'Gerente de contrato',u:'Tiago Marinho'},
  engenheiro:{n:'Engenheiro residente',u:'Marko Aurélio'},compras:{n:'Compras e suprimentos',u:'Compras'},almox:{n:'Almoxarife',u:'Almoxarife'},
- adm:{n:'Administrativo de obra',u:'Administrativo'},financeiro:{n:'Financeiro',u:'Financeiro'}};
+ adm:{n:'Administrativo de obra',u:'Administrativo'},financeiro:{n:'Financeiro',u:'Financeiro'},
+ admin:{n:'Administrador',u:'Administrador'},pendente:{n:'Aguardando liberação',u:'Novo usuário'}};
+const PAPEIS_ATRIBUIVEIS=['admin','gestao','diretoria','gerente','engenheiro','compras','almox','adm','financeiro','pendente'];
 const CAN={congelar:['gestao','diretoria'],solicitar:['engenheiro','gerente'],cotar:['compras'],receber:['almox','engenheiro'],
  nota:['adm','engenheiro'],liberar:['financeiro'],remanejar:['gerente','diretoria'],medir:['engenheiro','gerente'],atestar:['gerente','diretoria'],param:['diretoria','gestao']};
-const can=a=>CAN[a].includes(S.role);
-const user=()=>ROLES[S.role].u;
+const isRole=(...r)=>r.includes(S.role)||S.role==='admin';
+const can=a=>CAN[a].includes(S.role)||S.role==='admin';
+const user=()=>(MODO_SB&&SB.perfil)?SB.perfil.nome:ROLES[S.role].u;
 
 /* ============ estado ============ */
 const KEY='taf_admin_v3';
+const CFG=window.TAF_CONFIG||{};
+const MODO_SB=!!(CFG.supabaseUrl&&CFG.supabaseKey)&&!/[?&]demo=1/.test(location.search);
+const SB={c:null,user:null,perfil:null,obraId:null,sync:{},estado:'',timer:null,busy:false,perfis:[]};
 let S={view:'hoje',tab:{},role:'engenheiro',D:null,t:null,exp:new Set(),q:''};
 const novoT=()=>({titulos:[],frozen:false,versao:1,hist:[],metaOv:{},sols:[],ocs:[],notas:[],aud:[],meds:[],conc:[],seq:{sol:0,oc:0,nf:0,bm:0},par:{tol:0.02,limite:100000}});
-const save=()=>{try{localStorage.setItem(KEY,JSON.stringify({...S.t,role:S.role}))}catch(e){}};
+const save=()=>{if(MODO_SB){sbSyncSoon();return}try{localStorage.setItem(KEY,JSON.stringify({...S.t,role:S.role}))}catch(e){}};
 function loadT(){try{const j=JSON.parse(localStorage.getItem(KEY)||'null');if(j){S.role=j.role||S.role;delete j.role;return {...novoT(),...j}}}catch(e){}return novoT()}
-const log=(ent,ref,campo,antes,depois,motivo='')=>S.t.aud.unshift({q:new Date().toISOString(),quem:user()+' ('+ROLES[S.role].n+')',ent,ref,campo,antes:String(antes??''),depois:String(depois??''),motivo});
+const log=(ent,ref,campo,antes,depois,motivo='')=>S.t.aud.unshift({id:'a'+Date.now()+Math.random().toString(36).slice(2,6),q:new Date().toISOString(),quem:user()+' ('+ROLES[S.role].n+')',ent,ref,campo,antes:String(antes??''),depois:String(depois??''),motivo});
 function toast(m){document.querySelectorAll('.toast').forEach(x=>x.remove());const e=document.createElement('div');e.className='toast';e.textContent=m;document.body.appendChild(e);setTimeout(()=>e.remove(),2600)}
+
+
+/* ============ SUPABASE: login, papel, leitura e gravação ============ */
+const cmpCod=(a,b)=>{const x=a.split('.'),y=b.split('.');for(let i=0;i<Math.max(x.length,y.length);i++){const p=x[i],q=y[i];if(p===undefined)return -1;if(q===undefined)return 1;
+  const n=/^\d+$/.test(p)&&/^\d+$/.test(q);const d=n?(+p)-(+q):p.localeCompare(q);if(d)return d}return 0};
+const estadoObra=()=>({frozen:S.t.frozen,versao:S.t.versao,hist:S.t.hist,metaOv:S.t.metaOv,par:S.t.par});
+const DOCS=[['sols','sol'],['ocs','oc'],['notas','nf'],['titulos','tit'],['meds','med'],['aud','aud']];
+function sbDocs(){const out=[];DOCS.forEach(([k,tipo])=>(S.t[k]||[]).forEach(o=>{if(!o.id)o.id=tipo+Date.now()+Math.random().toString(36).slice(2,6);out.push({id:o.id,obra_id:SB.obraId,tipo,dados:o})}));return out}
+function sbSyncSoon(){clearTimeout(SB.timer);SB.timer=setTimeout(()=>{SB.timer=null;sbSync()},250)}
+async function sbSync(){
+  if(SB.busy){sbSyncSoon();return}SB.busy=true;
+  try{
+    const docs=sbDocs().filter(d=>{const j=JSON.stringify(d.dados);if(SB.sync[d.id]===j)return false;d._j=j;return true});
+    if(docs.length){const {error}=await SB.c.from('documento').upsert(docs.map(d=>({id:d.id,obra_id:d.obra_id,tipo:d.tipo,dados:d.dados})),{onConflict:'id'});if(error)throw error;docs.forEach(d=>SB.sync[d.id]=d._j)}
+    const est=JSON.stringify(estadoObra());
+    if(est!==SB.estado){const {error}=await SB.c.from('obra').update({estado:JSON.parse(est)}).eq('id',SB.obraId);if(error)throw error;SB.estado=est}
+  }catch(e){toast('Não salvou: '+(e.message||e));try{await sbPull();render()}catch(_){}}
+  SB.busy=false;
+}
+function aplicaDocs(est,docs){
+  const t={...novoT(),...(est&&Object.keys(est).length?est:{})};const map={sol:'sols',oc:'ocs',nf:'notas',tit:'titulos',med:'meds',aud:'aud'};
+  ['sols','ocs','notas','titulos','meds','aud'].forEach(k=>t[k]=[]);SB.sync={};
+  docs.forEach(r=>{if(!map[r.tipo])return;t[map[r.tipo]].push(r.dados);SB.sync[r.id]=JSON.stringify(r.dados)});
+  const key=o=>parseInt(String(o.id||'').replace(/\D/g,'').slice(0,13))||0;
+  ['sols','ocs','notas','titulos','meds'].forEach(k=>t[k].sort((a,b)=>key(b)-key(a)));t.aud.sort((a,b)=>String(b.q).localeCompare(String(a.q)));
+  S.t=t;if(S.D)prep();SB.estado=JSON.stringify(estadoObra());
+}
+async function sbPull(){
+  const [o,d]=await Promise.all([SB.c.from('obra').select('estado').eq('id',SB.obraId).single(),SB.c.from('documento').select('id,tipo,dados').eq('obra_id',SB.obraId).limit(10000)]);
+  if(o.error||d.error)throw (o.error||d.error);aplicaDocs(o.data.estado,d.data);
+}
+const login=()=>$('#login');
+function telaLogin(msg){
+  login().classList.add('open');$('#lbox').innerHTML=`<h3>TAF Admin</h3><div class="sub">Entre com seu e-mail e senha. O primeiro cadastro vira Administrador; os demais aguardam liberação.</div>
+   <label>E-mail</label><input id="l-e" type="email" autocomplete="username"><label>Senha</label><input id="l-s" type="password" autocomplete="current-password" minlength="6">
+   <div id="l-msg" class="sub" style="margin-top:10px;${msg?'color:var(--bad)':''}">${esc(msg||'')}</div>
+   <div class="acts"><button class="btn" data-act="l-novo">Criar conta</button><button class="btn dark" data-act="l-entrar">Entrar</button></div>`;
+}
+const lmsg=(m,bad=true)=>{const e=$('#l-msg');if(e){e.textContent=m;e.style.color=bad?'var(--bad)':'var(--ink-2)'}};
+async function doLogin(novo){
+  const email=($('#l-e').value||'').trim(),senha=$('#l-s').value||'';if(!email||senha.length<6)return lmsg('Informe e-mail e senha (mínimo 6 caracteres).');
+  lmsg('Aguarde…',false);
+  const r=novo?await SB.c.auth.signUp({email,password:senha,options:{data:{nome:email.split('@')[0]}}}):await SB.c.auth.signInWithPassword({email,password:senha});
+  if(r.error)return lmsg(r.error.message==='Invalid login credentials'?'E-mail ou senha incorretos.':r.error.message);
+  if(!r.data.session)return lmsg('Conta criada. Confirme o e-mail enviado e depois entre.',false);
+  login().classList.remove('open');await sbEntrar(r.data.session.user);
+}
+function telaAviso(titulo,texto,acao){$('#view').innerHTML=`<div class="soon"><h2>${titulo}</h2><div style="max-width:520px">${texto}</div><div style="display:flex;gap:8px;margin-top:10px">${acao||''}<button class="btn" data-act="sair">Sair</button></div></div>`;$('#nav').innerHTML='';}
+async function sbBoot(){
+  $('#role').parentNode.style.display='none';
+  if(!window.supabase){telaAviso('Biblioteca não carregou','Não consegui carregar o supabase-js. Abra com <code>?demo=1</code> para usar a demonstração.');return}
+  SB.c=window.supabase.createClient(CFG.supabaseUrl,CFG.supabaseKey);
+  const {data}=await SB.c.auth.getSession();
+  if(!data.session){telaLogin();$('#view').innerHTML='';return}
+  await sbEntrar(data.session.user);
+}
+async function sbEntrar(u){
+  SB.user=u;const pf=await SB.c.from('perfil').select('*').eq('user_id',u.id).single();
+  if(pf.error||!pf.data){telaAviso('Perfil não encontrado','Seu usuário existe, mas ainda não tem perfil. Peça ao administrador.');return}
+  SB.perfil=pf.data;S.role=pf.data.papel;
+  $('#userbox').style.display='block';$('#userbox').innerHTML=`<div class="note"><b>${esc(pf.data.nome)}</b><span>${esc(ROLES[S.role]?.n||S.role)}</span><div style="margin-top:8px"><button class="btn sm" data-act="sair">Sair</button></div></div>`;
+  if(S.role==='pendente'){telaAviso('Aguardando liberação','Sua conta foi criada. O administrador precisa atribuir seu papel (engenheiro, compras, financeiro…) para você acessar a obra.');return}
+  const ob=await SB.c.from('obra').select('*').limit(1);
+  if(ob.error){telaAviso('Erro ao ler a obra',esc(ob.error.message));return}
+  if(!ob.data.length){
+    const pode=isRole('gestao','diretoria');
+    telaAviso('Nenhuma obra cadastrada',pode?'Importe a obra 342 (orçamento, pacotes, metas e plano de contas) a partir da planilha já processada.':'Peça ao administrador para importar a obra.',pode?'<button class="btn dark" data-act="importar">Importar obra 342</button>':'');return}
+  await sbCarregar(ob.data[0]);
+}
+async function sbCarregar(ob){
+  const c=SB.c;SB.obraId=ob.id;
+  const [pc,ie,ct]=await Promise.all([c.from('pacote').select('*'),c.from('item_eap').select('*').limit(5000),c.from('conta').select('*')]);
+  const err=pc.error||ie.error||ct.error;if(err){telaAviso('Erro ao carregar',esc(err.message));return}
+  const N=v=>v==null?v:+v,pcode=Object.fromEntries(pc.data.map(p=>[p.id,p.codigo]));
+  const eap=ie.data.map(e=>({codigo:e.codigo,descricao:e.descricao,unidade:e.unidade,qtd:N(e.qtd),nivel:e.nivel,pai:e.pai_codigo,tipo_linha:e.eh_item?'item':'grupo',preco_venda_total:N(e.preco_venda_total),meta_total:N(e.meta_total),teto_total:N(e.teto_total),meta_unit:N(e.meta_unit),fonte_meta:e.fonte_meta,status_cotacao:e.status_cotacao,evento:e.evento,pacote:pcode[e.pacote_id],tipo:e.tipo,composicao:e.composicao,natureza:e.natureza||{}})).sort((a,b)=>cmpCod(a.codigo,b.codigo));
+  const venda=eap.filter(e=>e.tipo_linha==='item').reduce((s,e)=>s+e.preco_venda_total,0);
+  S.D={obra:{codigo:ob.codigo,nome:ob.nome,contratante:ob.contratante,contrato:ob.contrato,municipio:ob.municipio,valor_contrato:N(ob.valor_contrato),regime:ob.regime,tributos_nota:N(ob.tributos_nota)},
+    pacotes:pc.data.map(p=>({...p,meta:N(p.meta),teto:N(p.teto)})),eap,plano:ct.data.map(x=>({codigo:x.codigo,nome:x.nome,nivel:x.nivel,natureza:x.natureza})).sort((a,b)=>cmpCod(a.codigo,b.codigo)),
+    relatorio:{diferenca_contrato:r2(venda-N(ob.valor_contrato)),aviso:'Metas vêm do Estudo 342 REV10; aguardando META REV02 e Estudo REV13.'}};
+  await sbPull();
+  S.exp=new Set(S.D.eap.filter(e=>e.nivel<=2).map(e=>e.codigo));
+  $('#obra-av').textContent=ob.codigo;$('#obra-nome').textContent=(ob.contratante||'')+' · '+ob.nome;$('#obra-sub').textContent='Centro de custo '+ob.codigo;
+  $('#src-label').textContent='Supabase';$('#src-sub').textContent='Banco conectado · '+(ROLES[S.role]?.n||S.role);
+  if(S.role==='admin'){await sbPerfis()}
+  render();
+}
+async function sbPerfis(){const r=await SB.c.from('perfil').select('*').order('criado_em');SB.perfis=r.data||[]}
+async function sbImportar(){
+  toast('Importando…');let d=window.TAF_DATA;if(!d){const r=await fetch('data/obra342.json');d=await r.json()}
+  const r=await SB.c.rpc('importar_obra',{p:d});if(r.error)return toast('Erro: '+r.error.message);toast('Obra importada');await sbEntrar(SB.user);
+}
+function viewUsuarios(){
+  const P=SB.perfis||[];
+  return `<div class="head"><div><h1>Usuários</h1><p class="lead">Quem se cadastra entra como <b>Aguardando liberação</b>. Atribua o papel de cada pessoa: ele define o que ela vê e pode fazer.</p></div></div>
+  <div class="tw"><table class="tbl"><thead><tr><th>Nome</th><th>Cadastro</th><th>Papel</th></tr></thead><tbody>${P.map(u=>`<tr><td><b>${esc(u.nome)}</b>${u.user_id===SB.user.id?' <span class="pill info">você</span>':''}</td><td>${fdata((u.criado_em||'').slice(0,10))}</td><td><select data-perfil="${u.user_id}" ${u.user_id===SB.user.id?'disabled title="Você não altera o próprio papel"':''}>${PAPEIS_ATRIBUIVEIS.map(r=>`<option value="${r}" ${u.papel===r?'selected':''}>${ROLES[r].n}</option>`).join('')}</select></td></tr>`).join('')}</tbody></table></div>`}
+async function sbSair(){await SB.c.auth.signOut();location.reload()}
+document.addEventListener('change',async e=>{const el=e.target.closest&&e.target.closest('[data-perfil]');if(!el)return;
+  const r=await SB.c.from('perfil').update({papel:el.value}).eq('user_id',el.dataset.perfil);if(r.error)return toast('Erro: '+r.error.message);log('perfil',el.dataset.perfil,'papel','',el.value);save();toast('Papel atualizado');await sbPerfis()});
+window.addEventListener('focus',()=>{if(MODO_SB&&SB.obraId&&!SB.busy&&!$('#modal').classList.contains('open')&&!SB.timer)sbPull().then(render).catch(()=>{})});
+setInterval(()=>{if(MODO_SB&&SB.obraId&&!SB.busy&&!SB.timer&&!$('#modal').classList.contains('open')&&document.visibilityState==='visible')sbPull().then(render).catch(()=>{})},30000);
 
 /* ============ plano de contas ============ */
 const MAT_PAC={FOFO:'4.2.01',PVC:'4.2.01',TCONC:'4.2.01',VALV:'4.2.02',PARAF:'4.2.08',ELET:'4.2.05',ELETS:'4.2.05',CONC:'4.2.04',ACO:'4.2.04',FORMA:'4.2.04',IMPER:'4.2.06',BOMBA:'4.2.07',GUIND:'4.2.07',CIVIL:'4.2.03'};
@@ -233,7 +342,8 @@ function semaforo(cod,total,pendId){
 }
 const SEM_CLASS={verde:'ok',amarelo:'warn',vermelho:'bad',bloqueado:'bad'};
 const semPill=s=>`<span class="pill ${SEM_CLASS[s]||'mute'}">${s||'—'}</span>`;
-const nextNum=k=>{S.t.seq[k]=(S.t.seq[k]||0)+1;return {sol:'SC',oc:'OC',nf:'NF',bm:'BM'}[k]+'-'+String(S.t.seq[k]).padStart(4,'0')};
+const nextNum=k=>{const arr={sol:S.t.sols,oc:S.t.ocs,nf:S.t.notas,bm:S.t.meds}[k],px={sol:'SC',oc:'OC',nf:'NF',bm:'BM'}[k];
+  const mx=arr.reduce((m,o)=>Math.max(m,parseInt(String(o.num||'').replace(/\D/g,''))||0),0);return px+'-'+String(mx+1).padStart(4,'0')};
 const ocFat=oc=>S.t.notas.filter(n=>n.oc===oc.id&&n.status!=='lancada').reduce((s,n)=>s+n.rateio.reduce((a,l)=>a+ +l.valor,0),0);
 const ocRecebido=oc=>r2(oc.preco*(oc.recebido||0));
 
@@ -276,7 +386,8 @@ function alertas(X){
 }
 
 /* ============ componentes ============ */
-const NAV=[['hoje','Hoje','hoje'],['eap','Orçamento (EAP)','eap'],['pac','Pacotes','pac'],['compras','Compras','compras'],['nota','Notas e rateio','nota'],['fin','Financeiro','fin'],['med','Medição e resultado','med'],['plano','Plano de contas','plano'],['pain','Painéis','pain'],['aud','Auditoria','aud']];
+const NAV_BASE=[['hoje','Hoje','hoje'],['eap','Orçamento (EAP)','eap'],['pac','Pacotes','pac'],['compras','Compras','compras'],['nota','Notas e rateio','nota'],['fin','Financeiro','fin'],['med','Medição e resultado','med'],['plano','Plano de contas','plano'],['pain','Painéis','pain'],['aud','Auditoria','aud']];
+const navItens=()=>MODO_SB&&S.role==='admin'?[...NAV_BASE,['usuarios','Usuários','aud']]:NAV_BASE;
 function badgeFor(k,X){return k==='compras'?(X.pendAprov.length?`<span class="badge hot">${X.pendAprov.length}</span>`:''):k==='nota'?(X.semRateio.length?`<span class="badge hot">${X.semRateio.length}</span>`:''):''}
 function ticks(items){return items.map(i=>`<i class="${i.meta_total>i.teto_total?'r':i.status_cotacao==='A cotar'?'w':''}" title="${i.codigo}"></i>`).join('')}
 function ring(p,c){return `<div class="ring" style="--p:${Math.round(p*100)};--c:${c}"><span>${Math.round(p*100)}</span></div>`}
@@ -295,12 +406,12 @@ function pacRow(p){
 function minhaFila(X){
   const f=[];
   if(!S.t.frozen&&can('congelar'))f.push(['bad','Congelar a linha de base v1','Libera a abertura de compras na obra.','eap']);
-  if(['gerente','diretoria'].includes(S.role))X.pendAprov.filter(o=>o.alcada===S.role||(S.role==='diretoria'&&o.alcada==='gerente')).forEach(o=>f.push([o.alcada==='diretoria'?'bad':'warn',`Aprovar ${o.num} · ${brl(o.valor)}`,`${o.item} · ${esc(o.forn)}`,'compras']));
-  if(S.role==='compras')S.t.sols.filter(s=>s.status==='enviada'||s.status==='em_cotacao').forEach(s=>f.push(['warn',`Cotar ${s.num}`,`${esc(s.desc)} · ${s.item}`,'compras']));
-  if(S.role==='almox')S.t.ocs.filter(o=>['aprovada','recebida_parcial'].includes(o.status)).forEach(o=>f.push(['info',`Receber ${o.num}`,`${esc(o.forn)} · ${num(o.qtd-(o.recebido||0))} ${S.byCod[o.item].unidade||''} a receber`,'compras']));
-  if(['gerente','diretoria'].includes(S.role))S.t.meds.filter(m=>m.status==='lancada'&&m.quem!==user()).forEach(m=>f.push(['warn',`Atestar ${m.num}`,`${m.item} · ${num(m.qtd)} medidos`,'med']));
-  if(S.role==='adm')X.semRateio.forEach(n=>f.push(['warn',`Ratear ${n.num}`,`${esc(n.emitente)} · ${brl(n.valor)}`,'nota']));
-  if(S.role==='financeiro')S.t.notas.filter(n=>n.status==='conferida'||n.status==='liberada').forEach(n=>f.push(['info',`${n.status==='conferida'?'Liberar':'Pagar'} ${n.num}`,`${esc(n.emitente)} · ${brl(n.valor)}`,'nota']));
+  if(isRole('gerente','diretoria'))X.pendAprov.filter(o=>o.alcada===S.role||(isRole('diretoria')&&o.alcada==='gerente')||S.role==='admin').forEach(o=>f.push([o.alcada==='diretoria'?'bad':'warn',`Aprovar ${o.num} · ${brl(o.valor)}`,`${o.item} · ${esc(o.forn)}`,'compras']));
+  if(isRole('compras'))S.t.sols.filter(s=>s.status==='enviada'||s.status==='em_cotacao').forEach(s=>f.push(['warn',`Cotar ${s.num}`,`${esc(s.desc)} · ${s.item}`,'compras']));
+  if(isRole('almox'))S.t.ocs.filter(o=>['aprovada','recebida_parcial'].includes(o.status)).forEach(o=>f.push(['info',`Receber ${o.num}`,`${esc(o.forn)} · ${num(o.qtd-(o.recebido||0))} ${S.byCod[o.item].unidade||''} a receber`,'compras']));
+  if(isRole('gerente','diretoria'))S.t.meds.filter(m=>m.status==='lancada'&&m.quem!==user()).forEach(m=>f.push(['warn',`Atestar ${m.num}`,`${m.item} · ${num(m.qtd)} medidos`,'med']));
+  if(isRole('adm'))X.semRateio.forEach(n=>f.push(['warn',`Ratear ${n.num}`,`${esc(n.emitente)} · ${brl(n.valor)}`,'nota']));
+  if(isRole('financeiro'))S.t.notas.filter(n=>n.status==='conferida'||n.status==='liberada').forEach(n=>f.push(['info',`${n.status==='conferida'?'Liberar':'Pagar'} ${n.num}`,`${esc(n.emitente)} · ${brl(n.valor)}`,'nota']));
   return f;
 }
 function viewHoje(X){
@@ -435,7 +546,7 @@ function viewCompras(X){
 const empty=(a,b)=>`<div class="soon" style="min-height:200px"><h2 style="font-size:16px">${a}</h2><div>${b}</div></div>`;
 function aprovBtns(o){
   const ok=can_aprovar(o);return `<button class="btn sm ok" data-act="aprovar" data-id="${o.id}" ${ok?'':'disabled title="Sem alçada ou é o próprio solicitante"'}>Aprovar</button> <button class="btn sm no" data-act="reprovar" data-id="${o.id}" ${ok?'':'disabled'}>Reprovar</button>`}
-function can_aprovar(o){if(o.solicitante===user())return false;if(o.alcada==='diretoria')return S.role==='diretoria';return ['gerente','diretoria'].includes(S.role)}
+function can_aprovar(o){if(o.solicitante===user())return false;if(o.alcada==='diretoria')return isRole('diretoria');return isRole('gerente','diretoria')}
 function modalMapa(id){
   const s=S.t.sols.find(x=>x.id===id),i=S.byCod[s.item];
   const L=s.cots.map((c,k)=>`<tr><td><input type="radio" name="esc" value="${k}" ${s.escolhida===k?'checked':''}></td><td>${esc(c.forn)}</td><td class="r">${brl(c.preco)}</td><td>${esc(c.prazo||'—')}</td><td class="r">${brl(c.preco*s.qtd)}</td><td>${c.preco===Math.min(...s.cots.map(x=>x.preco))?'<span class="pill ok">menor</span>':''}</td></tr>`).join('');
@@ -459,7 +570,7 @@ function emitirOC(id){
   const total=r2(s.qtd*c.preco),sem=semaforo(s.item,total);if(sem[0]==='bloqueado')return toast(sem[1]);
   let st='aprovada',alc=null;
   if(sem[0]==='verde'){if(total>S.t.par.limite){st='em_alcada';alc='gerente'}}else if(sem[0]==='amarelo'){st='em_alcada';alc='gerente';if(!just)return toast('Acima da meta: justificativa escrita é obrigatória')}else{st='em_alcada';alc='diretoria';if(!just)return toast('Acima do teto: justificativa é obrigatória')}
-  const o={id:'o'+Date.now(),num:nextNum('oc'),sol:s.id,item:s.item,nat:s.nat,conta:s.conta,forn:c.forn,qtd:s.qtd,preco:c.preco,valor:total,sem:sem[0],status:st,alcada:alc,just,emergencia:em,solicitante:s.solicitante,recebido:0,criado:hojeISO()};
+  const o={id:'o'+Date.now()+Math.random().toString(36).slice(2,5),num:nextNum('oc'),sol:s.id,item:s.item,nat:s.nat,conta:s.conta,forn:c.forn,qtd:s.qtd,preco:c.preco,valor:total,sem:sem[0],status:st,alcada:alc,just,emergencia:em,solicitante:s.solicitante,recebido:0,criado:hojeISO()};
   S.t.ocs.unshift(o);if(st==='aprovada')criaTitulo(o);s.status='atendida';s.oc=o.num;log('ordem_compra',o.num,'emitida','',brl(total)+' · '+sem[0]+' · '+st,just);save();closeModal();toast(o.num+(st==='aprovada'?' aprovada (verde)':' aguarda '+ROLES[alc].n));S.tab.compras='ocs';render();
 }
 function decidir(id,ok){const o=S.t.ocs.find(x=>x.id===id);if(!can_aprovar(o))return toast('Sem alçada');
@@ -646,29 +757,28 @@ function viewPain(X){
 /* ============ AUDITORIA ============ */
 function viewAud(){
   const A=S.t.aud;
-  return `<div class="head"><div><h1>Auditoria</h1><p class="lead">Quem mudou o quê, quando e por quê. Nada se apaga: cancelar muda o status e grava o motivo.</p></div><button class="btn" data-act="reset">Restaurar dados de demonstração</button></div>
+  return `<div class="head"><div><h1>Auditoria</h1><p class="lead">Quem mudou o quê, quando e por quê. Nada se apaga: cancelar muda o status e grava o motivo.</p></div>${MODO_SB?'':'<button class="btn" data-act="reset">Restaurar dados de demonstração</button>'}</div>
   <div class="tw">${A.length?`<table class="tbl"><thead><tr><th>Quando</th><th>Quem</th><th>Registro</th><th>Campo</th><th>Antes</th><th>Depois</th><th>Motivo</th></tr></thead><tbody>${A.slice(0,200).map(a=>`<tr><td class="mono">${a.q.slice(0,19).replace('T',' ')}</td><td>${esc(a.quem)}</td><td class="mono">${esc(a.ref)}</td><td>${esc(a.campo)}</td><td>${esc(a.antes)}</td><td>${esc(a.depois)}</td><td>${esc(a.motivo)}</td></tr>`).join('')}</tbody></table>`:empty('Sem eventos ainda.','Cada ação do fluxo aparece aqui.')}</div>`;
 }
 
 /* ============ render / eventos ============ */
 function render(){
   const X=derive();S.X=X;
-  $('#nav').innerHTML=NAV.map(([k,l,i])=>`<button class="${S.view===k?'on':''}" data-v="${k}">${ico(i)}${l}${badgeFor(k,X)}</button>`).join('');
-  $('#crumb').textContent=NAV.find(n=>n[0]===S.view)[1];
-  const V={hoje:viewHoje,eap:viewEap,pac:viewPac,compras:viewCompras,nota:viewNota,fin:viewFin,med:viewMed,plano:viewPlano,pain:viewPain,aud:viewAud}[S.view];
+  $('#nav').innerHTML=navItens().map(([k,l,i])=>`<button class="${S.view===k?'on':''}" data-v="${k}">${ico(i)}${l}${badgeFor(k,X)}</button>`).join('');
+  $('#crumb').textContent=(navItens().find(n=>n[0]===S.view)||NAV_BASE[0])[1];
+  const V={hoje:viewHoje,eap:viewEap,pac:viewPac,compras:viewCompras,nota:viewNota,fin:viewFin,med:viewMed,plano:viewPlano,pain:viewPain,aud:viewAud,usuarios:viewUsuarios}[S.view]||viewHoje;
   const keepQ=document.activeElement&&document.activeElement.id==='q';
   $('#view').innerHTML=V(X);
   if(keepQ){const q=$('#q');q.focus();q.setSelectionRange(q.value.length,q.value.length)}
   const al=alertas(X);const nb=al.filter(a=>a[0]==='bad').length;$('#pip').style.display=nb?'block':'none';
   const G={bad:'var(--bad)',warn:'var(--warn)',info:'var(--info)'};
   $('#alerts').innerHTML=al.map(([k,t,p])=>`<div class="alert"><div class="g" style="color:${G[k]}"><svg class="ic" viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div><b>${t}</b><p>${p}</p><span class="pill ${k}">${k==='bad'?'Crítico':k==='warn'?'Atenção':'Info'}</span></div></div>`).join('');
-  $('#role').value=S.role;
+  if(!MODO_SB)$('#role').value=S.role;
 }
 const openDrawer=()=>{$('#drawer').classList.add('open');$('#scrim').classList.add('open')},closeDrawer=()=>{$('#drawer').classList.remove('open');$('#scrim').classList.remove('open')};
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDrawer();closeModal()}});
 $('#bell').onclick=openDrawer;$('#close').onclick=closeDrawer;$('#scrim').onclick=closeDrawer;
 $('#modal').onclick=e=>{if(e.target.id==='modal')closeModal()};
-$('#role').innerHTML=Object.entries(ROLES).map(([k,v])=>`<option value="${k}">${v.n} · ${v.u}</option>`).join('');
 $('#role').onchange=e=>{S.role=e.target.value;save();render()};
 
 document.addEventListener('input',e=>{if(e.target.id==='q'){S.q=e.target.value;render()}});
@@ -678,14 +788,14 @@ document.addEventListener('click',e=>{
   if(el=t.closest('#nav button')){S.view=el.dataset.v;return render()}
   if(el=t.closest('[data-go]')){S.view=el.dataset.go;return render()}
   if(el=t.closest('[data-act]')){const a=el.dataset.act,id=el.dataset.id;if(el.disabled)return;
-    const A={alertas:openDrawer,fechar:closeModal,congelar:()=>{if(!can('congelar'))return;const m=prompt('Congelar a linha de base v1. Confirma? (motivo/observação)','Estudo REV10 + META da aba 11/12');if(m===null)return;S.t.frozen=true;S.t.hist.push({versao:1,motivo:m||'congelada',quando:new Date().toISOString(),quem:user()});log('obra','342','linha_base','aberta','v1 congelada',m);save();toast('Linha de base v1 congelada · compras liberadas');render()},
+    const A={'l-entrar':()=>doLogin(false),'l-novo':()=>doLogin(true),sair:sbSair,importar:sbImportar,alertas:openDrawer,fechar:closeModal,congelar:()=>{if(!can('congelar'))return;const m=prompt('Congelar a linha de base v1. Confirma? (motivo/observação)','Estudo REV10 + META da aba 11/12');if(m===null)return;S.t.frozen=true;S.t.hist.push({versao:1,motivo:m||'congelada',quando:new Date().toISOString(),quem:user()});log('obra','342','linha_base','aberta','v1 congelada',m);save();toast('Linha de base v1 congelada · compras liberadas');render()},
      remanejar:modalRemanejar,'rm-ok':doRemanejar,'nova-sol':()=>modalSol(el.dataset.item),'sol-ok':doSol,mapa:()=>modalMapa(id),'add-cot':()=>addCot(id),'emitir-oc':()=>emitirOC(id),
      aprovar:()=>decidir(id,true),reprovar:()=>decidir(id,false),receber:()=>modalReceber(id),'rc-ok':()=>doReceber(id),'cancelar-oc':()=>cancelarOC(id),params:modalParams,
      'params-ok':()=>{S.t.par.limite=+$('#p-l').value||0;S.t.par.tol=(+$('#p-t').value||0)/100;log('parametros','alçada','limite/tolerância','',brl(S.t.par.limite)+' / '+$('#p-t').value+'%');save();closeModal();render()},
      'nova-nf':()=>modalNF(),ratear:()=>modalNF(id),'add-lin':()=>{NF.rateio.push({item:S.D.items[0].codigo,valor:0});pintaRat()},'del-lin':()=>{NF.rateio.splice(+el.dataset.k,1);pintaRat()},
      'sug-lin':()=>{const o=S.t.ocs.find(x=>x.id===NF.oc);if(!o)return toast('Escolha um pedido');NF.rateio=[{item:o.item,valor:Math.min(+NF.valor||o.valor,o.valor)}];pintaRat()},
      'nf-ok':()=>doNF(el.dataset.modo),conciliar:doConciliar,'nova-med':modalMed,'med-ok':doMed,atestar:()=>doAtestar(id),conferir:()=>conferir(id),liberar:()=>liberar(id),pagar:()=>pagar(id),
-     reset:()=>{if(!confirm('Apagar todos os lançamentos de demonstração deste navegador?'))return;localStorage.removeItem(KEY);S.t=novoT();prep();toast('Dados restaurados');render()}};
+     reset:()=>{if(MODO_SB)return toast('No modo conectado nada é apagado');if(!confirm('Apagar todos os lançamentos de demonstração deste navegador?'))return;localStorage.removeItem(KEY);S.t=novoT();prep();toast('Dados restaurados');render()}};
     if(A[a])A[a]();return}
   if(el=t.closest('[data-exp]')){const c=el.dataset.exp;S.exp.has(c)?S.exp.delete(c):S.exp.add(c);return render()}
   if(el=t.closest('[data-item]')){return modalItem(el.dataset.item)}
@@ -698,6 +808,8 @@ async function load(){
 }
 (async()=>{
   $('#today').textContent=new Date().toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'short',year:'numeric'});
+  $('#role').innerHTML=Object.entries(ROLES).filter(([k])=>!['admin','pendente'].includes(k)).map(([k,v])=>`<option value="${k}">${v.n} · ${v.u}</option>`).join('');
+  if(MODO_SB){try{await sbBoot()}catch(e){telaAviso('Erro de conexão',esc(e.message||e))}return}
   try{
     S.D=await load();S.t=loadT();prep();
     S.D.eap.filter(e=>e.nivel<=2).forEach(e=>S.exp.add(e.codigo));

@@ -156,7 +156,7 @@ begin
 end $$;
 
 -- Saldos por item: meta, comprometido, realizado, saldo livre ------------------------
-create or replace view v_saldo_item as
+create or replace view v_saldo_item with (security_invoker = true) as
 select i.id as item_id, i.obra_id, i.codigo, i.descricao, i.pacote_id, i.status_cotacao,
        i.meta_total, i.teto_total,
        coalesce(c.v,0) as comprometido,
@@ -168,7 +168,7 @@ left join (select item_id, sum(valor) v from ordem_compra
 left join (select item_id, sum(valor) v from rateio_nota group by item_id) r on r.item_id = i.id
 where i.eh_item;
 
-create or replace view v_saldo_pacote as
+create or replace view v_saldo_pacote with (security_invoker = true) as
 select p.id as pacote_id, p.obra_id, p.codigo, p.nome, p.fechar_ate, p.meta, p.teto,
        count(s.item_id) as itens,
        count(*) filter (where s.status_cotacao = 'A cotar') as sem_cotacao,

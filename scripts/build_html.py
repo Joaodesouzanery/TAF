@@ -5,9 +5,13 @@ from pathlib import Path
 root = Path(__file__).resolve().parent.parent
 html = (root / "web/index.html").read_text(encoding="utf-8")
 data = (root / "web/data/obra342.json").read_text(encoding="utf-8")
-cfg = '<script src="config.js"></script>'
-assert cfg in html
-html = html.replace(cfg, "<script>window.TAF_DATA=" + data.replace("</", "<\\/") + ";</script>")
+lib = (root / "web/vendor/supabase.js").read_text(encoding="utf-8")
+conf = (root / "web/config.js").read_text(encoding="utf-8")
+tag_lib, tag_cfg = '<script src="vendor/supabase.js"></script>', '<script src="config.js"></script>'
+assert tag_lib in html and tag_cfg in html
+import base64
+html = html.replace(tag_lib, '<script src="data:text/javascript;base64,' + base64.b64encode(lib.encode("utf-8")).decode() + '"></script>')
+html = html.replace(tag_cfg, "<script>" + conf + "</script>\n<script>window.TAF_DATA=" + data.replace("</", "<\\/") + ";</script>")
 out = root / "dist/tafadmin.html"
 out.parent.mkdir(exist_ok=True)
 out.write_text(html, encoding="utf-8")
