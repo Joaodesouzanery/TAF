@@ -11,7 +11,7 @@ SaaS de gestão de obras da **TAF** (saneamento). Cada obra é um centro de cust
 | Banco (Postgres/Supabase) | `supabase/migrations/0001…0008`, seeds em `supabase/seed/`, testes em `supabase/tests/` |
 | Importador das planilhas | `python3 -I scripts/import_planilhas.py fontes/OBRA_342_ESTUDO_DE_OBRA_INTERNO_REV10.xlsx` (gera JSON e seeds) |
 | Testes | `bash scripts/qa.sh` (tudo) e `node scripts/qa_visual.js` (telas). Precisa de Node + Playwright global, Chromium em `/opt/pw-browsers`, Postgres 16 |
-| Planilhas e documentos de origem | `fontes/` (versões substituídas em `fontes/antigas/`). **Ainda NÃO estão no GitHub: o repositório é público e as planilhas têm contratos e custos.** Torne o repositório privado e peça para enviar essa pasta, ou copie os arquivos à mão. |
+| Planilhas e documentos de origem | `fontes/` (versões substituídas em `fontes/antigas/`). **Contêm contratos e custos: o repositório precisa continuar privado.** |
 
 Regras de negócio vivem em JS (`prep`, `saldos`, `semaforo`, `derive`) e espelham o SQL (`calc_semaforo`, triggers). Mudou uma regra, mude nos dois.
 

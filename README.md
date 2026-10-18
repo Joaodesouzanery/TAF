@@ -1,6 +1,6 @@
 # TAF Obras
 
-> **Quem for continuar o projeto: leia [`docs/COMECE_AQUI.md`](docs/COMECE_AQUI.md).** As planilhas e documentos de origem ficam em `fontes/` assim que o repositório for privado (hoje ele é público).
+> **Quem for continuar o projeto: leia [`docs/COMECE_AQUI.md`](docs/COMECE_AQUI.md).** Planilhas e documentos de origem estão em `fontes/` (repositório privado: não torne público).
 
 Gestão de obras onde cada real entra amarrado a **obra + item do orçamento + natureza**: compra travada na meta e no teto do item, nota com rateio fechando 100%, saldos meta / comprometido / realizado.
 
