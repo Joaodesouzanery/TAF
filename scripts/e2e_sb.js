@@ -62,7 +62,7 @@ async function mock(page){
   await entrar(p,'admin@taf.com',true);
   await p.waitForSelector('[data-act=importar]');ok('primeiro cadastro = admin, sem obra: oferece importar',true);
   await p.click('[data-act=importar]');await p.waitForSelector('.big');
-  ok('obra 342 importada e carregada (346 itens)',await T(p,'Bom dia, Administrador!')&&db.item_eap.filter(i=>i.eh_item).length===346);
+  ok('obra 342 importada e carregada (346 itens)',await T(p,'Dashboard')&&db.item_eap.filter(i=>i.eh_item).length===346);
   ok('menu Usuários só para admin',await p.evaluate(()=>tabVisivel('usuarios')));
   // fluxo gravando no banco
   await p.evaluate(()=>{S.view='eap';render()});await p.click('[data-act=congelar]');await p.click('[data-act=ask-ok]');await p.waitForTimeout(600);

@@ -4,7 +4,7 @@ function render(){
   const AR=areaDe(S.view);
   $('#nav').innerHTML=areasVisiveis().map(a=>`<button class="${a.k===AR.k?'on':''}" data-v="${a.k===AR.k?S.view:a.tabs[0][0]}">${ico(a.i)}${a.n}${badgeArea(a,X)}</button>`).join('');
   $('#crumb').textContent=AR.n+(AR.tabs.length>1?' · '+(AR.tabs.find(t=>t[0]===S.view)||AR.tabs[0])[1]:'');
-  const V={fat:viewFat,campo:viewCampo,lean:viewLean,hoje:viewHoje,eap:viewEap,pac:viewPac,compras:viewCompras,nota:viewNota,fin:viewFin,med:viewMed,plano:viewPlano,pain:viewPain,ctb:viewCtb,est:viewEst,ctr:viewCtr,prj:viewPrj,pat:viewPat,frt:viewFrt,aud:viewAud,usuarios:viewUsuarios,cad:viewCadastros}[S.view]||viewHoje;
+  const V={fat:viewFat,campo:viewCampo,lean:viewLean,hoje:viewHoje,eap:viewEap,pac:viewPac,compras:viewCompras,nota:viewNota,fin:viewFin,med:viewMed,plano:viewPlano,pain:viewPain,ctb:viewCtb,est:viewEst,dash:viewDash,pes:viewPessoas,sst:viewSst,bi:biView,admin:viewAdmin,fluxo:viewFluxo,ctr:viewCtr,prj:viewPrj,pat:viewPat,frt:viewFrt,aud:viewAud,usuarios:viewUsuarios,cad:viewCadastros}[S.view]||viewHoje;
   const keepQ=document.activeElement&&document.activeElement.id==='q';
   $('#view').innerHTML=abasDaArea(AR)+V(X);
   if(keepQ){const q=$('#q');if(q){q.focus();q.setSelectionRange(q.value.length,q.value.length)}}
@@ -44,7 +44,7 @@ document.addEventListener('click',e=>{
 async function load(cod){
   const d=await obraData(cod||'342');S.src=window.TAF_DATA?['Arquivo único','Dados embutidos (demo)']:['Demonstração','Dados da planilha · estado salvo neste navegador'];return d}
 async function abreDemo(cod){
-  try{S.D=await load(cod);S.t=loadT();S.exp=new Set();S.tab={};S.view='hoje';prep();
+  try{S.D=await load(cod);S.t=loadT();S.exp=new Set();S.tab={};S.view='dash';prep();
     S.D.eap.filter(e=>e.nivel<=2).forEach(e=>S.exp.add(e.codigo));
     $('#obra-av').textContent=S.D.obra.codigo;$('#obra-nome').textContent=S.D.obra.contratante+' · '+S.D.obra.nome;$('#obra-sub').textContent='Centro de custo '+S.D.obra.codigo;
     $('#src-label').textContent=S.src[0];$('#src-sub').textContent=S.src[1];render();

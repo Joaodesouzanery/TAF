@@ -14,7 +14,7 @@ function modalObras(){
    ${faltam.map(([c,n])=>`<tr><td><span class="mono">${c}</span></td><td>${esc(n)}<div class="mut" style="font-size:11.5px">ainda não está no banco</div></td><td class="r"><button class="btn sm" data-act="obra-imp" data-cod="${c}" ${podeImp?'':'disabled title="Só Gestão ou Diretoria"'}>Importar</button></td></tr>`).join('')}</tbody></table></div>
    <div class="acts"><button class="btn" data-act="fechar">Fechar</button></div>`)}
 async function abrirObra(cod){closeModal();guardaObra(cod);
-  if(MODO_SB){const o=SB.obras.find(x=>x.codigo===cod);if(!o)return toast('Obra não encontrada');S.tab={};S.view='hoje';await sbCarregar(o);return}
+  if(MODO_SB){const o=SB.obras.find(x=>x.codigo===cod);if(!o)return toast('Obra não encontrada');S.tab={};S.view='dash';await sbCarregar(o);return}
   await abreDemo(cod)}
 async function importarObraBanco(cod){if(!MODO_SB)return;toast('Importando obra '+cod+'…');
   try{const d=await obraData(cod);const r=await SB.c.rpc('importar_obra',{p:d});if(r.error)return toast('Erro: '+r.error.message);

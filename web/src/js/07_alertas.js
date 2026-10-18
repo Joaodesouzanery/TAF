@@ -21,6 +21,13 @@ function alertas(X){
   a.push(['warn',`${X.aCotar.length} itens sem cotação`,`${brl(X.aCotar.reduce((s,i)=>s+i.meta_total,0),true)} do custo-meta é estimativa.`]);
   a.push(['warn',`${X.semFolga.length} itens com meta acima do teto`,'Sem folga: qualquer compra neles fica vermelha.']);
   if(S.D.relatorio?.aviso)a.push(['info','Versão da META a confirmar',S.D.relatorio.aviso]);
+  if(typeof sstVenc==='function'){sstVenc(30).forEach(x=>a.push([x.validade<hojeISO()?'bad':'warn','SST '+x.tipo+' '+(x.validade<hojeISO()?'vencido':'vence em 30 dias'),((colPorId(x.col)||{}).nome||'?')+' · '+fdata(x.validade)]));
+    S.t.ctrs.forEach(c=>ctrAvisos(c).filter(v=>v[0]!=='info').forEach(v=>a.push([v[0],'Contrato '+c.num+': '+v[1],c.parte])));
+    S.t.pats.filter(b=>!b.baixa&&b.seguro&&b.seguro.venc<=addDias(hojeISO(),30)).forEach(b=>a.push(['warn','Seguro do bem '+b.cod+' vence em '+fdata(b.seguro.venc),b.desc]));
+    S.t.frts.forEach(v=>{const p=prevVencida(v);if(p)a.push(['bad','Preventiva vencida: '+v.cod,p])});
+    S.t.ctrs.forEach(c=>(c.bms||[]).filter(b=>b.status==='lancado').forEach(b=>a.push(['warn','Medição de subempreiteiro a aprovar',c.num+' · BM '+b.n+' · '+brl(b.valor)])));
+    if(invAb())a.push(['info','Inventário aberto desde '+fdata(invAb().data),'Conte e feche para gerar os ajustes.']);
+    {const ant=addMes(mesDe(hojeISO()),-1);if(!S.t.fechs.some(f=>f.comp===ant&&!f.reaberta)&&partidasTodas().some(e=>e.comp===ant))a.push(['info','Competência '+ant+' ainda aberta','Feche em Contabilidade → Fechamento depois da conferência.'])}}
   return a;
 }
 

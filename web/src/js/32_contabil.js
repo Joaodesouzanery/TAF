@@ -48,7 +48,7 @@ function ctbNovo(est){const contas=planoCtb(),opt=sel=>contas.map(c=>`<option va
   <div class="acts"><button class="btn" data-act="fechar">Cancelar</button><button class="btn dark" data-act="ctb-ok">Lançar</button></div>`)}
 ACOES['ctb-novo']=()=>{if(!can('ctb'))return toast('Sem permissão');ctbNovo()};
 ACOES['ctb-ok']=()=>{const d=$('#cb-d').value,v=r2($('#cb-v').value),dc=$('#cb-dc').value,cc=$('#cb-cc').value,t=$('#cb-t').value.trim(),m=$('#cb-m').value.trim(),aj=$('#cb-aj').checked;
-  if(!d||!(v>0)||!t)return toast('Informe data, valor e descrição');if(dc===cc)return toast('Débito e crédito não podem ser a mesma conta');if(aj&&!m)return toast('Ajuste exige motivo');if(bloqueada(d,'lançamento'))return;
+  if(!d||!(v>0)||!t)return toast('Informe data, valor e descrição');if(dc===cc)return toast('Débito e crédito não podem ser a mesma conta');if(aj&&!m)return toast('Ajuste exige motivo');if(bloqueada(d,'lançamento'))return;if(aj&&!alcadaOk('ajuste_ctb',v))return;
   const e={id:'cx'+Date.now(),ref:'man:'+Date.now(),origem:aj?'Ajuste':'Manual',data:d,comp:mesDe(d),desc:t,motivo:m,ajuste:aj,linhas:[{conta:dc,d:v,c:0},{conta:cc,d:0,c:v}],quem:user()};
   S.t.ctbs.push(e);log('contabil',e.ref,aj?'ajuste':'lançamento','',brl(v)+' · '+dc+' / '+cc+(m?' · '+m:''));save();closeModal();toast('Lançado');render()};
 ACOES['ctb-est']=el=>{if(!can('ctb'))return toast('Sem permissão');const o=S.t.ctbs.find(x=>x.id===el.dataset.id);if(!o||o.estornado)return;

@@ -6,7 +6,7 @@ const {chromium}=require('playwright');
  const p=await b.newPage({viewport:{width:1400,height:1000}});const errs=[];p.on('pageerror',e=>errs.push(e.message));
  p.on('dialog',d=>d.accept());
  await p.goto('file:///home/user/TAF/dist/tafadmin.html?demo=1');await p.waitForSelector('.big');
- ok('abre direto, sem tela de login',!(await p.isVisible('#login.open'))&&(await p.innerText('body')).includes('Bom dia, Administrador!'));
+ ok('abre direto, sem tela de login',!(await p.isVisible('#login.open'))&&(await p.innerText('body')).includes('Dashboard'));
  const role=r=>p.selectOption('#role',r),nav=v=>p.evaluate(v=>{S.view=v;render()},v),T=async s=>(await p.innerText('body')).toLowerCase().includes(s.toLowerCase());
  const it=await p.evaluate(()=>{const i=S.D.items.find(i=>i.qtd>=10&&i.preco_venda_total>1000);return {c:i.codigo,pu:i.preco_venda_total/i.qtd}});
  // medição 10 un, atestada
