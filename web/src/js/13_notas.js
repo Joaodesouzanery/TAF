@@ -43,7 +43,7 @@ function fechaBar(){const soma=r2(NF.rateio.reduce((s,l)=>s+(+l.valor||0),0)),v=
 function doNF(modo){
   const ex=S.t.notas.find(n=>n.id===NF.id);
   NF.emitente=ex?ex.emitente:$('#n-e').value.trim();NF.valor=ex?ex.valor:r2($('#n-v').value);NF.chave=ex?ex.chave:$('#n-c').value.trim();NF.emissao=ex?ex.emissao:$('#n-d').value;NF.oc=ex?ex.oc:$('#n-o').value;
-  if(!NF.emitente||!(NF.valor>0))return toast('Informe emitente e valor');
+  if(!NF.emitente||!(NF.valor>0))return toast('Informe emitente e valor');if(bloqueada(NF.emissao||hojeISO(),'lançamento de nota'))return;
   if(!ex&&/^\d{44}$/.test(NF.chave)&&S.t.notas.some(n=>n.chave===NF.chave))return toast('Esta chave de acesso já foi lançada');
   if(!NF.oc){const j=$('#n-j').value.trim();if(!j)return toast('Nota sem pedido: justifique');NF.justSemOC=j}
   const lin=NF.rateio.filter(l=>+l.valor>0);
@@ -66,5 +66,5 @@ function conferir(id){
 function liberar(id){const n=S.t.notas.find(x=>x.id===id);
   if(n.oc){const o=S.t.ocs.find(x=>x.id===n.oc);if(!(o.recebido>0))return toast('Pagamento só com recebimento confirmado (E19)')}
   n.status='liberada';log('nota_fiscal',n.num,'status','conferida','liberada');save();toast('Liberada para pagamento');render()}
-function pagar(id){const n=S.t.notas.find(x=>x.id===id);n.status='paga';n.pago=hojeISO();log('nota_fiscal',n.num,'status','liberada','paga');save();toast('Pago');render()}
+function pagar(id){const n=S.t.notas.find(x=>x.id===id);if(bloqueada(hojeISO(),'pagamento'))return;n.status='paga';n.pago=hojeISO();log('nota_fiscal',n.num,'status','liberada','paga');save();toast('Pago');render()}
 

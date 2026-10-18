@@ -58,6 +58,24 @@ const {chromium}=require('playwright');
  ok('cobrança lista NF vencida com etapa',await T('FT-1')&&await T('Jurídico'));
  await p.click('[data-act=cobr-reg]');ok('contato fica registrado',await p.evaluate(()=>S.t.cobrs.length===1));
  ok('cobrança entra no atrasado a receber do painel',await p.evaluate(()=>painelCalc().atrRec===1000));
+
+ // ---- fechamento da fase 13: drill-down, parcelas, renegociação, agrupamento, carteira ----
+ await p.evaluate(()=>{S.view='pain';S.tab.pain='contrato';render()});
+ ok('drill-down: soma das linhas = bloco, para todos os blocos',await p.evaluate(()=>{const c=painelCalc(),m={fat:'fat',recebido:'recebido',aReceber:'aReceber',atrRec:'atrRec',gasto:'gasto',pago:'pago',aPagar:'aPagar',atrasado:'atrasado',requisicao:'requisicao',custoFixo:'custoFixo',prov:'prov'};
+  return Object.entries(m).every(([k,f])=>Math.abs(painelLinhas(k).reduce((s,x)=>s+x.valor,0)-c[f])<0.01)}));
+ await p.click('.pk[data-k=gasto]');ok('clique abre a composição do gasto',await T('Composição'));await p.click('[data-act=fechar]');
+ ok('carteira lista as 3 obras',await T('Carteira de obras')&&await T('343')&&await T('281'));
+ await p.evaluate(()=>{S.t.titulos.push({id:'tP',oc:'ocP',ocNum:'OC-P',forn:'Forn P',valor:1000,venc:'2999-01-31'},{id:'tQ',oc:'ocQ',ocNum:'OC-Q',forn:'Forn P',valor:500,venc:'2999-02-15'},{id:'tR',oc:'ocR',ocNum:'OC-R',forn:'Forn R',valor:100,venc:'2999-02-15'});S.view='fin';S.tab.fin='tit';render()});
+ await p.click('[data-act=tit-parc][data-id=tP]');await p.fill('#pa-n','3');await p.click('[data-act=tit-parc-ok]');
+ ok('parcelas somam o título (333,33+333,33+333,34)',await p.evaluate(()=>{const t=S.t.titulos.find(x=>x.id==='tP');return t.parcelas.length===3&&r2(t.parcelas.reduce((s,q)=>s+q.valor,0))===1000&&t.parcelas[2].valor===333.34}));
+ await p.click('[data-act=tit-reneg][data-id=tQ]');await p.fill('#rn-v','450');await p.fill('#rn-d','2999-03-01');
+ await p.click('[data-act=tit-reneg-ok]');ok('renegociação exige motivo',await p.evaluate(()=>S.t.titulos.find(x=>x.id==='tQ').valor===500));
+ await p.fill('#rn-m','acordo');await p.click('[data-act=tit-reneg-ok]');
+ ok('renegociação registra histórico e auditoria',await p.evaluate(()=>{const t=S.t.titulos.find(x=>x.id==='tQ');return t.valor===450&&t.hist.length===1&&t.hist[0].valorAntes===500&&S.t.aud.some(a=>a.campo==='renegociado')}));
+ await p.evaluate(()=>{document.querySelectorAll('.tg').forEach(e=>{if(['tP','tR'].includes(e.value))e.checked=true})});await p.click('[data-act=tit-agrup]');
+ ok('agrupar fornecedores diferentes é recusado',await p.evaluate(()=>!S.t.titulos.some(t=>t.agrupaDe)));
+ await p.evaluate(()=>{document.querySelectorAll('.tg').forEach(e=>{e.checked=['tP','tQ'].includes(e.value)})});await p.click('[data-act=tit-agrup]');
+ ok('agrupa do mesmo fornecedor: novo título = soma, originais cancelados',await p.evaluate(()=>{const g=S.t.titulos.find(t=>t.agrupaDe);return g&&g.valor===1450&&S.t.titulos.find(x=>x.id==='tP').cancelado&&S.t.titulos.find(x=>x.id==='tQ').cancelado}));
  // visual: sem overflow horizontal
  for(const w of [1400,400]){await p.setViewportSize({width:w,height:900});await p.evaluate(()=>{S.tab.pain='contrato';render()});
   ok('sem overflow horizontal a '+w+'px',await p.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1));}

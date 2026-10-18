@@ -31,7 +31,7 @@ const PAINEL_DICA={contrato:'Valor do contrato da obra.',fat:'Soma das NFs de se
  gasto:'Pago + a pagar + atrasado: notas rateadas/conferidas/pagas e lançamentos importados do tipo gasto. Atrasado = vencimento no passado e sem pagamento.',
  requisicao:'Solicitações de compra ainda sem pedido aprovado (preço × quantidade).',custoFixo:'Natureza indireta (ADM) rateada nas notas + lançamentos de custo fixo importados.',
  prov:'Comprometido: pedidos aprovados ainda sem nota + provisões importadas.',saldoFat:'Contrato − faturado.',lucro:'Contrato líquido de tributos − (gasto + custo fixo + provisão). É projeção; o realizado aparece ao lado.',impDeb:'Estimativa: faturado × tributos sobre a nota do contrato. Apuração completa na Fase 14.'};
-const kv=(l,v,o={})=>`<div class="pk ${o.cls||''}" ${o.tip?`title="${esc(o.tip)}"`:''}><div class="k-l">${l}</div><div class="v ${o.neg&&v<0?'neg':''}">${brl(v)}</div>${o.sub?`<div class="mut" style="font-size:11.5px">${o.sub}</div>`:''}</div>`;
+const kv=(l,v,o={})=>`<div class="pk ${o.cls||''} ${o.k?'clk':''}" ${o.k?`data-act="pc-det" data-k="${o.k}"`:''} ${o.tip?`title="${esc(o.tip)}"`:''}><div class="k-l">${l}</div><div class="v ${o.neg&&v<0?'neg':''}">${brl(v)}</div>${o.sub?`<div class="mut" style="font-size:11.5px">${o.sub}</div>`:''}</div>`;
 function svgBarrasContrato(c){
   const W=560,H=250,P=30,mx=Math.max(c.contrato,c.comprom,1)*1.08,y=v=>H-P-(v/mx)*(H-2*P),bw=70;
   const stack=[['Gasto',c.gasto,'var(--info)'],['Custo fixo',c.custoFixo,'var(--warn)'],['Provisão',c.prov,'var(--bad)']];
@@ -69,12 +69,12 @@ function painelContrato(X){
   return `<div class="sub" style="margin-top:6px">${esc(O.contratante)} · contrato ${esc(O.contrato)} · <b>${esc(O.codigo)}</b> ${esc(O.nome)}. Passe o mouse sobre um valor para ver como foi calculado.</div>
   <div class="pgrid">
    ${kv('Contrato',c.contrato,{...sf(0,'contrato'),cls:'big'})}
-   ${kv('Faturado',c.fat,{...sf(0,'fat'),sub:'anteriores '+brl(c.faturadoAnt)})}${kv('Recebido',c.recebido)}${kv('A receber',c.aReceber)}${kv('Atrasado (a receber)',c.atrRec,{neg:0,cls:c.atrRec>0?'bad':''})}
+   ${kv('Faturado',c.fat,{k:'fat',...sf(0,'fat'),sub:'anteriores '+brl(c.faturadoAnt)})}${kv('Recebido',c.recebido,{k:'recebido'})}${kv('A receber',c.aReceber,{k:'aReceber'})}${kv('Atrasado (a receber)',c.atrRec,{k:'atrRec',neg:0,cls:c.atrRec>0?'bad':''})}
    ${kv('Fat. direto',c.fatDireto,{tip:'Faturamento direto: pago pelo cliente ao fornecedor (marque na NF).'})}
    ${kv('Impostos (débito)',c.impDeb,{...sf(0,'impDeb')})}${kv('Impostos (crédito)',c.impCred,{tip:'Créditos de impostos entram na apuração da Fase 14.'})}
-   ${kv('Gasto',c.gasto,{...sf(0,'gasto'),cls:'big'})}${kv('Gasto pago',c.pago)}${kv('Gasto a pagar',c.aPagar)}${kv('Gasto atrasado',c.atrasado,{cls:c.atrasado>0?'bad':''})}${kv('Requisição',c.requisicao,{...sf(0,'requisicao')})}
-   ${kv('Custo fixo',c.custoFixo,{...sf(0,'custoFixo'),sub:(c.pctCF*100).toFixed(2).replace('.',',')+' % do contrato · previsto '+brl(c.cfPrev)})}
-   ${kv('Prov. gasto',c.prov,{...sf(0,'prov')})}${kv('Saldo a faturar',c.saldoFat,{...sf(0,'saldoFat')})}
+   ${kv('Gasto',c.gasto,{k:'gasto',...sf(0,'gasto'),cls:'big'})}${kv('Gasto pago',c.pago,{k:'pago'})}${kv('Gasto a pagar',c.aPagar,{k:'aPagar'})}${kv('Gasto atrasado',c.atrasado,{k:'atrasado',cls:c.atrasado>0?'bad':''})}${kv('Requisição',c.requisicao,{k:'requisicao',...sf(0,'requisicao')})}
+   ${kv('Custo fixo',c.custoFixo,{k:'custoFixo',...sf(0,'custoFixo'),sub:(c.pctCF*100).toFixed(2).replace('.',',')+' % do contrato · previsto '+brl(c.cfPrev)})}
+   ${kv('Prov. gasto',c.prov,{k:'prov',...sf(0,'prov')})}${kv('Saldo a faturar',c.saldoFat,{...sf(0,'saldoFat')})}
    ${kv('Lucro (projetado)',c.lucro,{...sf(0,'lucro'),neg:1,cls:'big '+(c.lucro<0?'bad':''),sub:(c.pctLucro*100).toFixed(2).replace('.',',')+' % · realizado '+brl(c.lucroReal)})}
   </div>
   <div class="cols" style="margin-top:14px"><div class="card"><div class="in"><div class="panel-t">Contrato × custos × lucro</div>${svgBarrasContrato(c)}</div></div>
@@ -88,6 +88,7 @@ function painelContrato(X){
   <div class="cols" style="margin-top:14px"><div class="card"><div class="in"><div class="panel-t">Maiores desvios (acima da meta)</div>${desv.length?`<table class="tbl"><tbody>${desv.map(x=>`<tr class="clk" data-item="${x.i.codigo}"><td class="mono">${x.i.codigo}</td><td>${esc(x.i.descricao.slice(0,50))}</td><td class="r neg">+${brl(x.v)}</td></tr>`).join('')}</tbody></table>`:'<div class="sub">Nenhum item acima da meta.</div>'}</div></div>
    <div class="card"><div class="in"><div class="panel-t">Custo por natureza (meta × usado)</div><table class="tbl"><tbody>${Object.entries(nat).map(([k,v])=>`<tr><td>${NATNOME[k]||k}</td><td class="r">${brl(v.real,true)} / ${brl(v.meta,true)}</td><td style="width:90px">${bar(v.real,v.meta)}</td></tr>`).join('')}</tbody></table></div></div></div>
   <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn" data-act="pc-csv">Copiar números (CSV)</button><button class="btn" data-act="pc-conf">Conferir com o Sankhya</button></div>
+  ${carteiraView()}
   <div class="sub" style="margin-top:8px">Sem dados do Sankhya, a obra ${esc(O.codigo)} só mostra o que foi lançado aqui. Para trazer o histórico financeiro de lá, use a aba <b>Importar</b> (CSV).</div>`}
 ACOES['pc-csv']=()=>{const c=painelCalc(),t='indicador;valor\n'+Object.entries({contrato:c.contrato,faturado:c.fat,recebido:c.recebido,a_receber:c.aReceber,atrasado_receber:c.atrRec,fat_direto:c.fatDireto,impostos_debito:c.impDeb,gasto:c.gasto,gasto_pago:c.pago,gasto_a_pagar:c.aPagar,gasto_atrasado:c.atrasado,requisicao:c.requisicao,custo_fixo:c.custoFixo,prov_gasto:c.prov,saldo_a_faturar:c.saldoFat,lucro:c.lucro}).map(([k,v])=>k+';'+String(v).replace('.',',')).join('\n');
   try{navigator.clipboard.writeText(t).then(()=>toast('Copiado'),()=>toast('Não consegui copiar'))}catch(e){toast('Não consegui copiar')}};
@@ -133,3 +134,34 @@ function impView(){const L=S.t.lfxs;
   <div style="margin-top:8px;display:flex;gap:8px"><button class="btn dark" data-act="lf-imp" ${can('lan')?'':'disabled title="Só Financeiro"'}>Importar</button><button class="btn" data-act="lf-undo" ${can('lan')&&L.length?'':'disabled'}>Desfazer último lote</button></div>
   ${(S.lfxErros||[]).length?`<div class="err" style="margin-top:8px">${S.lfxErros.slice(0,5).map(esc).join('<br>')}</div>`:''}
   ${L.length?`<div class="tw"><table class="tbl"><thead><tr><th>Tipo</th><th>Nº</th><th>Fornecedor</th><th>Vencimento</th><th class="r">Valor</th><th>Situação</th></tr></thead><tbody>${L.slice(-30).map(l=>`<tr><td>${l.tipo}${l.fatDireto?' · fat. direto':''}</td><td class="mono">${esc(l.numero)}</td><td>${esc(l.forn)}</td><td>${fdata(l.venc)}</td><td class="r">${brl(l.valor)}</td><td>${l.tipo==='gasto'?(l.pago?'pago '+fdata(l.pago):l.venc<hojeISO()?'<span class="neg">atrasado</span>':'a pagar'):'—'}</td></tr>`).join('')}</tbody></table></div>`:''}`}
+
+/* ---------- drill-down: lista que compõe cada número ---------- */
+function painelLinhas(k){const T=S.t,h=hojeISO(),R=[],add=(ref,desc,valor,data)=>R.push({ref,desc,valor:r2(valor),data});
+  const nt=T.notas.filter(n=>n.status!=='lancada'),lg=lfxDe('gasto');
+  const nota=n=>add(n.num,n.emitente+(n.status==='paga'?' · paga':''),n.valor,n.status==='paga'?n.pago:vencNota(n)),lf=l=>add('Sankhya '+(l.numero||''),l.forn+' · '+l.desc,l.valor,l.pago||l.venc);
+  if(k==='fat')T.fats.forEach(f=>add(f.num,f.bcNum,f.valor,f.emissao));
+  if(k==='recebido')T.recs.forEach(r=>add(r.id,'Recebimento',r.valor,r.data));
+  if(k==='aReceber')T.fats.filter(f=>fatSaldo(f)>0).forEach(f=>add(f.num,'saldo a receber',fatSaldo(f),f.venc));
+  if(k==='atrRec')T.fats.filter(f=>fatSaldo(f)>0&&f.venc<h).forEach(f=>add(f.num,'vencida',fatSaldo(f),f.venc));
+  if(k==='pago'){nt.filter(n=>n.status==='paga').forEach(nota);lg.filter(l=>l.pago).forEach(lf)}
+  if(k==='atrasado'){nt.filter(n=>n.status!=='paga'&&vencNota(n)<h).forEach(nota);lg.filter(l=>!l.pago&&l.venc<h).forEach(lf)}
+  if(k==='aPagar'){nt.filter(n=>n.status!=='paga'&&vencNota(n)>=h).forEach(nota);lg.filter(l=>!l.pago&&l.venc>=h).forEach(lf)}
+  if(k==='gasto'){nt.forEach(nota);lg.forEach(lf)}
+  if(k==='requisicao')T.sols.filter(s=>['enviada','em_cotacao','cotada'].includes(s.status)).forEach(s=>add(s.num,s.desc,s.qtd*s.preco,s.data));
+  if(k==='custoFixo'){nt.forEach(n=>{const v=n.rateio.filter(l=>l.nat==='ADM').reduce((a,l)=>a+ +l.valor,0);if(v)add(n.num,n.emitente+' (rateio ADM)',v,n.emissao)});lfxDe('custo_fixo').forEach(lf)}
+  if(k==='prov'){T.ocs.filter(o=>['aprovada','recebida_parcial','recebida'].includes(o.status)).forEach(o=>{const f=T.notas.filter(n=>n.oc===o.id&&n.status!=='lancada').reduce((s,n)=>s+n.rateio.filter(l=>l.item===o.item).reduce((a,l)=>a+ +l.valor,0),0),v=Math.max(0,o.valor-f);if(v)add(o.num,o.forn+' · pedido sem nota',v,o.data)});lfxDe('provisao').forEach(lf)}
+  return R}
+ACOES['pc-det']=el=>{const k=el.dataset.k,R=painelLinhas(k),tot=r2(R.reduce((s,x)=>s+x.valor,0));
+  modal(`<h3>Composição · ${esc(k)}</h3><div class="sub">${R.length} registros · total ${brl(tot)}</div>${R.length?`<div class="tw"><table class="tbl"><tbody>${R.map(x=>`<tr><td class="mono">${esc(x.ref)}</td><td>${esc(x.desc)}</td><td>${fdata(x.data)}</td><td class="r">${brl(x.valor)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">Nada compõe este número.</div>'}<div class="acts"><button class="btn" data-act="fechar">Fechar</button></div>`)};
+
+/* ---------- comparativo da carteira (342, 343, 281) ---------- */
+S.cart=S.cart||{};
+async function cartCarrega(){for(const [cod] of OBRAS_PADRAO){if(S.cart[cod])continue;try{const d=await obraData(cod);S.cart[cod]={contrato:d.obra.valor_contrato,trib:d.obra.tributos_nota,nome:d.obra.contratante+' · '+d.obra.nome}}catch(e){S.cart[cod]={contrato:0,trib:0,nome:cod}}}render()}
+function cartLinha(cod){const c=S.cart[cod];if(!c)return null;const atual=S.D.obra.codigo===cod;let t=null;
+  if(atual)t=S.t;else if(!MODO_SB)try{t=JSON.parse(localStorage.getItem(cod==='342'?KEY:KEY+'_'+cod)||'null')}catch(e){}
+  if(!t)return {cod,...c,sem:true};
+  const nt=(t.notas||[]).filter(n=>n.status!=='lancada'),gasto=r2(nt.reduce((s,n)=>s+n.valor,0)+(t.lfxs||[]).filter(l=>l.tipo==='gasto').reduce((s,l)=>s+l.valor,0)),fat=r2((t.fats||[]).reduce((s,f)=>s+f.valor,0));
+  const prov=r2((t.lfxs||[]).filter(l=>l.tipo==='provisao'||l.tipo==='custo_fixo').reduce((s,l)=>s+l.valor,0));
+  return {cod,...c,gasto,fat,lucro:r2(c.contrato*(1-c.trib)-gasto-prov)}}
+function carteiraView(){const L=OBRAS_PADRAO.map(([c])=>cartLinha(c));if(L.some(x=>!x))setTimeout(cartCarrega,0);
+  return `<div class="panel-t" style="margin-top:16px">Carteira de obras</div><div class="tw"><table class="tbl"><thead><tr><th>Obra</th><th class="r">Contrato</th><th class="r">Faturado</th><th class="r">Gasto</th><th class="r">Lucro (proj.)</th></tr></thead><tbody>${L.map((x,k)=>x?`<tr><td><b>${x.cod}</b> ${esc(x.nome)}</td><td class="r">${brl(x.contrato)}</td><td class="r">${x.sem?'—':brl(x.fat)}</td><td class="r">${x.sem?'—':brl(x.gasto)}</td><td class="r ${x.lucro<0?'neg':''}">${x.sem?'<span class="mut">abra a obra</span>':brl(x.lucro)}</td></tr>`:`<tr><td colspan="5">${OBRAS_PADRAO[k][0]} carregando…</td></tr>`).join('')}</tbody></table></div>`}

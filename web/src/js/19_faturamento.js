@@ -26,7 +26,7 @@ function caixa(){
   const put=(m,k,v)=>{if(L[m])L[m][k]+=v};
   S.t.fats.forEach(f=>{put(mesDe(f.venc),'entP',fatSaldo(f))});
   S.t.recs.forEach(r=>put(mesDe(r.data),'entR',r.valor));
-  S.t.titulos.filter(t=>!t.cancelado).forEach(t=>{const i=tituloInfo(t);put(mesDe(t.venc),'saiP',i.saldo)});
+  S.t.titulos.filter(t=>!t.cancelado).forEach(t=>{const i=tituloInfo(t);if(t.parcelas&&t.parcelas.length){let pg=i.pago;t.parcelas.forEach(q=>{const u=Math.min(pg,q.valor);pg=r2(pg-u);put(mesDe(q.venc),'saiP',r2(q.valor-u))})}else put(mesDe(t.venc),'saiP',i.saldo)});
   S.t.notas.filter(n=>n.status==='paga').forEach(n=>put(mesDe(n.pago),'saiR',n.valor));
   S.t.lans.forEach(l=>put(mesDe(l.data),'man',l.valor));
   let acc=0,minAcc=0;
@@ -73,19 +73,19 @@ function bcAprModal(id){const b=S.t.bcs.find(x=>x.id===id);
    <div class="acts"><button class="btn" data-act="fechar">Cancelar</button><button class="btn dark" data-act="bc-apr-ok" data-id="${id}">Registrar</button></div>`)}
 function bcAprOk(id){const b=S.t.bcs.find(x=>x.id===id),v=+$('#b-ap').value;if(!(v>0))return toast('Informe o valor aprovado');if(v>bcTotal(b)+0.005)return toast('Aprovado acima do medido');
   b.valorAprovado=r2(v);b.status='aprovado';log('boletim',b.num,'aprovado',brl(bcTotal(b)),brl(v));save();closeModal();render()}
-function bcFat(id){const b=S.t.bcs.find(x=>x.id===id);if(b.status!=='aprovado'||S.t.fats.some(f=>f.bc===id))return toast('Já faturado');
+function bcFat(id){const b=S.t.bcs.find(x=>x.id===id);if(bloqueada(hojeISO(),'faturamento'))return;if(b.status!=='aprovado'||S.t.fats.some(f=>f.bc===id))return toast('Já faturado');
   const par=S.t.par,emi=hojeISO(),f={id:'ft'+Date.now(),num:nextNum('fat'),bc:id,bcNum:b.num,valor:bcAprov(b),ret:par.ret||0,emissao:emi,venc:addDias(emi,par.prazoRec||30),quem:user()};
   S.t.fats.unshift(f);b.status='faturado';log('nf_servico',f.num,'emitida','',brl(f.valor));save();S.tab.fat='nf';toast(f.num+' emitida');render()}
 function modalRec(id){const f=S.t.fats.find(x=>x.id===id);
   modal(`<h3>Recebimento · ${f.num}</h3><div class="sub">Saldo a receber: <b>${brl(fatSaldo(f))}</b> (líquido de retenção de ${f.ret||0}%).</div><div class="g2"><div><label>Data</label><input id="rc-d" type="date" value="${hojeISO()}"></div><div><label>Valor (R$)</label><input id="rc-v" type="number" step="any" value="${fatSaldo(f)}"></div></div>
    <div class="acts"><button class="btn" data-act="fechar">Cancelar</button><button class="btn dark" data-act="rec-ok" data-id="${id}">Registrar</button></div>`)}
-function doRec(id){const f=S.t.fats.find(x=>x.id===id),v=+$('#rc-v').value;if(!(v>0))return toast('Informe o valor');if(v>fatSaldo(f)+0.005)return toast('Acima do saldo da NF');
+function doRec(id){const f=S.t.fats.find(x=>x.id===id),v=+$('#rc-v').value;if(!(v>0))return toast('Informe o valor');if(v>fatSaldo(f)+0.005)return toast('Acima do saldo da NF');if(bloqueada($('#rc-d').value||hojeISO(),'recebimento'))return;
   S.t.recs.unshift({id:'rc'+Date.now(),fat:id,data:$('#rc-d').value||hojeISO(),valor:r2(v),quem:user()});log('nf_servico',f.num,'recebido','',brl(v));save();closeModal();toast('Recebimento registrado');render()}
 function concEnt(){const linhas=($('#ofx-e').value||'').split('\n').map(l=>l.trim()).filter(Boolean);let ok=0,sem=0;
   linhas.forEach(l=>{const c=l.split(';'),v=parseFloat((c[2]||'').replace(/\./g,'').replace(',','.'));if(!(v>0))return sem++;const r=S.t.recs.find(r=>!r.conc&&Math.abs(r.valor-v)<.005);if(!r)return sem++;r.conc=hojeISO();ok++});
   S.msgConcE=`${ok} conciliado(s)${sem?` · ${sem} sem correspondência`:''}`;save();render()}
 function modalLan(){modal(`<h3>Lançamento manual de caixa</h3><div class="sub">Para o que não passa por compra nem faturamento (impostos, financeiro). Negativo = saída.</div><div class="g3"><div><label>Data</label><input id="l-d" type="date" value="${hojeISO()}"></div><div><label>Valor (R$)</label><input id="l-v" type="number" step="any"></div><div><label>Descrição</label><input id="l-t"></div></div>
    <div class="acts"><button class="btn" data-act="fechar">Cancelar</button><button class="btn dark" data-act="lan-ok">Lançar</button></div>`)}
-function doLan(){const v=+$('#l-v').value,t=$('#l-t').value.trim();if(!v||!t)return toast('Informe valor e descrição');const l={id:'ln'+Date.now(),data:$('#l-d').value||hojeISO(),valor:r2(v),desc:t,quem:user()};
+function doLan(){const v=+$('#l-v').value,t=$('#l-t').value.trim();if(!v||!t)return toast('Informe valor e descrição');if(bloqueada($('#l-d').value||hojeISO(),'lançamento de caixa'))return;const l={id:'ln'+Date.now(),data:$('#l-d').value||hojeISO(),valor:r2(v),desc:t,quem:user()};
   S.t.lans.unshift(l);log('caixa',t,'lançamento','',brl(v));save();closeModal();S.tab.fat='caixa';render()}
 
