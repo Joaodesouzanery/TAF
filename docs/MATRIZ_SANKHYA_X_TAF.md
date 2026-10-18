@@ -2,6 +2,8 @@
 
 Fonte: `fontes/Pesquisa_extensa_o_que_o_Sankhya_faz.md` (276 entradas com identificador). **Decisão do usuário (18/10/2026): não integrar com o Sankhya; criar as funções equivalentes dentro do TAF Obras.** O que exige certificado, banco, Sefaz ou lei fica como relatório/arquivo de apoio; o que é de outro ramo (varejo, agro, indústria, WMS, TMS, marketplaces) não será feito.
 
+**Status final (Fase 18):** as decisões "Fazer" e "Fazer simplificado" foram entregues nas fases indicadas, cada fase com testes automatizados do que foi construído (`scripts/e2e_fase*.js`, `supabase/tests/*.sql`); a matriz não é um teste item a item do inventário. As decisões "Não fazer" estão justificadas na coluna Observação (serviço de terceiro, base licenciada ou fora do escopo de obra).
+
 Resumo: **63 fazer**, **26 fazer simplificado**, **187 não fazer**, 0 sem decisão.
 
 Fase: números do plano (12 base e cadastros, 13 financeiro, 14 contábil/fiscal, 15 suprimentos e estoque, 16 contratos/projetos/patrimônio/frota, 17 pessoas, gestão e administração); número isolado menor que 12 indica fase já entregue.

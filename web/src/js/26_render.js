@@ -1,5 +1,6 @@
 /* ============ render / eventos ============ */
-function render(){
+function render(){S.memo={};try{renderCore()}finally{S.memo=null}if(typeof a11yPass==='function')a11yPass()}
+function renderCore(){
   const X=derive();S.X=X;
   const AR=areaDe(S.view);
   $('#nav').innerHTML=areasVisiveis().map(a=>`<button class="${a.k===AR.k?'on':''}" data-v="${a.k===AR.k?S.view:a.tabs[0][0]}">${ico(a.i)}${a.n}${badgeArea(a,X)}</button>`).join('');

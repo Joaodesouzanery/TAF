@@ -2,7 +2,7 @@
 
 ## Onde está tudo
 - **GitHub (privado), branch `claude/obras-compras-management-e4nsfm`**: código, banco (migrações e testes), dados das obras 342/343/281, **planilhas-fonte** (`fontes/`), documentação. Conferido: o último commit local é igual ao do GitHub. A pasta do sandbox do Claude **não** é a sua pasta local; o que vale é o GitHub. Para ter na sua máquina: `git clone <url do repositório>` e `git checkout claude/obras-compras-management-e4nsfm`.
-- **Supabase** (projeto `TAF`, id `kefkgydvjjakqaonyjau`, us-east-1): banco com a obra 342 carregada e todas as migrações 0001–0012 aplicadas. Chave pública em `web/config.js`; **nunca** use a `service_role` no front.
+- **Supabase** (projeto `TAF`, id `kefkgydvjjakqaonyjau`, us-east-1): banco com a obra 342 carregada e todas as migrações 0001–0015 aplicadas. Chave pública em `web/config.js`; **nunca** use a `service_role` no front.
 - **Vercel**: serve a pasta `web/` (arquivo único `index.html`, gerado de `web/src/`).
 - Demonstração: https://claude.ai/artifact/AmUjKVFnEXoqfu2SPj2m9x (modo aberto, sem login).
 
@@ -25,3 +25,7 @@
 1. Clonar o repositório e rodar `bash scripts/qa.sh` (precisa de Postgres local e Playwright; opcional).
 2. Criar a conta de **administrador** no site (a primeira conta vira Admin) e **fechar o cadastro aberto** no Supabase (Authentication → Providers → desligar "Allow new users to sign up" depois de criar os usuários).
 3. Importar 343 e 281 pelo botão Obras.
+
+
+## Atualização (Fase 18)
+O sistema está completo até a Fase 18: Dashboard no Início, 8 áreas, manuais por papel (`docs/MANUAL_*.md` e botão Ajuda), QA com 17 conjuntos SQL e 14 e2e. Tag `rodada-1-fase-18`. Ao trazer para a Lovable, rode `bash scripts/qa.sh` (precisa de Postgres local e Playwright) ou apenas `node scripts/check_acoes.js` e `python3 scripts/verifica_342.py`.

@@ -2,16 +2,18 @@
 Object.assign(CAN,{estoque:['almox','adm','engenheiro'],inventario:['almox','adm','diretoria','gestao']});
 const insBy=cod=>S.t.inss.find(i=>i.cod===cod);
 const sinalMov=m=>m.tipo==='ent'?1:m.tipo==='ajuste'?(m.sinal||1):-1;
-const movOrd=()=>S.t.ests.map((m,k)=>({m,k})).sort((a,b)=>(a.m.data||'').localeCompare(b.m.data||'')||a.k-b.k).map(x=>x.m);
+const movOrd=()=>memo('mo',movOrdRaw);
+const movOrdRaw=()=>S.t.ests.map((m,k)=>({m,k})).sort((a,b)=>(a.m.data||'').localeCompare(b.m.data||'')||a.k-b.k).map(x=>x.m);
 /* kardex: custo médio ponderado móvel por insumo (todos os locais); saldo por local à parte */
 function kardex(ins,local){let q=0,cm=0;const R=[];
-  movOrd().filter(m=>m.ins===ins).forEach(m=>{const s=sinalMov(m);let cu=m.cu;
+  movsIns(ins).forEach(m=>{const s=sinalMov(m);let cu=m.cu;
     if(s>0&&m.tipo==='ent'){const tot=q*cm+m.qtd*m.cu;q=r2(q+m.qtd);cm=q>0?tot/q:m.cu}
     else if(s>0){cu=cm||m.cu||0;q=r2(q+m.qtd)}   /* ajuste positivo entra ao custo médio */
     else{cu=cm;q=r2(q-m.qtd)}
     if(!local||m.local===local)R.push({m,q,cm,cu})});return R}
-const cmIns=ins=>{let q=0,cm=0;movOrd().filter(m=>m.ins===ins).forEach(m=>{const s=sinalMov(m);if(s>0&&m.tipo==='ent'){const t=q*cm+m.qtd*m.cu;q=r2(q+m.qtd);cm=q>0?t/q:m.cu}else if(s>0)q=r2(q+m.qtd);else q=r2(q-m.qtd)});return cm};
-const saldoIns=(ins,local)=>r2(S.t.ests.filter(m=>m.ins===ins&&(!local||m.local===local)).reduce((s,m)=>s+sinalMov(m)*m.qtd,0));
+const cmIns=ins=>memo('cm'+ins,()=>{let q=0,cm=0;movsIns(ins).forEach(m=>{const s=sinalMov(m);if(s>0&&m.tipo==='ent'){const t=q*cm+m.qtd*m.cu;q=r2(q+m.qtd);cm=q>0?t/q:m.cu}else if(s>0)q=r2(q+m.qtd);else q=r2(q-m.qtd)});return cm});
+const movsIns=ins=>(memo('mi',()=>{const M=new Map();movOrd().forEach(x=>{if(!M.has(x.ins))M.set(x.ins,[]);M.get(x.ins).push(x)});return M})).get(ins)||[];
+const saldoIns=(ins,local)=>memo('sd'+ins+'|'+(local||''),()=>r2(movsIns(ins).filter(m=>!local||m.local===local).reduce((s,m)=>s+sinalMov(m)*m.qtd,0)));
 const locaisIns=ins=>[...new Set(S.t.ests.filter(m=>m.ins===ins).map(m=>m.local||'Almoxarifado'))];
 function novoMov(o){const m={id:'es'+Date.now()+Math.random().toString(36).slice(2,5),data:hojeISO(),local:'Almoxarifado',quem:user(),...o};S.t.ests.push(m);return m}
 /* entrada automática pelo recebimento da OC; unidade de compra convertida pelo fator */

@@ -3,6 +3,10 @@
 from pathlib import Path
 root = Path(__file__).resolve().parent.parent
 src = root / "web/src"
+# manuais em docs/MANUAL_*.md viram dados da Ajuda embutida (fonte única: os .md)
+import json
+man = {f.stem[7:]: f.read_text(encoding="utf-8") for f in sorted((root / "docs").glob("MANUAL_*.md"))}
+(src / "js/40_ajuda_dados.js").write_text("/* GERADO por scripts/build_web.py a partir de docs/MANUAL_*.md: não edite. */\nconst MANUAIS=" + json.dumps(man, ensure_ascii=False) + ";\n", encoding="utf-8")
 shell = (src / "shell.html").read_text(encoding="utf-8")
 css = (src / "style.css").read_text(encoding="utf-8").rstrip("\n")
 js = "\n".join(p.read_text(encoding="utf-8").rstrip("\n") for p in sorted((src / "js").glob("*.js")))

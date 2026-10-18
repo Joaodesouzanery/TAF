@@ -3,7 +3,8 @@
 const mesCorr=()=>mesDe(hojeISO());
 const lfxDe=tp=>S.t.lfxs.filter(l=>l.tipo===tp);
 function vencNota(n){const t=S.t.titulos.find(x=>x.oc&&x.oc===n.oc&&!x.cancelado);return t?t.venc:addDias(n.emissao||hojeISO(),30)}
-function painelCalc(){
+function painelCalc(){return memo('pc',painelCalcRaw)}
+function painelCalcRaw(){
   const T=S.t,h=hojeISO(),O=S.D.obra,X=S.X||derive(),contrato=O.valor_contrato||X.venda,trib=O.tributos_nota||0;
   const fats=T.fats,recs=T.recs,fat=r2(fats.reduce((s,f)=>s+f.valor,0));
   const faturadoAnt=r2(fats.filter(f=>mesDe(f.emissao)<mesCorr()).reduce((s,f)=>s+f.valor,0));

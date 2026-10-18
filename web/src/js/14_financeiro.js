@@ -1,7 +1,9 @@
 /* ============ CONTAS A PAGAR / CONCILIAÇÃO ============ */
 const addDias=(iso,n)=>{const d=new Date(iso+'T00:00:00');d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)};
 function criaTitulo(o){if(S.t.titulos.some(t=>t.oc===o.id))return;S.t.titulos.push({id:'t'+Date.now()+Math.random().toString(36).slice(2,5),oc:o.id,ocNum:o.num,forn:o.forn,valor:o.valor,venc:addDias(hojeISO(),30)});log('titulo_pagar',o.num,'criado','',brl(o.valor)+' · venc '+fdata(addDias(hojeISO(),30)))}
-function tituloInfo(t){const ocs=t.agrupaDe?t.agrupaDe.map(id=>(S.t.titulos.find(x=>x.id===id)||{}).oc):[t.oc],notas=S.t.notas.filter(n=>ocs.includes(n.oc)),pago=notas.filter(n=>['paga'].includes(n.status)).reduce((s,n)=>s+n.valor,0);
+const notasOc=()=>memo('no',()=>{const m={};S.t.notas.forEach(n=>(m[n.oc]=m[n.oc]||[]).push(n));return m});
+function tituloInfo(t){return memo('ti'+t.id,()=>tituloInfoRaw(t))}
+function tituloInfoRaw(t){const ocs=t.agrupaDe?t.agrupaDe.map(id=>(S.t.titulos.find(x=>x.id===id)||{}).oc):[t.oc],NO=notasOc(),notas=[...new Set(ocs.flatMap(o=>NO[o]||[]))],pago=notas.filter(n=>['paga'].includes(n.status)).reduce((s,n)=>s+n.valor,0);
   const nf=notas.reduce((s,n)=>s+n.valor,0);const st=t.cancelado?'cancelado':pago>=t.valor-.01?'pago':pago>0?'parcial':nf>0?'nota lançada':'previsto';return {notas,pago,nf,st,saldo:Math.max(0,t.valor-pago)}}
 function viewFin(X){
   const tab=S.tab.fin||'tit';const T=S.t.titulos;

@@ -14,3 +14,6 @@ const ICON={campo:'<path d="M3 21h18M5 21V10l7-6 7 6v11M10 21v-6h4v6"/>',lean:'<
  nota:'<path d="M7 3h8l4 4v14H7zM15 3v4h4M10 12h6M10 16h6"/>',pain:'<path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/>',fin:'<path d="M3 7h18v12H3zM3 11h18M7 15h3"/>',med:'<path d="M3 17l5-5 4 4 8-9"/>',plano:'<path d="M4 5h16M4 10h12M4 15h8M4 20h4"/>',aud:'<path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/>'};
 
 const ACOES={};/* ações registradas pelos módulos novos (Fase 13+) */
+
+/* memo por ciclo de render: dentro de render() repete o resultado de cálculos caros; fora dele sempre recalcula (testes e ações veem dados novos) */
+const memo=(k,f)=>{const M=typeof S!=='undefined'&&S&&S.memo;if(!M)return f();return k in M?M[k]:(M[k]=f())};

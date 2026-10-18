@@ -16,7 +16,8 @@ const devedora=c=>['A','D'].includes(ctbNat(c));
 const compFechada=d=>S.t.fechs.some(f=>f.comp===mesDe(d)&&!f.reaberta);
 const bloqueada=(d,oque)=>{if(compFechada(d)){toast('Competência '+mesDe(d)+' fechada: '+oque+' bloqueado. Só a Diretoria reabre.');return true}return false};
 /* partidas automáticas: calculadas dos registros operacionais, sempre consistentes (sem cópia para divergir) */
-function partidasAuto(){const T=S.t,E=[],f=fisc(),push=(ref,origem,data,desc,L)=>{const linhas=L.filter(l=>(l.d||0)>0||(l.c||0)>0).map(l=>({conta:l.conta,d:r2(l.d||0),c:r2(l.c||0)}));if(linhas.length)E.push({ref,origem,data,comp:mesDe(data),desc,linhas,auto:true})};
+function partidasAuto(){return memo('pa',partidasAutoRaw)}
+function partidasAutoRaw(){const T=S.t,E=[],f=fisc(),push=(ref,origem,data,desc,L)=>{const linhas=L.filter(l=>(l.d||0)>0||(l.c||0)>0).map(l=>({conta:l.conta,d:r2(l.d||0),c:r2(l.c||0)}));if(linhas.length)E.push({ref,origem,data,comp:mesDe(data),desc,linhas,auto:true})};
   T.notas.filter(n=>n.status!=='lancada').forEach(n=>{const rt=retencoesNota(n),porConta={};
     n.rateio.forEach(l=>{const g=l.conta||contaPadrao(l.nat,S.byCod[l.item]?.pacote),c=gerParaCtb(g);porConta[c]=(porConta[c]||0)+ +l.valor});
     push('nf:'+n.id,'Nota '+n.num,n.emissao,'Nota '+n.num+' · '+n.emitente,[...Object.entries(porConta).map(([c,v])=>({conta:c,d:v})),{conta:'2.1.01',c:n.valor}]);
@@ -30,8 +31,9 @@ function partidasAuto(){const T=S.t,E=[],f=fisc(),push=(ref,origem,data,desc,L)=
   T.recs.forEach(r=>push('rc:'+r.id,'Recebimento',r.data,'Recebimento '+(T.fats.find(x=>x.id===r.fat)||{}).num,[{conta:'1.1.01',d:r.valor},{conta:'1.1.02',c:r.valor}]));
   T.lans.forEach(l=>push('ln:'+l.id,'Caixa',l.data,l.desc,l.valor>=0?[{conta:'1.1.01',d:l.valor},{conta:'3.1.03',c:l.valor}]:[{conta:'5.9.09',d:-l.valor},{conta:'1.1.01',c:-l.valor}]));
   return E.concat(typeof partidasPatrimonio==='function'?partidasPatrimonio():[])}
-const partidasTodas=()=>[...partidasAuto(),...S.t.ctbs.map(e=>({...e,auto:false}))].filter(e=>e.data).sort((a,b)=>a.data.localeCompare(b.data)||String(a.ref).localeCompare(String(b.ref)));
-function balancete(comp){const E=partidasTodas().filter(e=>!comp||e.comp<=comp),m={};
+const partidasTodas=()=>memo('pt',()=>[...partidasAuto(),...S.t.ctbs.map(e=>({...e,auto:false}))].filter(e=>e.data).sort((a,b)=>a.data.localeCompare(b.data)||String(a.ref).localeCompare(String(b.ref))));
+function balancete(comp){return memo('bal'+(comp||''),()=>balanceteRaw(comp))}
+function balanceteRaw(comp){const E=partidasTodas().filter(e=>!comp||e.comp<=comp),m={};
   E.forEach(e=>e.linhas.forEach(l=>{const x=m[l.conta]=m[l.conta]||{conta:l.conta,d:0,c:0};x.d+=l.d;x.c+=l.c}));
   const L=Object.values(m).map(x=>({...x,d:r2(x.d),c:r2(x.c),saldo:r2(devedora(x.conta)?x.d-x.c:x.c-x.d)})).sort((a,b)=>cmpCod(a.conta,b.conta));
   return {L,D:r2(L.reduce((s,x)=>s+x.d,0)),C:r2(L.reduce((s,x)=>s+x.c,0))}}

@@ -21,7 +21,8 @@ function dre(){
   const real=realPorConta(),custoPorConta=Object.entries(real).sort(([a],[b])=>cmpCod(a,b));const custo=custoPorConta.reduce((s,[,v])=>s+v,0);
   return {bruto,reaj,glosa,aprov,ded,liq,custoPorConta,custo,resultado:r2(liq-custo),margem:liq>0?(liq-custo)/liq:null}}
 function proxMeses(n0,n1){const m0=mesDe(hojeISO());return Array.from({length:n1-n0+1},(_,k)=>addMes(m0,n0+k))}
-function caixa(){
+function caixa(){return memo('cx',caixaRaw)}
+function caixaRaw(){
   const meses=proxMeses(-2,6),L={};meses.forEach(m=>L[m]={entP:0,entR:0,saiP:0,saiR:0,man:0});
   const put=(m,k,v)=>{if(L[m])L[m][k]+=v};
   S.t.fats.forEach(f=>{put(mesDe(f.venc),'entP',fatSaldo(f))});

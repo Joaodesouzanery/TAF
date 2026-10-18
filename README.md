@@ -21,10 +21,15 @@ Especificação: *SaaS de Gestão de Obras TAF — Fluxo Completo do Sistema (re
 | 10 | **Importar XML de NF-e** (chave única, sugestão de OC), **fechamento mensal ao contador** (CSV), arquivo de apoio Sankhya; API do Sankhya e provedor de NF-e aguardam credenciais | feita (sem integrações externas) |
 | 11 | Alçadas por faixa de valor, atualizar metas pela planilha (nova versão da linha de base), apuração estimada de tributos, funções de NF-e automática e Sankhya (prontas para ligar, exigem login e credenciais) | feita |
 | 12 | Base do ERP: login por padrão, código modular, menu em 8 áreas, cadastros (fornecedores, insumos, bancos, empresa), numeração no servidor, várias obras (343 e 281 importadas) | feita |
-| 13–18 | Financeiro, contábil/fiscal, suprimentos e estoque, contratos/projetos/patrimônio/frota, pessoas/BI/administração (plano em `docs/PLANO_E_HISTORICO.md`) | em andamento |
+| 13 | **Painel de Contratos/Obra** (mesmos blocos do Sankhya), conferência com o Sankhya, importação de lançamentos, financeiro nativo (OFX, baixa múltipla, parcelas, renegociação, CNAB genérico, cobrança) | feita |
+| 14 | **Contabilidade**: partidas dobradas automáticas, Diário, Razão, Balancete, DRE/Balanço, orçamento por conta, fechamento de competência (também no banco), livros de apoio | feita |
+| 15 | **Suprimentos e estoque**: cotação colada, devolução, ocorrências, kardex, custo médio, inventário, transferência entre obras | feita |
+| 16 | **Contratos, projetos, patrimônio (depreciação no Diário) e frota** (custo/h alimenta o Campo) | feita |
+| 17 | **Dashboard/BI no Início**, Pessoas (ponto, RH, SST, custo), Administração (grupos, suplentes, alçadas por evento, backup, fluxos) | feita |
+| 18 | Fechamento: QA geral (telas × papéis × temas), desempenho, acessibilidade/contraste AA, manuais por papel + Ajuda no sistema, segurança e backup | feita |
 
 ## Supabase (projeto "TAF")
-Migrações em `supabase/migrations/` (0001–0009) já aplicadas no projeto. `web/config.js` aponta para ele com a chave **publishable** (pública; a segurança está no RLS). A biblioteca `supabase-js` está em `web/vendor/` (sem CDN).
+Migrações em `supabase/migrations/` (0001–0015) já aplicadas no projeto. `web/config.js` aponta para ele com a chave **publishable** (pública; a segurança está no RLS). A biblioteca `supabase-js` está em `web/vendor/` (sem CDN).
 
 **Primeiro acesso:** abra o app e *Criar conta*. **O primeiro cadastro vira Administrador** e os demais ficam "Aguardando liberação" até o admin atribuir o papel em *Usuários*. Faça isso logo após publicar e, depois, desative novos cadastros em Supabase › Authentication › Sign In / Providers (*Allow new users to sign up*) se quiser fechar o acesso. Se o Supabase exigir confirmação de e-mail, confirme pelo link recebido (ou desative *Confirm email* nas mesmas configurações).
 Depois do login, o admin clica em **Importar obra 342** (orçamento, pacotes, metas e plano de contas).

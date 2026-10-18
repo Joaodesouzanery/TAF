@@ -40,7 +40,8 @@ ACOES['pto-comp']=()=>{if(!can('ponto'))return toast('Sem permissão');modal(`<h
 ACOES['pto-comp-ok']=()=>{const c=$('#pc-c').value,h=+$('#pc-h').value,d=$('#pc-d').value;if(!(h>0))return toast('Informe as horas');if(h>bancoHoras(c)+1e-9)return toast('Maior que o saldo do banco de horas');
   S.t.ptos.push({id:'pt'+Date.now(),col:c,data:d,sit:'folga',hn:0,he:0,hc:h,item:'',quem:user()});log('ponto',colPorId(c).nome,'compensação','',num(h)+' h');save();closeModal();render()};
 const bancoHoras=id=>r2(S.t.ptos.filter(p=>p.col===id).reduce((s,p)=>s+(p.he||0)-(p.hc||0),0));
-function custoPessoal(t){const T=t||S.t;let tot=0;const porCol={},porFunc={},porItem={};(T.ptos||[]).forEach(p=>{const c=(T.cols||[]).find(x=>x.id===p.col);if(!c)return;const ch=colCusto(c),v=r2((p.hn||0)*ch+(p.he||0)*ch*fatorExtra());
+function custoPessoal(t){return t?custoPessoalRaw(t):memo('cp',()=>custoPessoalRaw())}
+function custoPessoalRaw(t){const T=t||S.t;let tot=0;const porCol={},porFunc={},porItem={};(T.ptos||[]).forEach(p=>{const c=(T.cols||[]).find(x=>x.id===p.col);if(!c)return;const ch=colCusto(c),v=r2((p.hn||0)*ch+(p.he||0)*ch*fatorExtra());
   tot+=v;porCol[c.id]=(porCol[c.id]||0)+v;porFunc[c.funcao]=(porFunc[c.funcao]||0)+v;if(p.item)porItem[p.item]=(porItem[p.item]||0)+v});return {tot:r2(tot),porCol,porFunc,porItem}}
 /* "Puxar do ponto" no apontamento do Campo: agrupa por função n pessoas × horas médias do dia/item */
 function pontoParaApt(data,item){const g={};S.t.ptos.filter(p=>p.data===data&&p.item===item&&SIT_TRAB.includes(p.sit)&&(p.hn+p.he)>0).forEach(p=>{const c=colPorId(p.col);if(!c)return;const x=g[c.funcao]=g[c.funcao]||{funcao:c.funcao,n:0,h:0,hh:0};x.n++;x.hh+=p.hn+p.he});
@@ -52,7 +53,8 @@ ACOES['sst-ok']=()=>{const e=$('#ss-e').value,v=$('#ss-v').value,l=$('#ss-l').va
   S.t.ssts.push({id:'ss'+Date.now(),col:$('#ss-c').value,tipo:$('#ss-t').value,emissao:e,validade:v,desc:$('#ss-d').value.trim(),link:l,quem:user()});log('sst',colPorId($('#ss-c').value).nome,$('#ss-t').value,'','válido até '+v);save();closeModal();render()};
 /* ---- indicadores de RH (filtros: obra e meses) ---- */
 function rhFonte(cod){if(!cod||cod===S.D.obra.codigo)return {cols:S.t.cols,ptos:S.t.ptos};if(MODO_SB)return null;try{const j=JSON.parse(localStorage.getItem(cod==='342'?KEY:KEY+'_'+cod)||'null');return j?{cols:j.cols||[],ptos:j.ptos||[]}:null}catch(e){return null}}
-function rhCalc(cod,meses){const F=rhFonte(cod);if(!F)return null;const sel=meses&&meses.size?meses:null,P=F.ptos.filter(p=>!sel||sel.has(mesDe(p.data)));
+function rhCalc(cod,meses){return memo('rh'+cod+'|'+(meses?[...meses].sort().join(','):''),()=>rhCalcRaw(cod,meses))}
+function rhCalcRaw(cod,meses){const F=rhFonte(cod);if(!F)return null;const sel=meses&&meses.size?meses:null,P=F.ptos.filter(p=>!sel||sel.has(mesDe(p.data)));
   const conta={};P.forEach(p=>conta[p.sit]=(conta[p.sit]||0)+1);const n=P.length,den=n-(conta.folga||0)-(conta.ferias||0),abs=SIT_ABS.reduce((s,k)=>s+(conta[k]||0),0);
   const mensal={};P.forEach(p=>{const m=mesDe(p.data),x=mensal[m]=mensal[m]||{m,n:0,folga:0,ferias:0,abs:0,faltas:0,cols:new Set()};x.n++;if(p.sit==='folga')x.folga++;if(p.sit==='ferias')x.ferias++;if(SIT_ABS.includes(p.sit))x.abs++;if(p.sit==='falta')x.faltas++;x.cols.add(p.col)});
   const M=Object.values(mensal).sort((a,b)=>a.m.localeCompare(b.m)).map(x=>{const d=x.n-x.folga-x.ferias;return {m:x.m,abs:d>0?x.abs/d:0,freq:d>0?1-x.abs/d:0,faltas:x.faltas,ativos:x.cols.size,razao:x.cols.size?x.faltas/x.cols.size:0}});
