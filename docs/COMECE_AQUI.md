@@ -84,3 +84,10 @@ Alçadas por faixa de valor, atualização das metas pela planilha, apuração e
 
 ## Decisão registrada (Fase 15): custo do material
 Decidido (delegado ao Claude pelo usuário): o **custo realizado do item vem da nota fiscal** (regime de compra), porque é o que fecha com contas a pagar, contabilidade e rateio 100%. A saída de estoque mostra o *consumo apropriado* só como informação (consumo × meta). Motivo: apropriar por consumo duplicaria o custo já lançado pela nota e quebraria o balancete. Se um dia quiserem custo por consumo, a mudança é: nota de estoque vai para conta de estoque (ativo) e a saída reconhece o custo — exige revisar a contabilidade (Fase 14).
+
+## Fase 16 — Contratos, projetos, patrimônio e frota (área "Contratos e ativos")
+- **Contratos** (`34_contratos.js`): receita (cliente) e despesa (empreiteiro/locação) com vigência, aditivos de valor e prazo, alerta de vencimento (60 dias) e de reajuste, anexos por link, bloquear/reativar/encerrar. **Medição de subempreiteiro**: Engenheiro lança, Gerente/Diretoria aprova; a aprovação gera uma **nota** rateada ao item (entra no custo, no fluxo de liberar/pagar e na retenção de INSS do contrato). Não excede o valor vigente; contrato bloqueado não aceita medição.
+- **Projetos**: modelos com etapas e cronograma, equipe, % por etapa, horas apropriadas (custo da hora em `par.custoHoraPrj`, padrão R$ 120).
+- **Patrimônio** (`35_patrimonio.js`): bens com depreciação linear mensal pró-rata (vida contábil; a fiscal só informa), seguro, manutenção, local e baixa. A ativação, a depreciação e a baixa entram **automaticamente no Diário** (contas 1.2.01, 1.2.02, 5.9.03–5.9.05).
+- **Frota**: veículos/equipamentos com horímetro/km, abastecimento, checklist (reprovação abre OS corretiva), OS preventiva/corretiva (alerta por prazo ou uso), pneus e **custo por hora** (combustível + OS + depreciação do bem vinculado), que preenche o R$/h do equipamento no apontamento do Campo.
+- Migração `0013_fase16.sql` (tipos `ctr, prj, pat, frt, fmv`). Testes: `supabase/tests/fase16.sql`, `scripts/e2e_fase16.js`.

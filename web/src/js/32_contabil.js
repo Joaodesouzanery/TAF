@@ -1,11 +1,11 @@
 /* ============ CONTABILIDADE (Fase 14): partidas dobradas, Diário, Razão, Balancete, DRE/Balanço, orçamento, fechamento, livros ============ */
 Object.assign(CAN,{ctb:['financeiro','adm'],fechaCtb:['financeiro','diretoria'],reabreCtb:['diretoria']});
 /* Plano contábil base: A ativo, P passivo, PL patrimônio líquido, R receita, D custo/despesa. Natureza = lado em que a conta aumenta. Contas de custo 5.x.xx espelham o plano gerencial 4.x.xx da obra. */
-const PLANO_CONT=[['1.1.01','Caixa e bancos','A'],['1.1.02','Clientes a receber','A'],['1.1.03','Retenções a compensar','A'],['1.2.01','Imobilizado','A'],
+const PLANO_CONT=[['1.1.01','Caixa e bancos','A'],['1.1.02','Clientes a receber','A'],['1.1.03','Retenções a compensar','A'],['1.2.01','Imobilizado','A'],['1.2.02','(−) Depreciação acumulada','A'],
  ['2.1.01','Fornecedores a pagar','P'],['2.1.02','Tributos sobre faturamento a recolher','P'],['2.1.03','INSS retido a recolher','P'],['2.1.04','ISS retido a recolher','P'],['2.1.06','Outras retenções a recolher','P'],
  ['3.1.01','Capital social','PL'],['3.1.03','Aportes e outras entradas','PL'],['3.1.02','Lucros e prejuízos acumulados','PL'],
  ['4.1.01','Receita de medições (BM faturados)','R'],['4.9.01','Deduções: tributos sobre a receita','D'],
- ['5.9.01','Juros, multas e descontos','D'],['5.9.02','Gastos importados do financeiro','D'],['5.9.09','Outras saídas de caixa','D']];
+ ['5.9.01','Juros, multas e descontos','D'],['5.9.02','Gastos importados do financeiro','D'],['5.9.03','Depreciação','D'],['5.9.04','Perda na baixa de bens','D'],['5.9.05','(−) Aquisições ativadas no imobilizado','D'],['5.9.09','Outras saídas de caixa','D']];
 const gerParaCtb=g=>g&&String(g).startsWith('4')?'5'+String(g).slice(1):'5.9.02';
 function planoCtb(){const L=PLANO_CONT.map(([c,n,t])=>({codigo:c,nome:n,tipo:t,auto:true}));
   (S.D.plano||[]).filter(x=>String(x.codigo).startsWith('4.')&&x.nivel>=3).forEach(x=>L.push({codigo:gerParaCtb(x.codigo),nome:x.nome,tipo:'D',ger:x.codigo,auto:true}));
@@ -29,7 +29,7 @@ function partidasAuto(){const T=S.t,E=[],f=fisc(),push=(ref,origem,data,desc,L)=
     push('tb:'+x.id,'Tributos '+x.num,x.emissao,'Tributos estimados sobre '+x.num,[{conta:'4.9.01',d:tr},{conta:'2.1.02',c:tr}])});
   T.recs.forEach(r=>push('rc:'+r.id,'Recebimento',r.data,'Recebimento '+(T.fats.find(x=>x.id===r.fat)||{}).num,[{conta:'1.1.01',d:r.valor},{conta:'1.1.02',c:r.valor}]));
   T.lans.forEach(l=>push('ln:'+l.id,'Caixa',l.data,l.desc,l.valor>=0?[{conta:'1.1.01',d:l.valor},{conta:'3.1.03',c:l.valor}]:[{conta:'5.9.09',d:-l.valor},{conta:'1.1.01',c:-l.valor}]));
-  return E}
+  return E.concat(typeof partidasPatrimonio==='function'?partidasPatrimonio():[])}
 const partidasTodas=()=>[...partidasAuto(),...S.t.ctbs.map(e=>({...e,auto:false}))].filter(e=>e.data).sort((a,b)=>a.data.localeCompare(b.data)||String(a.ref).localeCompare(String(b.ref)));
 function balancete(comp){const E=partidasTodas().filter(e=>!comp||e.comp<=comp),m={};
   E.forEach(e=>e.linhas.forEach(l=>{const x=m[l.conta]=m[l.conta]||{conta:l.conta,d:0,c:0};x.d+=l.d;x.c+=l.c}));

@@ -34,7 +34,7 @@ const {chromium}=require('playwright');
  await p.reload();await p.waitForSelector('.big');ok('cadastros persistem após recarregar',await p.evaluate(()=>S.t.forns.length===1&&S.t.inss.length===1&&S.t.bancos.length===1));
 
  // menu por papel
- ok('encarregado vê só Início e Obra (Campo, Lean)',await p.evaluate(()=>{const r=S.role;S.role='encarregado';const a=areasVisiveis().map(x=>x.k).join(',');const f=!tabVisivel('fin');S.role=r;return a==='inicio,obra'&&f}));
+ ok('encarregado vê Início, Obra (Campo, Lean) e Frota',await p.evaluate(()=>{const r=S.role;S.role='encarregado';const a=areasVisiveis().map(x=>x.k).join(',');const f=!tabVisivel('fin')&&!tabVisivel('ctr');S.role=r;return a==='inicio,obra,ativos'&&f}));
  ok('financeiro vê Financeiro e Contábil, não vê Campo',await p.evaluate(()=>{const r=S.role;S.role='financeiro';const v=tabVisivel('fat')&&tabVisivel('plano')&&!tabVisivel('campo');S.role=r;return v}));
  // ---- várias obras (7b) ----
  await p.click('.obra-sel');ok('seletor lista as 3 obras (342, 343, 281)',await T('Subadutora Sobradinho')&&await T('Mozarl'));

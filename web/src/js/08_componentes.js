@@ -6,11 +6,12 @@ const AREAS=[
  {k:'sup',n:'Suprimentos',i:'compras',tabs:[['compras','Compras'],['nota','Notas e rateio'],['cad','Cadastros'],['est','Estoque']]},
  {k:'fin',n:'Financeiro',i:'fin',tabs:[['fin','Pagar e conciliar'],['fat','Faturamento e caixa']]},
  {k:'cont',n:'Contábil e fiscal',i:'plano',tabs:[['plano','Plano de contas'],['ctb','Contabilidade']]},
+ {k:'ativos',n:'Contratos e ativos',i:'eap',tabs:[['ctr','Contratos'],['prj','Projetos'],['pat','Patrimônio'],['frt','Frota']]},
  {k:'adm',n:'Gestão e administração',i:'aud',tabs:[['aud','Auditoria'],['usuarios','Usuários']]},
 ];
 /* Quais telas cada papel vê no menu (as ações dentro de cada tela continuam limitadas por can()). Papéis de gestão veem tudo. */
-const TELAS_PAPEL={encarregado:['hoje','eap','campo','lean'],almox:['hoje','pac','compras','nota','cad','est','lean'],planejamento:['hoje','pain','eap','pac','campo','lean','med'],
-  compras:['hoje','pain','eap','pac','compras','nota','cad','est','lean'],adm:['hoje','compras','nota','cad','est','fin','plano','ctb','aud'],financeiro:['hoje','pain','compras','nota','cad','fin','fat','plano','ctb','aud']};
+const TELAS_PAPEL={encarregado:['hoje','eap','campo','lean','frt'],almox:['hoje','pac','compras','nota','cad','est','frt','lean'],planejamento:['hoje','pain','eap','pac','campo','lean','med','prj'],
+  compras:['hoje','pain','eap','pac','compras','nota','cad','est','lean'],adm:['hoje','compras','nota','cad','est','ctr','pat','frt','fin','plano','ctb','aud'],financeiro:['hoje','pain','ctr','pat','compras','nota','cad','fin','fat','plano','ctb','aud']};
 const tabVisivel=k=>{if(k==='usuarios')return MODO_SB&&S.role==='admin';const l=TELAS_PAPEL[S.role];return !l||l.includes(k)};
 const areasVisiveis=()=>AREAS.map(a=>({...a,tabs:a.tabs.filter(t=>tabVisivel(t[0]))})).filter(a=>a.tabs.length);
 const areaDe=v=>areasVisiveis().find(a=>a.tabs.some(t=>t[0]===v))||areasVisiveis()[0];
