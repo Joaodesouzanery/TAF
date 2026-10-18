@@ -19,6 +19,7 @@ Especificação: *SaaS de Gestão de Obras TAF — Fluxo Completo do Sistema (re
 | 8 | **Campo** (apontamento diário: rascunho → conferido → aprovado, HH, produtividade × CPU, custo de MO, fila offline) e **Lean** (pauta de segunda, lookahead de 6 semanas, restrições com limite de 8 por dono e escalonamento, PPC com Pareto, tarefas) | feita |
 | 9 | **Faturamento e caixa**: boletim ao cliente (medições atestadas + reajuste, aprovação com glosa), NF de serviço, recebimento e conciliação de extrato, caixa mensal; **DRE** por obra e visão medido × executado × meta | feita |
 | 10 | **Importar XML de NF-e** (chave única, sugestão de OC), **fechamento mensal ao contador** (CSV), arquivo de apoio Sankhya; API do Sankhya e provedor de NF-e aguardam credenciais | feita (sem integrações externas) |
+| 11 | Alçadas por faixa de valor, atualizar metas pela planilha (nova versão da linha de base), apuração estimada de tributos, funções de NF-e automática e Sankhya (prontas para ligar, exigem login e credenciais) | feita |
 | 7b | Importar EAP da 343 e histórico da 281 | a fazer |
 
 ## Supabase (projeto "TAF")

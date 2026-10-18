@@ -28,7 +28,7 @@ const {chromium}=require('playwright');
  // fechamento
  await role('financeiro');await nav('fin');await p.click('.tabs button[data-t=fech]');
  await p.fill('#f-cno','90.123.45678/12');await p.dispatchEvent('#f-cno','change');
- ok('integrações aparecem como não configuradas',await T('Não contratado')&&await T('Aguardando credenciais'));
+ ok('integrações aparecem e avisam que exigem login',await T('Requer login')&&await T('NF-e recebidas (provedor)'));
  await p.click('[data-act=fech-csv]');
  const csv=await p.inputValue('#f-out');
  ok('arquivo do contador traz chave, CNPJ, conta, item e CNO',csv.includes(chave)&&csv.includes('12345678000195')&&csv.includes(cod)&&csv.includes('90.123.45678/12')&&csv.split('\n').length>=2);

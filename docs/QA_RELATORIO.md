@@ -27,3 +27,9 @@ Execução: `bash scripts/qa.sh` (sobe Postgres 16 local, aplica `supabase/migra
 - Numeração de documentos é local (`SC-0001`…); com vários usuários simultâneos no modo Supabase pode repetir número (ver `COMECE_AQUI.md`).
 - Alçadas em R$ e tolerância nota × pedido usam valores padrão até a Diretoria definir.
 - O teste de login real no Supabase não é possível a partir do ambiente de desenvolvimento (domínio bloqueado); só a versão simulada foi testada.
+
+## Atualização 18/10/2026 (Fase 11)
+`bash scripts/qa.sh` agora roda 6 testes SQL, 6 conjuntos e2e (28 + 19 + 17 + 14 + 18 + 22 verificações), os adaptadores de integração (10) e a varredura visual: tudo OK.
+- Novos testes: alçadas por faixa, atualização pela planilha (.json e .xlsx sintético), apuração de tributos com valores conhecidos, integrações sem login, e funções de NF-e e Sankhya simuladas no modo conectado.
+- As funções `nfe-sync` e `sankhya-sync` **não foram publicadas** no Supabase nem testadas contra um serviço real. O arquivo `index.ts` de cada uma (camada Deno) não é executado pelos testes; a lógica está em `supabase/functions/_shared/` e é testada com `node --experimental-strip-types`.
+- O botão "Baixar .csv" não funciona dentro do link do Claude (download bloqueado); use "Copiar".

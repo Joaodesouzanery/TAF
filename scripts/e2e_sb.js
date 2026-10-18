@@ -4,6 +4,7 @@ const {chromium}=require('playwright');
 const fs=require('fs');
 const URL_SB='https://kefkgydvjjakqaonyjau.supabase.co';
 const payload=JSON.parse(fs.readFileSync(__dirname+'/../web/data/obra342.json','utf8'));
+const XML_NFE='<nfeProc xmlns="http://www.portalfiscal.inf.br/nfe"><NFe><infNFe Id="NFe'+'4'.repeat(44)+'"><ide><nNF>55</nNF><dhEmi>2026-10-18T10:00:00-03:00</dhEmi></ide><emit><CNPJ>11222333000144</CNPJ><xNome>Forn Mock</xNome></emit><det><prod><xProd>Tubo</xProd><qCom>1</qCom><vProd>900.00</vProd></prod></det><total><ICMSTot><vNF>900.00</vNF></ICMSTot></total></infNFe></NFe></nfeProc>';
 const db={users:[],perfil:[],obra:[],pacote:[],item_eap:[],conta:[],documento:[],funcao_mo:[]};
 const log=[];
 const uid=e=>'u-'+e.split('@')[0];
@@ -28,6 +29,9 @@ async function mock(page){
     if(path==='/auth/v1/logout')return json(route,204);
     if(path.startsWith('/rest/v1/rpc/importar_obra')){const tok=(req.headers()['authorization']||'').replace('Bearer tok-','');const pf=db.perfil.find(x=>x.user_id===tok);
       if(!pf||!['admin','gestao','diretoria'].includes(pf.papel))return json(route,400,{message:'Sem permissão para importar'});importar(body.p);log.push('importar_obra');return json(route,200,'ob-1')}
+    if(path.startsWith('/functions/v1/')){const tok=(req.headers()['authorization']||'').replace('Bearer tok-','');if(!db.perfil.find(x=>x.user_id===tok))return json(route,403,{erro:'sem login'});
+      if(path.endsWith('nfe-sync')){log.push('fn nfe-sync');return json(route,200,{configurado:true,notas:[{nome:'n1.xml',xml:XML_NFE}],proximaVersao:'9'})}
+      if(path.endsWith('sankhya-sync')){log.push('fn sankhya-sync');return json(route,200,{configurado:false})}}
     const t=path.replace('/rest/v1/','');
     if(!db[t])return json(route,404,{message:'tabela '+t});
     const single=(req.headers()['accept']||'').includes('vnd.pgrst.object');
@@ -78,6 +82,13 @@ async function mock(page){
   ok('sem rede: registro guardado na fila do aparelho',await p.evaluate(()=>!!localStorage.getItem(filaKey())));
   await p.unroute('**/rest/v1/documento**');await p.evaluate(()=>sbSync());await p.waitForTimeout(900);
   ok('com rede: fila sobe e é limpa',await p.evaluate(()=>!localStorage.getItem(filaKey()))&&db.documento.find(d=>d.tipo==='apt').dados.status==='conferido');
+  // Fase 11: integrações usam funções do servidor (só com login)
+  await p.click('#nav button[data-v=fin]');await p.click('.tabs button[data-t=fech]');await p.click('[data-act=nfe-buscar]');await p.waitForTimeout(900);
+  ok('NF-e automática (função simulada) importa a nota para a fila sem rateio e grava no banco',db.documento.some(d=>d.tipo==='nf'&&d.dados.chave==='4'.repeat(44)&&d.dados.status==='lancada'));
+  await p.click('[data-act=nfe-buscar]');await p.waitForTimeout(600);
+  ok('mesma chave na segunda busca não duplica',db.documento.filter(d=>d.tipo==='nf'&&d.dados.chave==='4'.repeat(44)).length===1);
+  await p.click('[data-act=sk-conexao]');await p.waitForTimeout(500);
+  ok('Sankhya sem credenciais no servidor: avisa o que cadastrar',(await p.innerText('body')).includes('SANKHYA_CLIENT_ID'));
   // usuários: libera o segundo
   await p.click('#nav button[data-v=usuarios]');await p.waitForTimeout(200);
   await p.screenshot({path:out+'/usuarios.png'});

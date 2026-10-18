@@ -31,3 +31,16 @@ Legenda: **OK** = feito e coberto por teste. **Parcial** = feito com limite desc
 | 25 | Dados compartilhados entre pessoas | Supabase com login (`modo:'supabase'`) | e2e_sb | Parcial: no modo aberto os dados ficam em cada navegador |
 
 Itens que ainda dependem de decisão ou acesso do usuário estão em `COMECE_AQUI.md`.
+
+## Lista do usuário: já faz? (atualizado em 18/10/2026)
+| Item | Estado | Observação |
+|---|---|---|
+| Apontamento | OK | Campo, com fila offline e aprovação |
+| Lean | OK | Pauta, lookahead, restrições, PPC, tarefas |
+| BM / faturamento | OK | Boletim, glosa, NF de serviço, recebimento, conciliação |
+| DRE e plano de contas | OK | 38 contas; DRE da obra sem rateio de administração central |
+| NF-e automática | Pronto para ligar | Função `nfe-sync` testada com provedor simulado; falta contratar/habilitar o provedor, cadastrar secrets e ativar o login |
+| Sankhya | Pronto para ligar | Função `sankhya-sync` (OAuth, naturezas, centros, envio simulado e real) testada com servidor simulado; falta credencial, validar campos com o administrador e ativar o login |
+| Fiscal | OK como estimativa | Aba Apuração: tributos sobre faturamento e retenções em serviços tomados com alíquotas editáveis; o contador valida; sem SPED |
+| Alçadas em R$ | OK | Verde sem confirmação até R$ X; Gerente aprova até R$ Y; acima, Diretoria; tolerância nota × pedido editável (padrões: 100.000 / 250.000 / 2%, a definir) |
+| Sincronização planilha ↔ sistema | OK | Orçamento → Atualizar pela planilha: lê o .xlsx (abas 11/12) ou .json, mostra diferenças e aplica como nova versão da linha de base |

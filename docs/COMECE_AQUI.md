@@ -36,11 +36,14 @@ Regras de negócio vivem em JS (`prep`, `saldos`, `semaforo`, `derive`) e espelh
 7. Sem autenticação por enquanto.
 8. Guardar tudo no GitHub (migração de conta) e guardar as planilhas no repositório.
 
+## Fase 11 (18/10/2026)
+Alçadas por faixa de valor, atualização das metas pela planilha, apuração estimada de tributos, e as integrações de NF-e e Sankhya em funções do Supabase (`supabase/functions/`), prontas para ligar. Leia `docs/INTEGRACOES.md` e `docs/SANKHYA_PESQUISA.md`. A atualização pela planilha grava a nova linha de base em `obra.estado` (campos `baseOv` e `basePac`); o `item_eap` do banco guarda a versão 1.
+
 ## Pendências do usuário
 1. Renomear o projeto Vercel para `tafadmin` (e conferir Domains e a Production Branch).
 2. Decidir quando reativar o login (e fechar o cadastro aberto no Supabase).
-3. Credenciais de API do Sankhya (com o administrador de lá) e contratar o provedor de NF-e, se quiser baixa automática.
-4. Definir valores de alçada (R$) e a tolerância nota × pedido (hoje: 2%).
+3. Credenciais de API do Sankhya (com o administrador de lá), contratar/habilitar o provedor de NF-e, cadastrar os secrets e publicar as funções (passo a passo em `docs/INTEGRACOES.md`). Exige reativar o login.
+4. Definir valores de alçada (R$: hoje verde sem confirmação até 100.000, Gerente até 250.000) e a tolerância nota × pedido (2%), e conferir as alíquotas da apuração com o contador.
 5. Confirmar a versão vigente da META (REV13/META REV02), quando existir.
 
 ## Próximos passos sugeridos

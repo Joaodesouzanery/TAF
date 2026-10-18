@@ -15691,7 +15691,7 @@ const CFG=window.TAF_CONFIG||{};
 const MODO_SB=!!(CFG.supabaseUrl&&CFG.supabaseKey)&&(CFG.modo==='supabase'||/[?&]sb=1/.test(location.search))&&!/[?&]demo=1/.test(location.search);
 const SB={c:null,user:null,perfil:null,obraId:null,sync:{},estado:'',timer:null,busy:false,perfis:[]};
 let S={view:'hoje',tab:{},role:'engenheiro',D:null,t:null,exp:new Set(),q:''};
-const novoT=()=>({titulos:[],frozen:false,versao:1,hist:[],metaOv:{},sols:[],ocs:[],notas:[],aud:[],meds:[],conc:[],apts:[],rsts:[],atvs:[],tars:[],bcs:[],fats:[],recs:[],lans:[],fechs:[],seq:{sol:0,oc:0,nf:0,bm:0},par:{tol:0.02,limite:100000}});
+const novoT=()=>({titulos:[],frozen:false,versao:1,hist:[],metaOv:{},baseOv:{},basePac:{},sols:[],ocs:[],notas:[],aud:[],meds:[],conc:[],apts:[],rsts:[],atvs:[],tars:[],bcs:[],fats:[],recs:[],lans:[],fechs:[],seq:{sol:0,oc:0,nf:0,bm:0},par:{tol:0.02,limite:100000}});
 const save=()=>{if(MODO_SB){sbSyncSoon();return}try{localStorage.setItem(KEY,JSON.stringify({...S.t,role:S.role}))}catch(e){}};
 function loadT(){try{const j=JSON.parse(localStorage.getItem(KEY)||'null');if(j){S.role=j.role||S.role;delete j.role;return {...novoT(),...j}}}catch(e){}return novoT()}
 const log=(ent,ref,campo,antes,depois,motivo='')=>S.t.aud.unshift({id:'a'+Date.now()+Math.random().toString(36).slice(2,6),q:new Date().toISOString(),quem:user()+' ('+ROLES[S.role].n+')',ent,ref,campo,antes:String(antes??''),depois:String(depois??''),motivo});
@@ -15701,7 +15701,7 @@ function toast(m){document.querySelectorAll('.toast').forEach(x=>x.remove());con
 /* ============ SUPABASE: login, papel, leitura e gravação ============ */
 const cmpCod=(a,b)=>{const x=a.split('.'),y=b.split('.');for(let i=0;i<Math.max(x.length,y.length);i++){const p=x[i],q=y[i];if(p===undefined)return -1;if(q===undefined)return 1;
   const n=/^\d+$/.test(p)&&/^\d+$/.test(q);const d=n?(+p)-(+q):p.localeCompare(q);if(d)return d}return 0};
-const estadoObra=()=>({frozen:S.t.frozen,versao:S.t.versao,hist:S.t.hist,metaOv:S.t.metaOv,par:S.t.par});
+const estadoObra=()=>({frozen:S.t.frozen,versao:S.t.versao,hist:S.t.hist,metaOv:S.t.metaOv,baseOv:S.t.baseOv,basePac:S.t.basePac,par:S.t.par});
 const DOCS=[['sols','sol'],['ocs','oc'],['notas','nf'],['titulos','tit'],['meds','med'],['aud','aud'],['apts','apt'],['rsts','rst'],['atvs','atv'],['tars','tar'],['bcs','bc'],['fats','fat'],['recs','rec'],['lans','lan'],['fechs','fech']];
 function sbDocs(){const out=[];DOCS.forEach(([k,tipo])=>(S.t[k]||[]).forEach(o=>{if(!o.id)o.id=tipo+Date.now()+Math.random().toString(36).slice(2,6);out.push({id:o.id,obra_id:SB.obraId,tipo,dados:o})}));return out}
 function sbSyncSoon(){clearTimeout(SB.timer);SB.timer=setTimeout(()=>{SB.timer=null;sbSync()},250)}
@@ -15818,7 +15818,8 @@ const dominante=i=>{const n=i.natureza||{};const k=Object.keys(n).sort((a,b)=>n[
   if(n[k]>0)return k;return /material/.test(i.tipo||'')?'MAT':'TER'};
 function prep(){
   const D=S.D;D.items=D.eap.filter(e=>e.tipo_linha==='item');
-  D.items.forEach(i=>{i.meta_base=i.meta_base??i.meta_total;if(S.t.metaOv[i.codigo]!=null)i.meta_total=S.t.metaOv[i.codigo];else i.meta_total=i.meta_base;i.nat=dominante(i)});
+  D.items.forEach(i=>{const ov=S.t.baseOv&&S.t.baseOv[i.codigo];if(ov){i.meta_base=ov.meta_total;i.teto_total=ov.teto_total;i.status_cotacao=ov.status_cotacao;i.meta_unit=ov.meta_unit}else i.meta_base=i.meta_base??i.meta_total;if(S.t.metaOv[i.codigo]!=null)i.meta_total=S.t.metaOv[i.codigo];else i.meta_total=i.meta_base;i.nat=dominante(i)});
+  D.pacotes.forEach(p=>{const o=S.t.basePac&&S.t.basePac[p.codigo];if(o)Object.assign(p,o)});
   S.byCod=Object.fromEntries(D.eap.map(e=>[e.codigo,e]));
   D.items.forEach(i=>{i.linhas=i.composicao||[{nat:i.nat,share:1}]});
   D.pacotes.forEach(p=>p._it=D.items.filter(i=>i.pacote===p.codigo));
@@ -15958,7 +15959,7 @@ function viewEap(X){
       rows.push(`<tr class="clk" data-item="${e.codigo}"><td><span class="mono">${e.codigo}</span></td><td style="padding-left:${(e.nivel-1)*14+10}px">${esc(e.descricao.slice(0,90))}<div class="mut" style="font-size:11.5px">${num(e.qtd)} ${e.unidade||''} · ${e.pacote||'—'}</div></td><td class="r mut">${brl(e.preco_venda_total)}</td><td class="r">${brl(e.meta_total)}</td><td class="r ${e.meta_total>e.teto_total?'neg':''}">${brl(e.teto_total)}</td><td class="r">${brl(s.comp)}</td><td class="r">${brl(s.real)}</td><td>${bar(s.comp,s.real,e.meta_total)}</td><td>${e.status_cotacao==='A cotar'?'<span class="pill warn">estimado</span>':e.meta_total>e.teto_total?'<span class="pill bad">sem folga</span>':''}</td></tr>`)}});
   return `<div class="head"><div><h1>Orçamento (EAP)</h1><p class="lead">Cada item guarda meta, teto e saldos. Clique num item para ver detalhes, solicitar compra ou remanejar saldo.</p></div>
    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><span class="pill ${S.t.frozen?'ok':'bad'}">Linha de base v${S.t.versao} ${S.t.frozen?'congelada':'não congelada'}</span>
-   ${S.t.frozen?'':`<button class="btn dark" data-act="congelar" ${can('congelar')?'':'disabled title="Só Gestão ou Diretoria"'}>Congelar v1</button>`}<button class="btn" data-act="remanejar" ${can('remanejar')&&S.t.frozen?'':'disabled'}>Remanejar saldo</button></div></div>
+   ${S.t.frozen?'':`<button class="btn dark" data-act="congelar" ${can('congelar')?'':'disabled title="Só Gestão ou Diretoria"'}>Congelar v1</button>`}<button class="btn" data-act="remanejar" ${can('remanejar')&&S.t.frozen?'':'disabled'}>Remanejar saldo</button><button class="btn" data-act="sync-novo" ${can('congelar')?'':'disabled title="Só Gestão ou Diretoria"'}>Atualizar pela planilha</button></div></div>
   <div class="toolbar"><input class="search" id="q" placeholder="Buscar código ou descrição…" value="${esc(S.q)}"><span class="sub">${S.D.items.length} itens · soma do licitado ${brl(X.venda)}${S.D.relatorio?.diferenca_contrato?` · difere do contrato em ${brl(S.D.relatorio.diferenca_contrato)}`:''}</span></div>
   <div class="tw"><table class="tbl"><thead><tr><th>Código</th><th>Descrição</th><th class="r">Licitado</th><th class="r">Meta</th><th class="r">Teto</th><th class="r">Comprom.</th><th class="r">Realizado</th><th>Consumo</th><th></th></tr></thead><tbody>${rows.join('')}</tbody></table></div>
   ${S.t.hist.length?`<div class="sub" style="margin-top:10px">Histórico da linha de base: ${S.t.hist.map(h=>`v${h.versao} (${h.motivo})`).join(' · ')}</div>`:''}`;
@@ -16048,11 +16049,13 @@ function viewCompras(X){
   if(tab==='aprov')body=nAprov?`<table class="tbl"><thead><tr><th>OC</th><th>Item</th><th class="r">Valor</th><th>Alçada</th><th>Justificativa</th><th></th></tr></thead><tbody>${X.pendAprov.map(o=>`<tr><td class="mono">${o.num}</td><td><span class="mono">${o.item}</span> · ${esc(o.forn)}</td><td class="r">${brl(o.valor)}</td><td>${semPill(o.sem)} <span class="mut">${ROLES[o.alcada].n}</span></td><td>${esc(o.just||'—')}</td><td class="r">${aprovBtns(o)}</td></tr>`).join('')}</tbody></table>`:empty('Nada aguardando aprovação.','Compras acima da meta ou do teto aparecem aqui.');
   return `<div class="head"><div><h1>Compras</h1><p class="lead">Solicitação → cotação (3 preços) → OC. Verde passa direto; amarelo vai ao Gerente; vermelho, à Diretoria; fora da planilha, bloqueado.</p></div>
    <div style="display:flex;gap:8px"><button class="btn" data-act="params" ${can('param')?'':'disabled title="Só Diretoria ou Gestão"'}>Parâmetros</button><button class="btn dark" data-act="nova-sol" ${can('solicitar')?'':'disabled title="Só Engenheiro ou Gerente"'}>Nova solicitação</button></div></div>
-   <div class="toolbar">${tabs('compras',[['sols','Solicitações '+sols.length],['ocs','Ordens de compra '+ocs.length],['aprov','Aprovações',nAprov]],tab)}<span class="sub">Verde sem confirmação até ${brl(S.t.par.limite)} · tolerância nota×pedido ${(S.t.par.tol*100).toFixed(1)}%</span></div><div class="tw">${body}</div>`;
+   <div class="toolbar">${tabs('compras',[['sols','Solicitações '+sols.length],['ocs','Ordens de compra '+ocs.length],['aprov','Aprovações',nAprov]],tab)}<span class="sub">Verde sem confirmação até ${brl(S.t.par.limite)} · Gerente até ${brl(gerAte())} · tolerância nota×pedido ${(S.t.par.tol*100).toFixed(1)}%</span></div><div class="tw">${body}</div>`;
 }
 const empty=(a,b)=>`<div class="soon" style="min-height:200px"><h2 style="font-size:16px">${a}</h2><div>${b}</div></div>`;
 function aprovBtns(o){
   const ok=can_aprovar(o);return `<button class="btn sm ok" data-act="aprovar" data-id="${o.id}" ${ok?'':'disabled title="Sem alçada ou é o próprio solicitante"'}>Aprovar</button> <button class="btn sm no" data-act="reprovar" data-id="${o.id}" ${ok?'':'disabled'}>Reprovar</button>`}
+const gerAte=()=>S.t.par.gerenteAte??250000;
+const alcadaDe=(sem,total)=>{let a=sem==='verde'?(total>S.t.par.limite?'gerente':null):sem==='amarelo'?'gerente':'diretoria';if(a==='gerente'&&total>gerAte())a='diretoria';return a};
 function can_aprovar(o){if(o.solicitante===user())return false;if(o.alcada==='diretoria')return isRole('diretoria');return isRole('gerente','diretoria')}
 function modalMapa(id){
   const s=S.t.sols.find(x=>x.id===id),i=S.byCod[s.item];
@@ -16075,8 +16078,9 @@ function emitirOC(id){
   if(!em&&s.cots.length<3&&!just)return toast('Menos de 3 propostas: justifique ou marque emergência');
   if(c.preco>menor&&!just)return toast('Escolheu fora da menor: justifique');
   const total=r2(s.qtd*c.preco),sem=semaforo(s.item,total);if(sem[0]==='bloqueado')return toast(sem[1]);
-  let st='aprovada',alc=null;
-  if(sem[0]==='verde'){if(total>S.t.par.limite){st='em_alcada';alc='gerente'}}else if(sem[0]==='amarelo'){st='em_alcada';alc='gerente';if(!just)return toast('Acima da meta: justificativa escrita é obrigatória')}else{st='em_alcada';alc='diretoria';if(!just)return toast('Acima do teto: justificativa é obrigatória')}
+  if(sem[0]==='amarelo'&&!just)return toast('Acima da meta: justificativa escrita é obrigatória');
+  if(sem[0]==='vermelho'&&!just)return toast('Acima do teto: justificativa é obrigatória');
+  const alc=alcadaDe(sem[0],total),st=alc?'em_alcada':'aprovada';
   const o={id:'o'+Date.now()+Math.random().toString(36).slice(2,5),num:nextNum('oc'),sol:s.id,item:s.item,nat:s.nat,conta:s.conta,forn:c.forn,qtd:s.qtd,preco:c.preco,valor:total,sem:sem[0],status:st,alcada:alc,just,emergencia:em,solicitante:s.solicitante,recebido:0,criado:hojeISO()};
   S.t.ocs.unshift(o);if(st==='aprovada')criaTitulo(o);s.status='atendida';s.oc=o.num;log('ordem_compra',o.num,'emitida','',brl(total)+' · '+sem[0]+' · '+st,just);save();closeModal();toast(o.num+(st==='aprovada'?' aprovada (verde)':' aguarda '+ROLES[alc].n));S.tab.compras='ocs';render();
 }
@@ -16096,8 +16100,9 @@ function doReceber(id){const o=S.t.ocs.find(x=>x.id===id),q=+$('#rc-q').value;if
 function cancelarOC(id){const o=S.t.ocs.find(x=>x.id===id);ask('Cancelar '+o.num,'Motivo do cancelamento (obrigatório)','',m=>cancelarFim(o,m))}
 function cancelarFim(o,m){
   const a=o.status;o.status='cancelada';o.motivo=m;const tt=S.t.titulos.find(t=>t.oc===o.id);if(tt&&!tt.cancelado)tt.cancelado=true;log('ordem_compra',o.num,'status',a,'cancelada',m);save();toast('OC cancelada · comprometido liberado');render()}
-function modalParams(){modal(`<h3>Parâmetros</h3><div class="sub">Valores de alçada ainda são decisão da Diretoria (seção 18 do doc). Os padrões abaixo são sugestão.</div>
-  <div class="g2"><div><label>Verde sem confirmação até (R$)</label><input id="p-l" type="number" value="${S.t.par.limite}"></div><div><label>Tolerância nota × pedido (%)</label><input id="p-t" type="number" step="0.1" value="${S.t.par.tol*100}"></div></div>
+function modalParams(){modal(`<h3>Parâmetros</h3><div class="sub">Valores de alçada ainda são decisão da Diretoria (seção 18 do doc). Os padrões abaixo são sugestão e valem para as próximas OCs.</div>
+  <div class="g3"><div><label>Verde sem confirmação até (R$)</label><input id="p-l" type="number" value="${S.t.par.limite}"></div><div><label>Gerente aprova até (R$)</label><input id="p-g" type="number" value="${gerAte()}"></div><div><label>Tolerância nota × pedido (%)</label><input id="p-t" type="number" step="0.1" value="${S.t.par.tol*100}"></div></div>
+  <div class="sub" style="margin-top:8px">Regra: verde até o limite é aprovada sozinha; verde acima do limite e amarelo vão ao Gerente; acima do valor do Gerente, ou acima do teto, vai à Diretoria.</div>
   <div class="acts"><button class="btn" data-act="fechar">Cancelar</button><button class="btn dark" data-act="params-ok">Salvar</button></div>`)}
 
 /* ============ NOTAS E RATEIO (Fase 4) ============ */
@@ -16185,13 +16190,14 @@ function viewFin(X){
     b=`<div class="kpi4"><div><div class="k-l">Títulos</div><div class="v">${T.length}</div></div><div><div class="k-l">A pagar (saldo)</div><div class="v">${brl(aberto,true)}</div></div><div><div class="k-l">Vencidos</div><div class="v ${venc?'neg':''}">${venc}</div></div><div><div class="k-l">Notas sem pedido</div><div class="v ${avulsas.length?'neg':''}">${avulsas.length}</div></div></div>
     <div class="tw">${T.length?`<table class="tbl"><thead><tr><th>Título</th><th>Fornecedor</th><th>Vence</th><th class="r">Valor</th><th class="r">Pago</th><th class="r">Saldo</th><th>Situação</th><th>Nota(s)</th></tr></thead><tbody>${T.map(t=>{const i=tituloInfo(t);return `<tr><td class="mono">${t.ocNum}</td><td>${esc(t.forn)}</td><td class="${t.venc<hojeISO()&&i.saldo>0&&!t.cancelado?'neg':''}">${fdata(t.venc)}</td><td class="r">${brl(t.valor)}</td><td class="r">${brl(i.pago)}</td><td class="r">${brl(i.saldo)}</td><td><span class="pill ${i.st==='pago'?'ok':i.st==='cancelado'?'bad':i.st==='previsto'?'mute':'warn'}">${i.st}</span></td><td class="mono">${i.notas.map(n=>n.num).join(', ')||'—'}</td></tr>`}).join('')}</tbody></table>`:empty('Nenhum título ainda.','Toda OC aprovada gera o título; depois a nota é alocada a ele.')}</div>`}
   if(tab==='fech')b=viewFiscal();
+  if(tab==='apur')b=viewApuracao();
   if(tab==='conc'){
     b=`<div class="sub">Cole as linhas do extrato (<span class="mono">dd/mm/aaaa;descrição;valor</span>). O valor pago casa com a nota paga de mesmo valor.</div>
     <textarea id="ofx" rows="5" placeholder="16/11/2026;PIX Forn A;-1600,00"></textarea><div style="margin-top:8px"><button class="btn dark" data-act="conciliar" ${can('liberar')?'':'disabled title="Só Financeiro"'}>Conciliar</button></div>
     <div id="conc-msg" class="sub" style="margin-top:8px">${S.msgConc||''}</div>
     <div class="tw">${pagas.length?`<table class="tbl"><thead><tr><th>Nota</th><th>Emitente</th><th class="r">Valor</th><th>Pago em</th><th>Banco</th></tr></thead><tbody>${pagas.map(n=>`<tr><td class="mono">${n.num}</td><td>${esc(n.emitente)}</td><td class="r">${brl(n.valor)}</td><td>${fdata(n.pago)}</td><td>${n.conc?`<span class="pill ok">conciliado ${fdata(n.conc)}</span>`:'<span class="pill warn">pendente</span>'}</td></tr>`).join('')}</tbody></table>`:empty('Nenhum pagamento ainda.','Pague uma nota em Notas e rateio.')}</div>`}
   return `<div class="head"><div><h1>Financeiro</h1><p class="lead">A OC aprovada gera a conta a pagar; a nota é alocada a ela, o pagamento baixa o título e o extrato concilia.</p></div></div>
-   <div class="toolbar">${tabs('fin',[['tit','Contas a pagar '+T.length],['conc','Conciliação bancária'],['fech','Fechamento e integrações']],tab)}</div>${b}`}
+   <div class="toolbar">${tabs('fin',[['tit','Contas a pagar '+T.length],['conc','Conciliação bancária'],['apur','Apuração de tributos'],['fech','Fechamento e integrações']],tab)}</div>${b}`}
 function doConciliar(){
   const linhas=($('#ofx').value||'').split('\n').map(l=>l.trim()).filter(Boolean);let ok=0;const sem=[];
   linhas.forEach(l=>{const c=l.split(';');const v=Math.abs(parseFloat((c[2]||'').replace(/\./g,'').replace(',','.')));if(!(v>0))return sem.push(l);
@@ -16513,9 +16519,9 @@ const csvCel=v=>{const s=String(v??'');return /[;"\n]/.test(s)?'"'+s.replace(/"/
 const csvNum=v=>(+v||0).toFixed(2).replace('.',',');
 function linhasFechamento(comp){
   const L=[];S.t.notas.filter(n=>n.status!=='lancada'&&mesDe(n.emissao)===comp).forEach(n=>{
-    const bruto=n.rateio.reduce((s,l)=>s+ +l.valor,0)||n.valor;
+    const bruto=n.rateio.reduce((s,l)=>s+ +l.valor,0)||n.valor;const rt=retencoesNota(n);
     n.rateio.forEach(l=>{const i=S.byCod[l.item]||{};const k=bruto?l.valor/bruto:0;
-      L.push([n.emissao,comp,n.emitente,n.cnpj||'',n.nfNum||n.num,n.chave||'',csvNum(n.valor),csvNum(l.valor),csvNum((n.retInss||0)*k),csvNum((n.retIss||0)*k),S.D.obra.codigo,S.t.par.cno||'',l.item,i.descricao||'',l.conta,l.nat,n.status,n.pago||''])})});
+      L.push([n.emissao,comp,n.emitente,n.cnpj||'',n.nfNum||n.num,n.chave||'',csvNum(n.valor),csvNum(l.valor),csvNum(l.nat==='TER'&&rt.base>0?rt.inss*l.valor/rt.base:0),csvNum(l.nat==='TER'&&rt.base>0?rt.iss*l.valor/rt.base:0),S.D.obra.codigo,S.t.par.cno||'',l.item,i.descricao||'',l.conta,l.nat,n.status,n.pago||''])})});
   return L}
 const CAB_FECH=['emissao','competencia','fornecedor','cnpj','nota','chave','valor_nota','valor_rateado','retencao_inss','retencao_iss','obra','cno','item_eap','descricao_item','conta_plano','natureza','status','pago_em'];
 const montaCsv=(cab,L)=>'﻿'+[cab,...L].map(r=>r.map(csvCel).join(';')).join('\r\n');
@@ -16532,11 +16538,116 @@ function viewFiscal(){
   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button class="btn dark" data-act="fech-csv" ${L.length?'':'disabled'}>Gerar arquivo do contador</button><button class="btn" data-act="fech-sk" ${L.length?'':'disabled'}>Arquivo de apoio para o Sankhya</button><button class="btn ok" data-act="fech-fechar" ${L.length&&!fe&&can('recFat')?'':'disabled title="Só Financeiro, Adm ou Diretoria, com notas no mês"'}>Fechar competência</button></div>
   ${S.csvOut?`<label>Arquivo gerado (copie ou baixe)</label><textarea id="f-out" rows="6" readonly>${esc(S.csvOut.replace('﻿',''))}</textarea><div style="display:flex;gap:8px;margin-top:8px"><button class="btn" data-act="fech-copy">Copiar</button><a class="btn" id="f-dl" download="${S.csvNome||'fechamento.csv'}" href="${'data:text/csv;charset=utf-8,'+encodeURIComponent(S.csvOut)}">Baixar .csv</a></div>`:''}
   <div class="sub" style="margin-top:10px">Cada linha é um item da EAP com sua conta do plano, para o contador conciliar custo por obra e CNO. O arquivo do Sankhya traz as colunas básicas (centro de resultado, natureza, parceiro, nota, valor); o layout final depende da rotina de importação configurada lá.</div>
-  <div class="panel-t" style="margin-top:18px">Integrações</div><div class="tw"><table class="tbl"><tbody><tr><td><b>Provedor de NF-e</b><div class="mut" style="font-size:11.5px">Baixa o XML das notas emitidas contra o CNPJ da TAF</div></td><td><span class="pill ${FISCAL.provedor?'ok':'mute'}">${FISCAL.provedor?'Configurado':'Não contratado'}</span></td><td class="mut">Enquanto isso, importe o XML manualmente em Notas e rateio.</td></tr>
-  <tr><td><b>Sankhya (API oficial)</b><div class="mut" style="font-size:11.5px">Naturezas, centros de resultado e lançamentos financeiros</div></td><td><span class="pill ${SANKHYA.token?'ok':'mute'}">${SANKHYA.token?'Configurado':'Aguardando credenciais'}</span></td><td class="mut">O administrador do Sankhya gera o acesso; veja docs/INTEGRACOES.md.</td></tr></tbody></table></div>`}
+  ${viewIntegracoes(comp)}`}
 function fechGerar(sk){const comp=S.comp||mesDe(hojeISO());S.csvOut=sk?csvSankhya(comp):montaCsv(CAB_FECH,linhasFechamento(comp));S.csvNome=(sk?'sankhya_':'contador_')+S.D.obra.codigo+'_'+comp+'.csv';log('fechamento',comp,sk?'arquivo_sankhya':'arquivo_contador','','gerado');render()}
 function fechFechar(){const comp=S.comp||mesDe(hojeISO());if(S.t.fechs.some(f=>f.comp===comp))return;const L=linhasFechamento(comp);
   S.t.fechs.push({id:'fe'+Date.now(),comp,quando:new Date().toISOString(),quem:user(),linhas:L.length});log('fechamento',comp,'competência','aberta','fechada · '+L.length+' linhas');save();toast('Competência '+comp+' fechada');render()}
+/* ============ ATUALIZAR METAS PELA PLANILHA (Fase 11) ============ */
+const XLSX_URL='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+let SYNC=null;
+function carregaXlsx(){return new Promise((ok,no)=>{if(window.XLSX)return ok(window.XLSX);const s=document.createElement('script');s.src=XLSX_URL;s.onload=()=>ok(window.XLSX);s.onerror=()=>no(new Error('Não consegui carregar o leitor de Excel (precisa de internet). Use o arquivo .json gerado pelo importador.'));document.head.appendChild(s)})}
+const nOrNull=v=>{const n=typeof v==='number'?v:parseFloat(String(v??'').replace(/\./g,'').replace(',','.'));return Number.isFinite(n)?n:null};
+async function linhasDaPlanilha(file){
+  if(/\.json$/i.test(file.name)){const j=JSON.parse(await file.text());return {itens:(j.eap||[]).filter(e=>e.tipo_linha==='item'&&e.meta_total!=null).map(e=>({codigo:e.codigo,qtd:e.qtd,meta:e.meta_total,teto:e.teto_total,status:e.status_cotacao})),pacotes:(j.pacotes||[]).map(p=>({codigo:p.codigo,meta:p.meta,teto:p.teto,fechar_ate:p.fechar_ate}))}}
+  const X=await carregaXlsx();const wb=X.read(await file.arrayBuffer(),{type:'array',cellDates:true});
+  const aba=(pref)=>{const n=wb.SheetNames.find(x=>x.startsWith(pref));if(!n)throw new Error('Aba "'+pref+'" não encontrada. É o Estudo de Obra interno?');return X.utils.sheet_to_json(wb.Sheets[n],{header:1,defval:null,raw:true})};
+  const tabela=(rows,chave)=>{const h=rows.findIndex(r=>r&&r.includes(chave));if(h<0)throw new Error('Cabeçalho "'+chave+'" não encontrado');const cab=rows[h];return rows.slice(h+1).map(r=>Object.fromEntries(cab.map((c,k)=>[c,r[k]])))};
+  const itens=tabela(aba('12.'),'Item').filter(r=>r['Item']).map(r=>({codigo:String(r['Item']).trim(),qtd:nOrNull(r['Qtd']),meta:nOrNull(r['Custo adotado'])??nOrNull(r['Meta custo total']),teto:nOrNull(r['Teto total (margem zero)']),status:r['Status']}));
+  const dt=v=>v instanceof Date?v.toISOString().slice(0,10):null;
+  const pacotes=tabela(aba('11.'),'Pacote').filter(r=>r['Pacote']&&r['Pacote']!=='TOTAL').map(r=>({codigo:r['Pacote'],meta:nOrNull(r['Meta de custo']),teto:nOrNull(r['Teto (margem zero)']),fechar_ate:dt(r['Fechar até'])}));
+  return {itens,pacotes}}
+function calculaDiff(L){
+  const dif=[],info={novos:[],semQtd:[]},seen=new Set();
+  L.itens.forEach(r=>{const i=S.byCod[r.codigo];seen.add(r.codigo);
+    if(!i||i.tipo_linha!=='item'){info.novos.push(r.codigo);return}
+    if(r.qtd!=null&&i.qtd!=null&&Math.abs(r.qtd-i.qtd)>1e-6)info.semQtd.push(`${r.codigo}: planilha ${num(r.qtd)} × orçamento ${num(i.qtd)}`);
+    const m=r.meta!=null?r2(r.meta):null,t=r.teto!=null?r2(r.teto):null,mudou=[];
+    if(m!=null&&Math.abs(m-i.meta_base)>0.005)mudou.push(['Meta',i.meta_base,m]);
+    if(t!=null&&Math.abs(t-i.teto_total)>0.005)mudou.push(['Teto',i.teto_total,t]);
+    if(r.status&&r.status!==i.status_cotacao)mudou.push(['Status',i.status_cotacao,r.status]);
+    if(mudou.length)dif.push({codigo:r.codigo,mudou,novo:{meta_total:m??i.meta_base,teto_total:t??i.teto_total,status_cotacao:r.status||i.status_cotacao,qtd:i.qtd}})});
+  const pacs=[];L.pacotes.forEach(r=>{const p=S.D.pacotes.find(x=>x.codigo===r.codigo);if(!p)return;
+    if((r.meta!=null&&Math.abs(r2(r.meta)-p.meta)>0.005)||(r.teto!=null&&Math.abs(r2(r.teto)-p.teto)>0.005)||(r.fechar_ate&&r.fechar_ate!==p.fechar_ate))pacs.push({codigo:r.codigo,nome:p.nome,meta:r.meta!=null?r2(r.meta):p.meta,teto:r.teto!=null?r2(r.teto):p.teto,fechar_ate:r.fechar_ate||p.fechar_ate,antes:{meta:p.meta,teto:p.teto,fechar_ate:p.fechar_ate}})});
+  const semMov=S.D.items.filter(i=>!seen.has(i.codigo)).length;
+  return {dif,pacs,info,semMov,dMeta:r2(dif.reduce((s,d)=>s+d.novo.meta_total-S.byCod[d.codigo].meta_base,0))}}
+function modalSync(){SYNC=null;modal(`<h3>Atualizar metas pela planilha</h3><div class="sub">Escolha o Estudo de Obra (.xlsx, abas 11 e 12) ou o .json do importador. O app mostra o que mudou e só aplica depois da sua confirmação, como <b>nova versão da linha de base</b>. Preço licitado e quantidades do contrato não são alterados.</div>
+  <label>Arquivo</label><input id="sy-f" type="file" accept=".xlsx,.xlsm,.json"><div id="sy-r" style="margin-top:10px"></div>
+  <div class="acts"><button class="btn" data-act="fechar">Fechar</button><button class="btn dark" data-act="sync-ler">Comparar</button><button class="btn ok" id="sy-ap" data-act="sync-aplicar" disabled>Aplicar como nova versão</button></div>`)}
+async function syncLer(){const f=$('#sy-f').files[0];if(!f)return toast('Escolha o arquivo');$('#sy-r').innerHTML='<div class="sub">Lendo…</div>';
+  try{const L=await linhasDaPlanilha(f);SYNC=calculaDiff(L);SYNC.arquivo=f.name;
+    const d=SYNC;$('#sy-r').innerHTML=`<div class="kpi4"><div><div class="k-l">Itens com mudança</div><div class="v">${d.dif.length}</div></div><div><div class="k-l">Pacotes com mudança</div><div class="v">${d.pacs.length}</div></div><div><div class="k-l">Variação da meta</div><div class="v ${d.dMeta>0?'neg':'pos'}">${brl(d.dMeta,true)}</div></div><div><div class="k-l">Itens fora do orçamento</div><div class="v">${d.info.novos.length}</div></div></div>
+    ${d.dif.length?`<div class="tw" style="max-height:260px;overflow:auto"><table class="tbl"><thead><tr><th>Item</th><th>Mudança</th></tr></thead><tbody>${d.dif.slice(0,200).map(x=>`<tr><td class="mono">${x.codigo}</td><td>${x.mudou.map(m=>`${m[0]}: ${typeof m[1]==='number'?brl(m[1]):esc(m[1]||'—')} → <b>${typeof m[2]==='number'?brl(m[2]):esc(m[2])}</b>`).join(' · ')}</td></tr>`).join('')}</tbody></table></div>`:'<div class="sub">Nenhuma diferença de meta, teto ou status nos itens.</div>'}
+    ${d.pacs.length?`<div class="sub" style="margin-top:8px">Pacotes: ${d.pacs.map(p=>esc(p.codigo)).join(', ')}</div>`:''}${d.info.semQtd.length?`<div class="sub neg" style="margin-top:8px">Quantidade diferente do orçamento (não aplicada): ${d.info.semQtd.slice(0,5).map(esc).join('; ')}${d.info.semQtd.length>5?'…':''}</div>`:''}${d.info.novos.length?`<div class="sub" style="margin-top:8px">Fora do orçamento (ignorados): ${d.info.novos.slice(0,8).join(', ')}${d.info.novos.length>8?'…':''}</div>`:''}`;
+    $('#sy-ap').disabled=!(d.dif.length||d.pacs.length)||!can('congelar')}catch(e){$('#sy-r').innerHTML=`<div class="neg">${esc(e.message)}</div>`}}
+function syncAplicar(){const d=SYNC;if(!d||!can('congelar'))return;
+  S.t.baseOv=S.t.baseOv||{};S.t.basePac=S.t.basePac||{};
+  d.dif.forEach(x=>{const i=S.byCod[x.codigo];S.t.baseOv[x.codigo]={meta_total:x.novo.meta_total,teto_total:x.novo.teto_total,status_cotacao:x.novo.status_cotacao,meta_unit:i.qtd?r2(x.novo.meta_total/i.qtd*10000)/10000:i.meta_unit}});
+  d.pacs.forEach(p=>S.t.basePac[p.codigo]={meta:p.meta,teto:p.teto,fechar_ate:p.fechar_ate});
+  const v=(S.t.versao||1)+(S.t.frozen?1:0);S.t.versao=v;S.t.hist.push({versao:v,motivo:'Atualização pela planilha '+d.arquivo+' · '+d.dif.length+' itens, '+d.pacs.length+' pacotes',quando:new Date().toISOString(),quem:user()});
+  log('obra',S.D.obra.codigo,'linha_base','v'+(v-(S.t.frozen?1:0)),'v'+v+' · '+d.dif.length+' itens · variação '+brl(d.dMeta),d.arquivo);
+  prep();save();closeModal();toast('Linha de base v'+v+' aplicada');render()}
+
+/* ============ APURAÇÃO ESTIMADA DE TRIBUTOS (Fase 11) ============ */
+const FISC_PAD={iss:2,pis:0.65,cofins:3,irpjCsll:2.85,inssRet:11,issRet:0,outrasRet:0};   // padrões do Estudo (8,5% no total); o contador confirma
+const fisc=()=>({...FISC_PAD,...(S.t.par.fisc||{})});
+const baseServico=n=>n.rateio.filter(l=>l.nat==='TER').reduce((s,l)=>s+ +l.valor,0);
+function retencoesNota(n){const f=fisc(),b=r2(baseServico(n));
+  const inss=n.retInss?n.retInss:r2(b*f.inssRet/100),iss=n.retIss?n.retIss:r2(b*f.issRet/100),out=r2(b*f.outrasRet/100);
+  return {base:b,inss,iss,out,total:r2(inss+iss+out),liquido:r2(n.valor-inss-iss-out)}}
+function apuraFaturamento(comp){const f=fisc();
+  const L=S.t.fats.filter(x=>mesDe(x.emissao)===comp).map(x=>{const b=x.valor,t={iss:r2(b*f.iss/100),pis:r2(b*f.pis/100),cofins:r2(b*f.cofins/100),irpjCsll:r2(b*f.irpjCsll/100)};return {f:x,base:b,...t,total:r2(t.iss+t.pis+t.cofins+t.irpjCsll)}});
+  const T=L.reduce((a,x)=>({base:a.base+x.base,iss:a.iss+x.iss,pis:a.pis+x.pis,cofins:a.cofins+x.cofins,irpjCsll:a.irpjCsll+x.irpjCsll,total:a.total+x.total}),{base:0,iss:0,pis:0,cofins:0,irpjCsll:0,total:0});
+  return {L,T:Object.fromEntries(Object.entries(T).map(([k,v])=>[k,r2(v)]))}}
+function apuraRetencoes(comp){
+  const L=S.t.notas.filter(n=>n.status!=='lancada'&&mesDe(n.emissao)===comp).map(n=>({n,...retencoesNota(n)})).filter(x=>x.base>0);
+  return {L,total:r2(L.reduce((s,x)=>s+x.total,0)),inss:r2(L.reduce((s,x)=>s+x.inss,0)),iss:r2(L.reduce((s,x)=>s+x.iss,0))}}
+function viewApuracao(){
+  const comp=S.comp||mesDe(hojeISO()),f=fisc(),A=apuraFaturamento(comp),R=apuraRetencoes(comp);
+  const campo=(k,l)=>`<div><label style="margin-top:0">${l}</label><input data-fisc="${k}" type="number" step="0.01" value="${f[k]}"></div>`;
+  return `<div class="g3" style="grid-template-columns:1fr 3fr;margin-top:12px"><div><label style="margin-top:0">Competência</label><input id="a-comp" type="month" value="${comp}"></div><div class="sub" style="align-self:end">Estimativa para conferência. Alíquotas editáveis (padrão do Estudo: 8,5% sobre o faturamento). O contador valida e apura de fato.</div></div>
+  <div class="g3" style="grid-template-columns:repeat(4,1fr);margin-top:8px">${campo('iss','ISS (%)')}${campo('pis','PIS (%)')}${campo('cofins','COFINS (%)')}${campo('irpjCsll','IRPJ+CSLL efetivo (%)')}</div>
+  <div class="g3" style="grid-template-columns:repeat(3,1fr);margin-top:4px">${campo('inssRet','INSS retido em serviços tomados (%)')}${campo('issRet','ISS retido em serviços tomados (%)')}${campo('outrasRet','Outras retenções (IRRF/PIS/COFINS/CSLL, %)')}</div>
+  <div class="kpi4"><div><div class="k-l">Faturado no mês</div><div class="v">${brl(A.T.base,true)}</div></div><div><div class="k-l">Tributos s/ faturamento</div><div class="v">${brl(A.T.total,true)}</div></div><div><div class="k-l">Retido em serviços tomados</div><div class="v">${brl(R.total,true)}</div></div><div><div class="k-l">Total a recolher (estimado)</div><div class="v">${brl(A.T.total+R.total,true)}</div></div></div>
+  <div class="panel-t" style="margin-top:14px">Notas de serviço emitidas</div>${A.L.length?`<div class="tw"><table class="tbl"><thead><tr><th>NF</th><th class="r">Valor</th><th class="r">ISS</th><th class="r">PIS</th><th class="r">COFINS</th><th class="r">IRPJ+CSLL</th><th class="r">Total</th></tr></thead><tbody>${A.L.map(x=>`<tr><td class="mono">${x.f.num}</td><td class="r">${brl(x.base)}</td><td class="r">${brl(x.iss)}</td><td class="r">${brl(x.pis)}</td><td class="r">${brl(x.cofins)}</td><td class="r">${brl(x.irpjCsll)}</td><td class="r"><b>${brl(x.total)}</b></td></tr>`).join('')}</tbody></table></div>`:'<div class="sub">Nenhuma NF de serviço emitida na competência.</div>'}
+  <div class="panel-t" style="margin-top:14px">Retenções em notas de serviço recebidas (natureza terceiros)</div>${R.L.length?`<div class="tw"><table class="tbl"><thead><tr><th>Nota</th><th>Fornecedor</th><th class="r">Base de serviço</th><th class="r">INSS</th><th class="r">ISS</th><th class="r">Outras</th><th class="r">Líquido a pagar</th></tr></thead><tbody>${R.L.map(x=>`<tr><td class="mono">${x.n.num}</td><td>${esc(x.n.emitente)}</td><td class="r">${brl(x.base)}</td><td class="r">${brl(x.inss)}</td><td class="r">${brl(x.iss)}</td><td class="r">${brl(x.out)}</td><td class="r">${brl(x.liquido)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="sub">Nenhuma nota de serviço rateada na competência.</div>'}`}
+/* ============ INTEGRAÇÕES (NF-e provedor e Sankhya): só com login ativo ============ */
+const INTEG={msg:'',sk:null,prev:null,busy:false};
+async function chamaFuncao(nome,body){if(!MODO_SB)throw new Error('As integrações usam credenciais guardadas no servidor e exigem o login ativo (config.js com modo "supabase").');
+  const r=await SB.c.functions.invoke(nome,{body});if(r.error)throw new Error(r.error.message||'Falha ao chamar '+nome);return r.data}
+const dataBR=iso=>iso?iso.split('-').reverse().join('/'):'';
+function lancamentosMes(comp){const mapa=S.t.par.skMap||{},centro=S.t.par.skCentro||'',ls=[],sem=new Set();
+  S.t.notas.filter(n=>n.status!=='lancada'&&mesDe(n.emissao)===comp).forEach(n=>n.rateio.forEach(l=>{const nat=mapa[l.conta]||'';if(!nat)sem.add(l.conta);ls.push({nota:String(n.nfNum||n.num),data:dataBR(n.emissao),cnpj:n.cnpj||'',nome:n.emitente,natureza:nat,centro,valor:r2(l.valor),conta:l.conta})}));
+  return {ls,sem:[...sem],semCentro:!centro}}
+async function nfeBuscar(){INTEG.busy=true;INTEG.msg='Buscando notas no provedor…';render();
+  try{const d=await chamaFuncao('nfe-sync',{versao:S.t.par.nfeVersao,max:20});
+    if(!d.configurado)INTEG.msg='Provedor ainda sem credenciais: cadastre NFE_PROVIDER_TOKEN e NFE_CNPJ nos secrets do Supabase.';
+    else if(d.erro)INTEG.msg='Provedor: '+d.erro;
+    else{const r=importaXmls(d.notas.map(n=>[n.nome,n.xml]));if(d.proximaVersao)S.t.par.nfeVersao=d.proximaVersao;save();INTEG.msg=`${r.ok.length} nota(s) nova(s) importada(s)${r.dup.length?' · '+r.dup.length+' já lançada(s)':''}${r.erro.length?' · '+r.erro.length+' com erro':''}.`}}
+  catch(e){INTEG.msg=e.message}INTEG.busy=false;render()}
+async function skAcao(acao){INTEG.busy=true;INTEG.msg='Consultando o Sankhya…';render();
+  try{const comp=S.comp||mesDe(hojeISO()),L=lancamentosMes(comp).ls;
+    const d=await chamaFuncao('sankhya-sync',acao==='conexao'||acao==='referencias'?{acao}:{acao,lancamentos:L});
+    if(d.configurado===false)INTEG.msg='Sankhya ainda sem credenciais: cadastre SANKHYA_URL, SANKHYA_CLIENT_ID, SANKHYA_CLIENT_SECRET e SANKHYA_TOKEN nos secrets do Supabase.';
+    else if(d.erro)INTEG.msg='Sankhya: '+d.erro;
+    else if(acao==='conexao')INTEG.msg='Conexão com o Sankhya OK.';
+    else if(acao==='referencias'){INTEG.sk={naturezas:d.naturezas,centros:d.centros};INTEG.msg=`${d.naturezas.length} naturezas e ${d.centros.length} centros de resultado lidos.`}
+    else if(acao==='simular'){INTEG.simulou=true;INTEG.msg=`Simulação: ${d.payloads.length} lançamento(s) seriam enviados. Nada foi gravado.`}
+    else if(acao==='enviar')INTEG.msg=`Enviado: ${d.resultados.filter(x=>x.ok).length} ok, ${d.resultados.filter(x=>!x.ok).length} com erro.`}
+  catch(e){INTEG.msg=e.message}INTEG.busy=false;render()}
+function viewIntegracoes(comp){
+  const lm=lancamentosMes(comp),mapa=S.t.par.skMap||{},contas=[...new Set(S.t.notas.filter(n=>n.status!=='lancada').flatMap(n=>n.rateio.map(l=>l.conta)))].sort(cmpCod);
+  const pill=MODO_SB?'<span class="pill info">Login ativo</span>':'<span class="pill mute">Requer login</span>';
+  return `<div class="panel-t" style="margin-top:18px">Integrações ${pill}</div>
+  <div class="sub">As credenciais ficam só nos secrets do servidor (Supabase), nunca no app. Sem login ativo os botões abaixo explicam o que falta. ${INTEG.msg?`<b>${esc(INTEG.msg)}</b>`:''}</div>
+  <div class="tw"><table class="tbl"><tbody>
+  <tr><td><b>NF-e recebidas (provedor)</b><div class="mut" style="font-size:11.5px">Busca os XMLs das notas emitidas contra o CNPJ da TAF e importa pela fila “sem rateio”</div></td><td class="r"><button class="btn sm dark" data-act="nfe-buscar" ${INTEG.busy||!(can('nota')||can('recFat'))?'disabled':''}>Buscar notas novas</button></td></tr>
+  <tr><td><b>Sankhya (API oficial)</b><div class="mut" style="font-size:11.5px">Testa a conexão, lê naturezas e centros de resultado e envia o fechamento (primeiro simulado)</div></td><td class="r"><button class="btn sm" data-act="sk-conexao" ${INTEG.busy?'disabled':''}>Testar conexão</button> <button class="btn sm" data-act="sk-ref" ${INTEG.busy?'disabled':''}>Ler naturezas e centros</button></td></tr></tbody></table></div>
+  <div class="panel-t" style="margin-top:14px">De-para com o Sankhya</div>
+  <div class="g3" style="grid-template-columns:1fr 2fr;margin-top:6px"><div><label style="margin-top:0">Centro de resultado da obra ${S.D.obra.codigo}</label><input id="sk-centro" value="${esc(S.t.par.skCentro||'')}" placeholder="código no Sankhya"></div><div class="sub" style="align-self:end">${INTEG.sk?`Referência lida: ${INTEG.sk.centros.length} centros, ${INTEG.sk.naturezas.length} naturezas.`:'Informe o código do centro de resultado e a natureza de cada conta do plano.'}</div></div>
+  ${contas.length?`<div class="tw"><table class="tbl"><thead><tr><th>Conta do plano</th><th>Natureza no Sankhya</th></tr></thead><tbody>${contas.map(c=>`<tr><td><span class="mono">${c}</span> ${esc(nomeConta(c))}</td><td><input data-skmap="${c}" value="${esc(mapa[c]||'')}" placeholder="código da natureza"></td></tr>`).join('')}</tbody></table></div>`:'<div class="sub">As contas aparecem aqui depois das primeiras notas rateadas.</div>'}
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="btn" data-act="sk-previa" ${lm.ls.length?'':'disabled'}>Pré-visualizar envio do mês</button><button class="btn" data-act="sk-simular" ${INTEG.busy||!lm.ls.length?'disabled':''}>Simular no servidor</button><button class="btn ok" data-act="sk-enviar" ${INTEG.busy||!lm.ls.length||lm.sem.length||lm.semCentro||!can('recFat')?'disabled title="Só envia com de-para completo e perfil Financeiro, Adm ou Diretoria"':''}>Enviar ao Sankhya</button></div>
+  ${INTEG.prev?`<div class="tw"><table class="tbl"><thead><tr><th>Nota</th><th>Data</th><th>Parceiro</th><th>Natureza</th><th>Centro</th><th class="r">Valor</th></tr></thead><tbody>${INTEG.prev.ls.map(x=>`<tr><td class="mono">${esc(x.nota)}</td><td>${x.data}</td><td>${esc(x.nome)}</td><td class="${x.natureza?'':'neg'}">${esc(x.natureza||'sem de-para')}</td><td class="${x.centro?'':'neg'}">${esc(x.centro||'—')}</td><td class="r">${brl(x.valor)}</td></tr>`).join('')}</tbody></table></div>`:''}
+  <div class="sub" style="margin-top:8px">A gravação no Sankhya vem desligada no servidor (SANKHYA_ALLOW_WRITE) e os nomes de campos precisam ser validados com o administrador do Sankhya antes do primeiro envio.</div>`}
 /* ============ PAINÉIS (Fase 5) ============ */
 function viewPain(X){
   const tab=S.tab.pain||'compras';
@@ -16605,7 +16716,7 @@ $('#bell').onclick=openDrawer;$('#close').onclick=closeDrawer;$('#scrim').onclic
 $('#modal').onclick=e=>{if(e.target.id==='modal')closeModal()};
 $('#role').onchange=e=>{S.role=e.target.value;save();render()};
 
-document.addEventListener('change',e=>{const t=e.target;if(t.id==='f-comp'){S.comp=t.value;S.csvOut='';render()}else if(t.id==='f-cno'){S.t.par.cno=t.value.trim();save()}else if(t.id==='f-mun'){S.t.par.mun=t.value.trim();save()}});
+document.addEventListener('change',e=>{const t=e.target;if(t.id==='f-comp'||t.id==='a-comp'){S.comp=t.value;S.csvOut='';render()}else if(t.dataset&&t.dataset.fisc){S.t.par.fisc={...(S.t.par.fisc||{}),[t.dataset.fisc]:+t.value||0};log('parametros','fiscal',t.dataset.fisc,'',t.value);save();render()}else if(t.id==='sk-centro'){S.t.par.skCentro=t.value.trim();save();render()}else if(t.dataset&&t.dataset.skmap){S.t.par.skMap={...(S.t.par.skMap||{}),[t.dataset.skmap]:t.value.trim()};save();render()}else if(t.id==='f-cno'){S.t.par.cno=t.value.trim();save()}else if(t.id==='f-mun'){S.t.par.mun=t.value.trim();save()}});
 document.addEventListener('input',e=>{if(e.target.id==='q'){S.q=e.target.value;render()}});
 document.addEventListener('click',e=>{
   const t=e.target;let el;
@@ -16616,10 +16727,10 @@ document.addEventListener('click',e=>{
     const A={'l-entrar':()=>doLogin(false),'l-novo':()=>doLogin(true),sair:sbSair,importar:sbImportar,alertas:openDrawer,fechar:closeModal,congelar:()=>{if(!can('congelar'))return;ask('Congelar a linha de base v1','Motivo ou observação','Estudo REV10 + META da aba 11/12',m=>{S.t.frozen=true;S.t.hist.push({versao:1,motivo:m||'congelada',quando:new Date().toISOString(),quem:user()});log('obra','342','linha_base','aberta','v1 congelada',m);save();toast('Linha de base v1 congelada · compras liberadas');render()})},
      remanejar:modalRemanejar,'rm-ok':doRemanejar,'nova-sol':()=>modalSol(el.dataset.item),'sol-ok':doSol,mapa:()=>modalMapa(id),'add-cot':()=>addCot(id),'emitir-oc':()=>emitirOC(id),
      aprovar:()=>decidir(id,true),reprovar:()=>decidir(id,false),receber:()=>modalReceber(id),'rc-ok':()=>doReceber(id),'cancelar-oc':()=>cancelarOC(id),params:modalParams,
-     'params-ok':()=>{S.t.par.limite=+$('#p-l').value||0;S.t.par.tol=(+$('#p-t').value||0)/100;log('parametros','alçada','limite/tolerância','',brl(S.t.par.limite)+' / '+$('#p-t').value+'%');save();closeModal();render()},
+     'params-ok':()=>{S.t.par.limite=+$('#p-l').value||0;S.t.par.gerenteAte=+$('#p-g').value||0;S.t.par.tol=(+$('#p-t').value||0)/100;log('parametros','alçada','limite/gerente/tolerância','',brl(S.t.par.limite)+' / '+brl(S.t.par.gerenteAte)+' / '+$('#p-t').value+'%');save();closeModal();render()},
      'nova-nf':()=>modalNF(),ratear:()=>modalNF(id),'add-lin':()=>{NF.rateio.push({item:S.D.items[0].codigo,valor:0});pintaRat()},'del-lin':()=>{NF.rateio.splice(+el.dataset.k,1);pintaRat()},
      'sug-lin':()=>{const o=S.t.ocs.find(x=>x.id===NF.oc);if(!o)return toast('Escolha um pedido');NF.rateio=[{item:o.item,valor:Math.min(+NF.valor||o.valor,o.valor)}];pintaRat()},
-     'nf-ok':()=>doNF(el.dataset.modo),conciliar:doConciliar,'nova-med':modalMed,'ask-ok':askOk,'xml-novo':modalXml,'xml-ok':doXml,'fech-csv':()=>fechGerar(false),'fech-sk':()=>fechGerar(true),'fech-fechar':fechFechar,'fech-copy':()=>{const t=$('#f-out');t.select();try{navigator.clipboard.writeText(t.value).then(()=>toast('Copiado'),()=>toast('Selecionado: use Ctrl+C'))}catch(e){toast('Selecionado: use Ctrl+C')}},'bc-novo':modalBc,'bc-ok':doBc,'bc-env':()=>bcEnv(id),'bc-apr':()=>bcAprModal(id),'bc-apr-ok':()=>bcAprOk(id),'bc-fat':()=>bcFat(id),'rec-novo':()=>modalRec(id),'rec-ok':()=>doRec(id),'conc-ent':concEnt,'lan-novo':modalLan,'lan-ok':doLan,'novo-apt':modalApt,'apt-ok':doApt,'apt-conf':()=>aptConf(id),'apt-apr':()=>aptApr(id),'apt-addp':()=>{lerApt();APT.pessoas.push({funcao:FUNCOES()[0]||'',n:1,h:8});pintaApt()},'apt-delp':()=>{lerApt();APT.pessoas.splice(+el.dataset.k,1);pintaApt()},'apt-adde':()=>{lerApt();APT.equip.push({nome:'',h:8,rh:0});pintaApt()},'apt-dele':()=>{lerApt();APT.equip.splice(+el.dataset.k,1);pintaApt()},'nova-atv':modalAtv,'atv-salvar':doAtv,'atv-ok':()=>atvOk(id),'atv-no':()=>atvNo(id),'atv-no-ok':()=>atvNoOk(id),'nova-rst':modalRst,'rst-salvar':doRst,'rst-ok':()=>rstOk(id),'rst-rep':()=>rstRep(id),'nova-tar':modalTar,'tar-salvar':doTar,'tar-mv':()=>tarMv(id),'med-ok':doMed,atestar:()=>doAtestar(id),conferir:()=>conferir(id),liberar:()=>liberar(id),pagar:()=>pagar(id),
+     'nf-ok':()=>doNF(el.dataset.modo),conciliar:doConciliar,'nova-med':modalMed,'ask-ok':askOk,'nfe-buscar':nfeBuscar,'sk-conexao':()=>skAcao('conexao'),'sk-ref':()=>skAcao('referencias'),'sk-simular':()=>skAcao('simular'),'sk-enviar':()=>{if(!INTEG.simulou)return toast('Simule no servidor antes de enviar');skAcao('enviar')},'sk-previa':()=>{INTEG.prev=lancamentosMes(S.comp||mesDe(hojeISO()));render()},'sync-novo':modalSync,'sync-ler':syncLer,'sync-aplicar':syncAplicar,'xml-novo':modalXml,'xml-ok':doXml,'fech-csv':()=>fechGerar(false),'fech-sk':()=>fechGerar(true),'fech-fechar':fechFechar,'fech-copy':()=>{const t=$('#f-out');t.select();try{navigator.clipboard.writeText(t.value).then(()=>toast('Copiado'),()=>toast('Selecionado: use Ctrl+C'))}catch(e){toast('Selecionado: use Ctrl+C')}},'bc-novo':modalBc,'bc-ok':doBc,'bc-env':()=>bcEnv(id),'bc-apr':()=>bcAprModal(id),'bc-apr-ok':()=>bcAprOk(id),'bc-fat':()=>bcFat(id),'rec-novo':()=>modalRec(id),'rec-ok':()=>doRec(id),'conc-ent':concEnt,'lan-novo':modalLan,'lan-ok':doLan,'novo-apt':modalApt,'apt-ok':doApt,'apt-conf':()=>aptConf(id),'apt-apr':()=>aptApr(id),'apt-addp':()=>{lerApt();APT.pessoas.push({funcao:FUNCOES()[0]||'',n:1,h:8});pintaApt()},'apt-delp':()=>{lerApt();APT.pessoas.splice(+el.dataset.k,1);pintaApt()},'apt-adde':()=>{lerApt();APT.equip.push({nome:'',h:8,rh:0});pintaApt()},'apt-dele':()=>{lerApt();APT.equip.splice(+el.dataset.k,1);pintaApt()},'nova-atv':modalAtv,'atv-salvar':doAtv,'atv-ok':()=>atvOk(id),'atv-no':()=>atvNo(id),'atv-no-ok':()=>atvNoOk(id),'nova-rst':modalRst,'rst-salvar':doRst,'rst-ok':()=>rstOk(id),'rst-rep':()=>rstRep(id),'nova-tar':modalTar,'tar-salvar':doTar,'tar-mv':()=>tarMv(id),'med-ok':doMed,atestar:()=>doAtestar(id),conferir:()=>conferir(id),liberar:()=>liberar(id),pagar:()=>pagar(id),
      reset:()=>{if(MODO_SB)return toast('No modo conectado nada é apagado');if(!S.confirmReset){S.confirmReset=1;return toast('Clique de novo em Restaurar para apagar tudo');}S.confirmReset=0;localStorage.removeItem(KEY);S.t=novoT();prep();toast('Dados restaurados');render()}};
     if(A[a])A[a]();return}
   if(el=t.closest('[data-exp]')){const c=el.dataset.exp;S.exp.has(c)?S.exp.delete(c):S.exp.add(c);return render()}
