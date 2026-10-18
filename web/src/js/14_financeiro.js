@@ -12,6 +12,8 @@ function viewFin(X){
     const aberto=T.filter(t=>!t.cancelado).reduce((s,t)=>s+tituloInfo(t).saldo,0),venc=T.filter(t=>!t.cancelado&&t.venc<hojeISO()&&tituloInfo(t).saldo>0).length;
     b=`<div class="kpi4"><div><div class="k-l">Títulos</div><div class="v">${T.length}</div></div><div><div class="k-l">A pagar (saldo)</div><div class="v">${brl(aberto,true)}</div></div><div><div class="k-l">Vencidos</div><div class="v ${venc?'neg':''}">${venc}</div></div><div><div class="k-l">Notas sem pedido</div><div class="v ${avulsas.length?'neg':''}">${avulsas.length}</div></div></div>
     <div class="tw">${T.length?`<table class="tbl"><thead><tr><th>Título</th><th>Fornecedor</th><th>Vence</th><th class="r">Valor</th><th class="r">Pago</th><th class="r">Saldo</th><th>Situação</th><th>Nota(s)</th></tr></thead><tbody>${T.map(t=>{const i=tituloInfo(t);return `<tr><td class="mono">${t.ocNum}</td><td>${esc(t.forn)}</td><td class="${t.venc<hojeISO()&&i.saldo>0&&!t.cancelado?'neg':''}">${fdata(t.venc)}</td><td class="r">${brl(t.valor)}</td><td class="r">${brl(i.pago)}</td><td class="r">${brl(i.saldo)}</td><td><span class="pill ${i.st==='pago'?'ok':i.st==='cancelado'?'bad':i.st==='previsto'?'mute':'warn'}">${i.st}</span></td><td class="mono">${i.notas.map(n=>n.num).join(', ')||'—'}</td></tr>`}).join('')}</tbody></table>`:empty('Nenhum título ainda.','Toda OC aprovada gera o título; depois a nota é alocada a ele.')}</div>`}
+  if(tab==='contas')b=viewContas();
+  if(tab==='cobr')b=viewCobranca();
   if(tab==='fech')b=viewFiscal();
   if(tab==='apur')b=viewApuracao();
   if(tab==='conc'){
@@ -21,7 +23,7 @@ function viewFin(X){
     <div class="tw">${pagas.length?`<table class="tbl"><thead><tr><th>Nota</th><th>Emitente</th><th class="r">Valor</th><th>Pago em</th><th>Banco</th></tr></thead><tbody>${pagas.map(n=>`<tr><td class="mono">${n.num}</td><td>${esc(n.emitente)}</td><td class="r">${brl(n.valor)}</td><td>${fdata(n.pago)}</td><td>${n.conc?`<span class="pill ok">conciliado ${fdata(n.conc)}</span>`:'<span class="pill warn">pendente</span>'}</td></tr>`).join('')}</tbody></table>`:empty('Nenhum pagamento ainda.','Pague uma nota em Notas e rateio.')}</div>`}
   const banner=historicoPendente()?`<div class="alert" style="margin-top:12px"><div class="g" style="color:var(--info)">i</div><div><b>Histórico do consórcio da obra 281</b><p>Há 342 lançamentos (despesas e aportes até abril/2026) prontos para entrar: despesas viram notas na fila “sem item” e aportes viram caixa.</p><button class="btn sm dark" data-act="hist-281">Importar histórico</button></div></div>`:'';
   return `<div class="head"><div><h1>Financeiro</h1><p class="lead">A OC aprovada gera a conta a pagar; a nota é alocada a ela, o pagamento baixa o título e o extrato concilia.</p></div></div>
-   ${banner}<div class="toolbar">${tabs('fin',[['tit','Contas a pagar '+T.length],['conc','Conciliação bancária'],['apur','Apuração de tributos'],['fech','Fechamento e integrações']],tab)}</div>${b}`}
+   ${banner}<div class="toolbar">${tabs('fin',[['tit','Contas a pagar '+T.length],['conc','Conciliação bancária'],['contas','Contas e extrato'],['cobr','Cobrança'],['apur','Apuração de tributos'],['fech','Fechamento e integrações']],tab)}</div>${b}`}
 function doConciliar(){
   const linhas=($('#ofx').value||'').split('\n').map(l=>l.trim()).filter(Boolean);let ok=0;const sem=[];
   linhas.forEach(l=>{const c=l.split(';');const v=Math.abs(parseFloat((c[2]||'').replace(/\./g,'').replace(',','.')));if(!(v>0))return sem.push(l);

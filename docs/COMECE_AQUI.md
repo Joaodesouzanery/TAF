@@ -63,3 +63,10 @@ Alçadas por faixa de valor, atualização das metas pela planilha, apuração e
 ## Cuidados
 - No link do Claude: `alert/confirm/prompt` não aparecem, downloads são bloqueados e só scripts de cdnjs/jsdelivr/unpkg carregam. O app foi ajustado para isso (janelas na página, texto copiável).
 - Ao editar `web/index.html`, rode `bash scripts/qa.sh` antes de publicar.
+
+## Fase 13 — Painel de Contratos/Obra, conferência Sankhya e financeiro nativo
+- **Painel**: Início → Painéis → aba *Contrato da obra* (`29_painel_contrato.js`): mesmos blocos do Painel de Contratos do Sankhya (contrato, faturado, fat. direto, impostos, gasto pago/a pagar/atrasado, requisição, custo fixo, prov. gasto, saldo a faturar, lucro) + gráfico contrato×custos×lucro, Curva S, saúde (IDC, margem), alertas, desvios, custo por natureza, cópia CSV.
+- **Conferência Sankhya** (aba): digita os totais do Sankhya e vê bate/difere + causa provável. **Importar lançamentos** (aba): CSV `tipo;numero;fornecedor;descricao;vencimento;valor;pago_em;fat_direto` (tipo gasto|custo_fixo|provisao), sem duplicar, com desfazer.
+- **Financeiro** → *Contas e extrato* (OFX, baixa múltipla com juros/multa/desconto, CNAB 240 genérico — validar com o banco) e *Cobrança* (mensagem + link WhatsApp manual).
+- Migração `0010_fase13.sql` (tipos lfx, mov, cobr) já aplicada no Supabase TAF. Testes: `supabase/tests/fase13.sql`, `scripts/e2e_fase13.js`.
+- Os prints do Sankhya são da obra **343**; só o contrato (R$ 5.226.634,03) existia nas planilhas — gasto/provisão/custo fixo vêm do financeiro do Sankhya (importar CSV para conferir).

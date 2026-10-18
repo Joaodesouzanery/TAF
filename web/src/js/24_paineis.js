@@ -1,7 +1,10 @@
 /* ============ PAINÉIS (Fase 5) ============ */
 function viewPain(X){
-  const tab=S.tab.pain||'compras';
+  const tab=S.tab.pain||'contrato';
   let b='';
+  if(tab==='contrato')b=painelContrato(X);
+  if(tab==='conf')b=confView();
+  if(tab==='imp')b=impView();
   if(tab==='compras'){
     const L=S.D.pacotes.filter(p=>p._it.length).sort((a,b)=>(b._comp+b._real)-(a._comp+a._real));
     b=`<div class="kpi4"><div><div class="k-l">Comprometido</div><div class="v">${brl(X.comp,true)}</div></div><div><div class="k-l">Realizado</div><div class="v">${brl(X.real,true)}</div></div><div><div class="k-l">Economia nas OCs</div><div class="v ${X.economia>=0?'pos':'neg'}">${brl(X.economia,true)}</div></div><div><div class="k-l">Aprovações paradas</div><div class="v ${X.pendAprov.length?'neg':''}">${X.pendAprov.length}</div></div></div>
@@ -36,6 +39,6 @@ function viewPain(X){
     const C=[['342','SANEAGO · UTR ETA Santo Antônio do Descoberto',3258000,'Preço global por evento','ativa'],['343','CAESB · Subadutora Sobradinho',5226634.03,'Preço unitário','linha de base pendente (Fase seguinte)'],['281','SANEAGO · Mozarlândia (consórcio)',17120015.74,'Eventograma','sem orçamento de custo; histórico a importar (08D)']];
     b=`<div class="tw"><table class="tbl"><thead><tr><th>Obra</th><th class="r">Contrato</th><th>Regime</th><th class="r">Meta</th><th class="r">Comprometido</th><th class="r">Realizado</th><th>Situação</th></tr></thead><tbody>${C.map(c=>c[0]==='342'?`<tr class="clk"><td><b>${c[0]}</b><div class="mut" style="font-size:11.5px">${c[1]}</div></td><td class="r">${brl(c[2],true)}</td><td>${c[3]}</td><td class="r">${brl(X.meta,true)}</td><td class="r">${brl(X.comp,true)}</td><td class="r">${brl(X.real,true)}</td><td><span class="pill ${S.t.frozen?'ok':'warn'}">${S.t.frozen?'base v'+S.t.versao:'base não congelada'}</span></td></tr>`:`<tr><td><b>${c[0]}</b><div class="mut" style="font-size:11.5px">${c[1]}</div></td><td class="r">${brl(c[2],true)}</td><td>${c[3]}</td><td class="r mut">—</td><td class="r mut">—</td><td class="r mut">—</td><td><span class="pill bad">${c[4]}</span></td></tr>`).join('')}</tbody></table></div><div class="sub" style="margin-top:8px">Valores de contrato lidos de TAF rev6 · 03. CONTRATOS. Obras sem linha de base não abrem compra (E01).</div>`}
   return `<div class="head"><div><h1>Painéis</h1><p class="lead">Lidos dos mesmos registros do fluxo de compra e de notas, sem exportação.</p></div></div>
-  <div class="toolbar">${tabs('pain',[['compras','Compras'],['obra','Obra'],['dre','DRE'],['prod','Produção'],['lean','Lean'],['carteira','Carteira']],tab)}</div>${b}`;
+  <div class="toolbar">${tabs('pain',[['contrato','Contrato da obra'],['compras','Compras'],['obra','Obra'],['dre','DRE'],['prod','Produção'],['lean','Lean'],['carteira','Carteira'],['conf','Conferência Sankhya'],['imp','Importar lançamentos']],tab)}</div>${b}`;
 }
 

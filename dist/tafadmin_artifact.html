@@ -131,6 +131,11 @@ label{display:block;font:500 10.5px var(--mono);letter-spacing:.06em;text-transf
 .kpi4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px}.kpi4>div{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--panel)}
 .kpi4 .v{font-size:22px;font-weight:500;letter-spacing:-.02em;margin-top:3px}
 @media (max-width:820px){.g2,.g3,.kpi4{grid-template-columns:1fr 1fr}}
+.pgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:12px}
+.pk{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--panel);min-width:0}
+.pk .v{font-size:19px;font-weight:500;letter-spacing:-.02em;margin-top:2px}
+.pk.big{background:var(--panel-2)}.pk.big .v{font-size:22px}.pk.bad .v{color:var(--bad)}
+@media (max-width:820px){.pgrid{grid-template-columns:1fr 1fr}}
 </style>
 
 <div class="app">
@@ -24905,6 +24910,8 @@ const ICON={campo:'<path d="M3 21h18M5 21V10l7-6 7 6v11M10 21v-6h4v6"/>',lean:'<
  eap:'<path d="M4 6h16M4 12h10M4 18h6"/>',pac:'<path d="M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8"/>',
  compras:'<path d="M5 6h15l-1.5 9h-12zM5 6L4 3H2M9 20a1 1 0 1 0 0 .01M17 20a1 1 0 1 0 0 .01"/>',
  nota:'<path d="M7 3h8l4 4v14H7zM15 3v4h4M10 12h6M10 16h6"/>',pain:'<path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/>',fin:'<path d="M3 7h18v12H3zM3 11h18M7 15h3"/>',med:'<path d="M3 17l5-5 4 4 8-9"/>',plano:'<path d="M4 5h16M4 10h12M4 15h8M4 20h4"/>',aud:'<path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/>'};
+
+const ACOES={};/* ações registradas pelos módulos novos (Fase 13+) */
 /* ============ papéis ============ */
 const ROLES={gestao:{n:'Gestão da carteira',u:'Felipe'},diretoria:{n:'Diretoria',u:'Thadeu'},gerente:{n:'Gerente de contrato',u:'Tiago Marinho'},
  engenheiro:{n:'Engenheiro residente',u:'Marko Aurélio'},compras:{n:'Compras e suprimentos',u:'Compras'},almox:{n:'Almoxarife',u:'Almoxarife'},
@@ -24923,7 +24930,7 @@ const CFG=window.TAF_CONFIG||{};
 const MODO_SB=!!(CFG.supabaseUrl&&CFG.supabaseKey)&&(CFG.modo==='supabase'||/[?&]sb=1/.test(location.search))&&!/[?&]demo=1/.test(location.search);
 const SB={c:null,user:null,perfil:null,obraId:null,sync:{},estado:'',timer:null,busy:false,perfis:[]};
 let S={view:'hoje',tab:{},role:'engenheiro',D:null,t:null,exp:new Set(),q:''};
-const novoT=()=>({titulos:[],frozen:false,versao:1,hist:[],metaOv:{},baseOv:{},basePac:{},sols:[],ocs:[],notas:[],aud:[],meds:[],conc:[],apts:[],rsts:[],atvs:[],tars:[],bcs:[],fats:[],recs:[],lans:[],fechs:[],forns:[],inss:[],bancos:[],seq:{sol:0,oc:0,nf:0,bm:0},par:{tol:0.02,limite:100000}});
+const novoT=()=>({titulos:[],frozen:false,versao:1,hist:[],metaOv:{},baseOv:{},basePac:{},sols:[],ocs:[],notas:[],aud:[],meds:[],conc:[],apts:[],rsts:[],atvs:[],tars:[],bcs:[],fats:[],recs:[],lans:[],lfxs:[],movs:[],cobrs:[],fechs:[],forns:[],inss:[],bancos:[],seq:{sol:0,oc:0,nf:0,bm:0},par:{tol:0.02,limite:100000}});
 /* Cadastros (fornecedores, insumos, bancos) valem para todas as obras: no modo aberto ficam numa chave própria do navegador. */
 const GL_KEYS=['forns','inss','bancos'];
 const save=()=>{if(MODO_SB){sbSyncSoon();return}try{const g={};GL_KEYS.forEach(k=>g[k]=S.t[k]);localStorage.setItem('taf_global',JSON.stringify(g));localStorage.setItem(chaveObra(),JSON.stringify({...S.t,role:S.role}))}catch(e){}};
@@ -24935,7 +24942,7 @@ function toast(m){document.querySelectorAll('.toast').forEach(x=>x.remove());con
 const cmpCod=(a,b)=>{const x=a.split('.'),y=b.split('.');for(let i=0;i<Math.max(x.length,y.length);i++){const p=x[i],q=y[i];if(p===undefined)return -1;if(q===undefined)return 1;
   const n=/^\d+$/.test(p)&&/^\d+$/.test(q);const d=n?(+p)-(+q):p.localeCompare(q);if(d)return d}return 0};
 const estadoObra=()=>({frozen:S.t.frozen,versao:S.t.versao,hist:S.t.hist,metaOv:S.t.metaOv,baseOv:S.t.baseOv,basePac:S.t.basePac,par:S.t.par});
-const DOCS=[['sols','sol'],['ocs','oc'],['notas','nf'],['titulos','tit'],['meds','med'],['aud','aud'],['apts','apt'],['rsts','rst'],['atvs','atv'],['tars','tar'],['bcs','bc'],['fats','fat'],['recs','rec'],['lans','lan'],['fechs','fech'],['forns','forn'],['inss','ins'],['bancos','banc']];
+const DOCS=[['sols','sol'],['ocs','oc'],['notas','nf'],['titulos','tit'],['meds','med'],['aud','aud'],['apts','apt'],['rsts','rst'],['atvs','atv'],['tars','tar'],['bcs','bc'],['fats','fat'],['recs','rec'],['lans','lan'],['lfxs','lfx'],['movs','mov'],['cobrs','cobr'],['fechs','fech'],['forns','forn'],['inss','ins'],['bancos','banc']];
 function sbDocs(){const out=[];DOCS.forEach(([k,tipo])=>(S.t[k]||[]).forEach(o=>{if(!o.id)o.id=tipo+Date.now()+Math.random().toString(36).slice(2,6);out.push({id:o.id,obra_id:GLOBAIS.includes(tipo)?(SB.obraBase||SB.obraId):SB.obraId,tipo,dados:o})}));return out}
 function sbSyncSoon(){clearTimeout(SB.timer);SB.timer=setTimeout(()=>{SB.timer=null;sbSync()},250)}
 const filaKey=()=>'taf_fila_'+SB.obraId;
@@ -25438,6 +25445,8 @@ function viewFin(X){
     const aberto=T.filter(t=>!t.cancelado).reduce((s,t)=>s+tituloInfo(t).saldo,0),venc=T.filter(t=>!t.cancelado&&t.venc<hojeISO()&&tituloInfo(t).saldo>0).length;
     b=`<div class="kpi4"><div><div class="k-l">Títulos</div><div class="v">${T.length}</div></div><div><div class="k-l">A pagar (saldo)</div><div class="v">${brl(aberto,true)}</div></div><div><div class="k-l">Vencidos</div><div class="v ${venc?'neg':''}">${venc}</div></div><div><div class="k-l">Notas sem pedido</div><div class="v ${avulsas.length?'neg':''}">${avulsas.length}</div></div></div>
     <div class="tw">${T.length?`<table class="tbl"><thead><tr><th>Título</th><th>Fornecedor</th><th>Vence</th><th class="r">Valor</th><th class="r">Pago</th><th class="r">Saldo</th><th>Situação</th><th>Nota(s)</th></tr></thead><tbody>${T.map(t=>{const i=tituloInfo(t);return `<tr><td class="mono">${t.ocNum}</td><td>${esc(t.forn)}</td><td class="${t.venc<hojeISO()&&i.saldo>0&&!t.cancelado?'neg':''}">${fdata(t.venc)}</td><td class="r">${brl(t.valor)}</td><td class="r">${brl(i.pago)}</td><td class="r">${brl(i.saldo)}</td><td><span class="pill ${i.st==='pago'?'ok':i.st==='cancelado'?'bad':i.st==='previsto'?'mute':'warn'}">${i.st}</span></td><td class="mono">${i.notas.map(n=>n.num).join(', ')||'—'}</td></tr>`}).join('')}</tbody></table>`:empty('Nenhum título ainda.','Toda OC aprovada gera o título; depois a nota é alocada a ele.')}</div>`}
+  if(tab==='contas')b=viewContas();
+  if(tab==='cobr')b=viewCobranca();
   if(tab==='fech')b=viewFiscal();
   if(tab==='apur')b=viewApuracao();
   if(tab==='conc'){
@@ -25447,7 +25456,7 @@ function viewFin(X){
     <div class="tw">${pagas.length?`<table class="tbl"><thead><tr><th>Nota</th><th>Emitente</th><th class="r">Valor</th><th>Pago em</th><th>Banco</th></tr></thead><tbody>${pagas.map(n=>`<tr><td class="mono">${n.num}</td><td>${esc(n.emitente)}</td><td class="r">${brl(n.valor)}</td><td>${fdata(n.pago)}</td><td>${n.conc?`<span class="pill ok">conciliado ${fdata(n.conc)}</span>`:'<span class="pill warn">pendente</span>'}</td></tr>`).join('')}</tbody></table>`:empty('Nenhum pagamento ainda.','Pague uma nota em Notas e rateio.')}</div>`}
   const banner=historicoPendente()?`<div class="alert" style="margin-top:12px"><div class="g" style="color:var(--info)">i</div><div><b>Histórico do consórcio da obra 281</b><p>Há 342 lançamentos (despesas e aportes até abril/2026) prontos para entrar: despesas viram notas na fila “sem item” e aportes viram caixa.</p><button class="btn sm dark" data-act="hist-281">Importar histórico</button></div></div>`:'';
   return `<div class="head"><div><h1>Financeiro</h1><p class="lead">A OC aprovada gera a conta a pagar; a nota é alocada a ela, o pagamento baixa o título e o extrato concilia.</p></div></div>
-   ${banner}<div class="toolbar">${tabs('fin',[['tit','Contas a pagar '+T.length],['conc','Conciliação bancária'],['apur','Apuração de tributos'],['fech','Fechamento e integrações']],tab)}</div>${b}`}
+   ${banner}<div class="toolbar">${tabs('fin',[['tit','Contas a pagar '+T.length],['conc','Conciliação bancária'],['contas','Contas e extrato'],['cobr','Cobrança'],['apur','Apuração de tributos'],['fech','Fechamento e integrações']],tab)}</div>${b}`}
 function doConciliar(){
   const linhas=($('#ofx').value||'').split('\n').map(l=>l.trim()).filter(Boolean);let ok=0;const sem=[];
   linhas.forEach(l=>{const c=l.split(';');const v=Math.abs(parseFloat((c[2]||'').replace(/\./g,'').replace(',','.')));if(!(v>0))return sem.push(l);
@@ -25893,8 +25902,11 @@ function viewIntegracoes(comp){
   <div class="sub" style="margin-top:8px">A gravação no Sankhya vem desligada no servidor (SANKHYA_ALLOW_WRITE) e os nomes de campos precisam ser validados com o administrador do Sankhya antes do primeiro envio.</div>`}
 /* ============ PAINÉIS (Fase 5) ============ */
 function viewPain(X){
-  const tab=S.tab.pain||'compras';
+  const tab=S.tab.pain||'contrato';
   let b='';
+  if(tab==='contrato')b=painelContrato(X);
+  if(tab==='conf')b=confView();
+  if(tab==='imp')b=impView();
   if(tab==='compras'){
     const L=S.D.pacotes.filter(p=>p._it.length).sort((a,b)=>(b._comp+b._real)-(a._comp+a._real));
     b=`<div class="kpi4"><div><div class="k-l">Comprometido</div><div class="v">${brl(X.comp,true)}</div></div><div><div class="k-l">Realizado</div><div class="v">${brl(X.real,true)}</div></div><div><div class="k-l">Economia nas OCs</div><div class="v ${X.economia>=0?'pos':'neg'}">${brl(X.economia,true)}</div></div><div><div class="k-l">Aprovações paradas</div><div class="v ${X.pendAprov.length?'neg':''}">${X.pendAprov.length}</div></div></div>
@@ -25929,7 +25941,7 @@ function viewPain(X){
     const C=[['342','SANEAGO · UTR ETA Santo Antônio do Descoberto',3258000,'Preço global por evento','ativa'],['343','CAESB · Subadutora Sobradinho',5226634.03,'Preço unitário','linha de base pendente (Fase seguinte)'],['281','SANEAGO · Mozarlândia (consórcio)',17120015.74,'Eventograma','sem orçamento de custo; histórico a importar (08D)']];
     b=`<div class="tw"><table class="tbl"><thead><tr><th>Obra</th><th class="r">Contrato</th><th>Regime</th><th class="r">Meta</th><th class="r">Comprometido</th><th class="r">Realizado</th><th>Situação</th></tr></thead><tbody>${C.map(c=>c[0]==='342'?`<tr class="clk"><td><b>${c[0]}</b><div class="mut" style="font-size:11.5px">${c[1]}</div></td><td class="r">${brl(c[2],true)}</td><td>${c[3]}</td><td class="r">${brl(X.meta,true)}</td><td class="r">${brl(X.comp,true)}</td><td class="r">${brl(X.real,true)}</td><td><span class="pill ${S.t.frozen?'ok':'warn'}">${S.t.frozen?'base v'+S.t.versao:'base não congelada'}</span></td></tr>`:`<tr><td><b>${c[0]}</b><div class="mut" style="font-size:11.5px">${c[1]}</div></td><td class="r">${brl(c[2],true)}</td><td>${c[3]}</td><td class="r mut">—</td><td class="r mut">—</td><td class="r mut">—</td><td><span class="pill bad">${c[4]}</span></td></tr>`).join('')}</tbody></table></div><div class="sub" style="margin-top:8px">Valores de contrato lidos de TAF rev6 · 03. CONTRATOS. Obras sem linha de base não abrem compra (E01).</div>`}
   return `<div class="head"><div><h1>Painéis</h1><p class="lead">Lidos dos mesmos registros do fluxo de compra e de notas, sem exportação.</p></div></div>
-  <div class="toolbar">${tabs('pain',[['compras','Compras'],['obra','Obra'],['dre','DRE'],['prod','Produção'],['lean','Lean'],['carteira','Carteira']],tab)}</div>${b}`;
+  <div class="toolbar">${tabs('pain',[['contrato','Contrato da obra'],['compras','Compras'],['obra','Obra'],['dre','DRE'],['prod','Produção'],['lean','Lean'],['carteira','Carteira'],['conf','Conferência Sankhya'],['imp','Importar lançamentos']],tab)}</div>${b}`;
 }
 /* ============ AUDITORIA ============ */
 function viewAud(){
@@ -25974,7 +25986,7 @@ document.addEventListener('click',e=>{
      'sug-lin':()=>{const o=S.t.ocs.find(x=>x.id===NF.oc);if(!o)return toast('Escolha um pedido');NF.rateio=[{item:o.item,valor:Math.min(+NF.valor||o.valor,o.valor)}];pintaRat()},
      'nf-ok':()=>doNF(el.dataset.modo),conciliar:doConciliar,'nova-med':modalMed,'ask-ok':askOk,'obras':modalObras,'obra-abrir':()=>abrirObra(el.dataset.cod),'obra-imp':()=>importarObraBanco(el.dataset.cod),'hist-281':importaHistorico281,'cad-novo':()=>modalCad(el.dataset.k),'cad-edit':()=>modalCad(el.dataset.k,id),'cad-ok':doCad,'nfe-buscar':nfeBuscar,'sk-conexao':()=>skAcao('conexao'),'sk-ref':()=>skAcao('referencias'),'sk-simular':()=>skAcao('simular'),'sk-enviar':()=>{if(!INTEG.simulou)return toast('Simule no servidor antes de enviar');skAcao('enviar')},'sk-previa':()=>{INTEG.prev=lancamentosMes(S.comp||mesDe(hojeISO()));render()},'sync-novo':modalSync,'sync-ler':syncLer,'sync-aplicar':syncAplicar,'xml-novo':modalXml,'xml-ok':doXml,'fech-csv':()=>fechGerar(false),'fech-sk':()=>fechGerar(true),'fech-fechar':fechFechar,'fech-copy':()=>{const t=$('#f-out');t.select();try{navigator.clipboard.writeText(t.value).then(()=>toast('Copiado'),()=>toast('Selecionado: use Ctrl+C'))}catch(e){toast('Selecionado: use Ctrl+C')}},'bc-novo':modalBc,'bc-ok':doBc,'bc-env':()=>bcEnv(id),'bc-apr':()=>bcAprModal(id),'bc-apr-ok':()=>bcAprOk(id),'bc-fat':()=>bcFat(id),'rec-novo':()=>modalRec(id),'rec-ok':()=>doRec(id),'conc-ent':concEnt,'lan-novo':modalLan,'lan-ok':doLan,'novo-apt':modalApt,'apt-ok':doApt,'apt-conf':()=>aptConf(id),'apt-apr':()=>aptApr(id),'apt-addp':()=>{lerApt();APT.pessoas.push({funcao:FUNCOES()[0]||'',n:1,h:8});pintaApt()},'apt-delp':()=>{lerApt();APT.pessoas.splice(+el.dataset.k,1);pintaApt()},'apt-adde':()=>{lerApt();APT.equip.push({nome:'',h:8,rh:0});pintaApt()},'apt-dele':()=>{lerApt();APT.equip.splice(+el.dataset.k,1);pintaApt()},'nova-atv':modalAtv,'atv-salvar':doAtv,'atv-ok':()=>atvOk(id),'atv-no':()=>atvNo(id),'atv-no-ok':()=>atvNoOk(id),'nova-rst':modalRst,'rst-salvar':doRst,'rst-ok':()=>rstOk(id),'rst-rep':()=>rstRep(id),'nova-tar':modalTar,'tar-salvar':doTar,'tar-mv':()=>tarMv(id),'med-ok':doMed,atestar:()=>doAtestar(id),conferir:()=>conferir(id),liberar:()=>liberar(id),pagar:()=>pagar(id),
      reset:()=>{if(MODO_SB)return toast('No modo conectado nada é apagado');if(!S.confirmReset){S.confirmReset=1;return toast('Clique de novo em Restaurar para apagar tudo');}S.confirmReset=0;localStorage.removeItem(chaveObra());S.t=novoT();prep();toast('Dados restaurados');render()}};
-    if(A[a])A[a]();return}
+    if(A[a])A[a]();else if(ACOES[a])ACOES[a](el);return}
   if(el=t.closest('[data-exp]')){const c=el.dataset.exp;S.exp.has(c)?S.exp.delete(c):S.exp.add(c);return render()}
   if(el=t.closest('[data-item]')){return modalItem(el.dataset.item)}
   if(el=t.closest('[data-pac]')){return modalPac(el.dataset.pac)}
@@ -26057,6 +26069,204 @@ async function importaHistorico281(){
     S.t.notas.push({id:'h281-'+h.n,num:'H281-'+String(h.n).padStart(4,'0'),emitente:h.fornecedor||'(sem fornecedor)',chave:'',nfNum:h.documento,valor:h.valor,emissao:h.emissao||h.vencimento,oc:'',ocNum:'',
       rateio:[{item:'S.1',valor:h.valor,nat:h.nat,conta:h.conta}],status:pago?'paga':'conferida',pago:pago?(h.vencimento||h.emissao):undefined,historico:true,descricao:h.descricao,justSemOC:'Histórico importado do consórcio (aba 08D)',central:h.central});nN++});
   log('obra','281','historico','',nN+' despesas e '+nA+' aportes importados');save();toast(nN+' despesas e '+nA+' aportes importados');render()}
+/* ============ PAINEL DE CONTRATOS / OBRA (Fase 13) ============ */
+/* Mesmos blocos do Painel de Contratos do Sankhya, calculados dos registros do sistema (+ lançamentos importados). */
+const mesCorr=()=>mesDe(hojeISO());
+const lfxDe=tp=>S.t.lfxs.filter(l=>l.tipo===tp);
+function vencNota(n){const t=S.t.titulos.find(x=>x.oc&&x.oc===n.oc&&!x.cancelado);return t?t.venc:addDias(n.emissao||hojeISO(),30)}
+function painelCalc(){
+  const T=S.t,h=hojeISO(),O=S.D.obra,X=S.X||derive(),contrato=O.valor_contrato||X.venda,trib=O.tributos_nota||0;
+  const fats=T.fats,recs=T.recs,fat=r2(fats.reduce((s,f)=>s+f.valor,0));
+  const faturadoAnt=r2(fats.filter(f=>mesDe(f.emissao)<mesCorr()).reduce((s,f)=>s+f.valor,0));
+  const recebido=r2(recs.reduce((s,r)=>s+r.valor,0)),aReceber=r2(fats.reduce((s,f)=>s+fatSaldo(f),0));
+  const atrRec=r2(fats.filter(f=>f.venc<h).reduce((s,f)=>s+fatSaldo(f),0));
+  const fatDireto=r2(fats.filter(f=>f.fatDireto).reduce((s,f)=>s+f.valor,0)+T.notas.filter(n=>n.fatDireto&&n.status!=='lancada').reduce((s,n)=>s+n.valor,0)+lfxDe('gasto').filter(l=>l.fatDireto).reduce((s,l)=>s+l.valor,0));
+  const impDeb=r2(fat*trib);
+  const nt=T.notas.filter(n=>n.status!=='lancada'),npg=nt.filter(n=>n.status==='paga'),nab=nt.filter(n=>n.status!=='paga');
+  const lg=lfxDe('gasto');
+  const pago=r2(npg.reduce((s,n)=>s+n.valor,0)+lg.filter(l=>l.pago).reduce((s,l)=>s+l.valor,0));
+  const atrasado=r2(nab.filter(n=>vencNota(n)<h).reduce((s,n)=>s+n.valor,0)+lg.filter(l=>!l.pago&&l.venc<h).reduce((s,l)=>s+l.valor,0));
+  const aPagar=r2(nab.filter(n=>vencNota(n)>=h).reduce((s,n)=>s+n.valor,0)+lg.filter(l=>!l.pago&&l.venc>=h).reduce((s,l)=>s+l.valor,0));
+  const gasto=r2(pago+atrasado+aPagar);
+  const requisicao=r2(T.sols.filter(s=>['enviada','em_cotacao','cotada'].includes(s.status)).reduce((s,x)=>s+x.qtd*x.preco,0));
+  const cfReal=r2(T.notas.filter(n=>n.status!=='lancada').reduce((s,n)=>s+n.rateio.filter(l=>l.nat==='ADM').reduce((a,l)=>a+ +l.valor,0),0)+lfxDe('custo_fixo').reduce((s,l)=>s+l.valor,0));
+  const cfPrev=r2(S.D.items.filter(i=>i.nat==='ADM').reduce((s,i)=>s+i.meta_total,0));
+  const custoFixo=Math.max(cfReal,0),prov=r2(X.comp+lfxDe('provisao').reduce((s,l)=>s+l.valor,0));
+  const saldoFat=r2(contrato-fat);
+  const comprom=r2(gasto+custoFixo+prov);
+  const lucro=r2(contrato*(1-trib)-comprom);          // projetado com o que já está comprometido
+  const lucroReal=r2(fat*(1-trib)-gasto-custoFixo);   // realizado: só o faturado contra o gasto
+  return {contrato,fat,faturadoAnt,recebido,aReceber,atrRec,fatDireto,impDeb,impCred:0,pago,aPagar,atrasado,gasto,requisicao,custoFixo,cfPrev,
+    pctCF:contrato?custoFixo/contrato:0,prov,saldoFat,comprom,lucro,lucroReal,pctLucro:contrato?lucro/contrato:0,trib}}
+const PAINEL_DICA={contrato:'Valor do contrato da obra.',fat:'Soma das NFs de serviço emitidas (boletins aprovados e faturados).',
+ gasto:'Pago + a pagar + atrasado: notas rateadas/conferidas/pagas e lançamentos importados do tipo gasto. Atrasado = vencimento no passado e sem pagamento.',
+ requisicao:'Solicitações de compra ainda sem pedido aprovado (preço × quantidade).',custoFixo:'Natureza indireta (ADM) rateada nas notas + lançamentos de custo fixo importados.',
+ prov:'Comprometido: pedidos aprovados ainda sem nota + provisões importadas.',saldoFat:'Contrato − faturado.',lucro:'Contrato líquido de tributos − (gasto + custo fixo + provisão). É projeção; o realizado aparece ao lado.',impDeb:'Estimativa: faturado × tributos sobre a nota do contrato. Apuração completa na Fase 14.'};
+const kv=(l,v,o={})=>`<div class="pk ${o.cls||''}" ${o.tip?`title="${esc(o.tip)}"`:''}><div class="k-l">${l}</div><div class="v ${o.neg&&v<0?'neg':''}">${brl(v)}</div>${o.sub?`<div class="mut" style="font-size:11.5px">${o.sub}</div>`:''}</div>`;
+function svgBarrasContrato(c){
+  const W=560,H=250,P=30,mx=Math.max(c.contrato,c.comprom,1)*1.08,y=v=>H-P-(v/mx)*(H-2*P),bw=70;
+  const stack=[['Gasto',c.gasto,'var(--info)'],['Custo fixo',c.custoFixo,'var(--warn)'],['Provisão',c.prov,'var(--bad)']];
+  let acc=0,seg='';stack.forEach(([n,v,col])=>{const y1=y(acc+v),y0=y(acc);seg+=`<rect x="${W*.5-bw/2}" y="${y1}" width="${bw}" height="${Math.max(0,y0-y1)}" fill="${col}"><title>${n}: ${brl(v)}</title></rect>`;acc+=v});
+  const lx=W*.82,ly=y(Math.max(0,c.lucro)),lh=Math.abs(y(c.lucro)-y(0));
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px;height:auto" role="img" aria-label="Contrato, custos empilhados e lucro">
+   <line x1="${P}" x2="${W-P}" y1="${H-P}" y2="${H-P}" stroke="var(--line)"/>
+   <rect x="${W*.18-bw/2}" y="${y(c.contrato)}" width="${bw}" height="${H-P-y(c.contrato)}" fill="var(--ink-4,#9aa)"><title>Contrato ${brl(c.contrato)}</title></rect>
+   ${seg}
+   <rect x="${lx-bw/2}" y="${c.lucro>=0?ly:y(0)}" width="${bw}" height="${Math.max(2,lh)}" fill="${c.lucro>=0?'var(--ok)':'var(--bad)'}"><title>Lucro ${brl(c.lucro)}</title></rect>
+   <text x="${W*.18}" y="${H-10}" text-anchor="middle" font-size="11" fill="var(--ink-3)">Contrato</text><text x="${W*.5}" y="${H-10}" text-anchor="middle" font-size="11" fill="var(--ink-3)">Custos</text><text x="${lx}" y="${H-10}" text-anchor="middle" font-size="11" fill="var(--ink-3)">Lucro</text>
+   <text x="${W*.18}" y="${y(c.contrato)-6}" text-anchor="middle" font-size="11" fill="var(--ink-2)">${brl(c.contrato,true)}</text><text x="${W*.5}" y="${y(c.comprom)-6}" text-anchor="middle" font-size="11" fill="var(--ink-2)">${brl(c.comprom,true)}</text><text x="${lx}" y="${(c.lucro>=0?ly:y(0)+lh)+(c.lucro>=0?-6:14)}" text-anchor="middle" font-size="11" fill="var(--ink-2)">${brl(c.lucro,true)}</text></svg>
+   <div class="legend">${stack.map(([n,,col])=>`<span><i style="background:${col}"></i>${n}</span>`).join('')}</div>`}
+function curvaS(){
+  const ms=new Set([mesCorr()]);S.t.meds.forEach(m=>ms.add(mesDe(m.periodo)));S.t.fats.forEach(f=>ms.add(mesDe(f.emissao)));S.t.notas.forEach(n=>n.status!=='lancada'&&ms.add(mesDe(n.emissao)));
+  const L=[...ms].filter(Boolean).sort();if(L.length<2)L.unshift(addMes(L[0],-1));
+  const c={medido:0,fat:0,custo:0};return L.map(m=>{c.medido+=S.t.meds.filter(x=>x.status==='atestada'&&mesDe(x.periodo)===m).reduce((s,x)=>s+medValor(x),0);
+    c.fat+=S.t.fats.filter(f=>mesDe(f.emissao)===m).reduce((s,f)=>s+f.valor,0);
+    c.custo+=S.t.notas.filter(n=>n.status!=='lancada'&&mesDe(n.emissao)===m).reduce((s,n)=>s+n.valor,0);return {m,...c}})}
+function svgCurvaS(r){
+  const W=560,H=210,P=28,mx=Math.max(1,...r.map(x=>Math.max(x.medido,x.fat,x.custo))),X=i=>P+i*(W-2*P)/Math.max(1,r.length-1),Y=v=>H-P-(v/mx)*(H-2*P);
+  const ln=(k,col)=>`<polyline fill="none" stroke="${col}" stroke-width="2" points="${r.map((x,i)=>X(i)+','+Y(x[k])).join(' ')}"/>`+r.map((x,i)=>`<circle cx="${X(i)}" cy="${Y(x[k])}" r="3" fill="${col}"><title>${fmes(x.m)} · ${k}: ${brl(x[k])}</title></circle>`).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px;height:auto" role="img" aria-label="Curva S acumulada">${ln('medido','var(--info)')}${ln('fat','var(--ok)')}${ln('custo','var(--bad)')}${r.map((x,i)=>`<text x="${X(i)}" y="${H-8}" text-anchor="middle" font-size="10" fill="var(--ink-3)">${fmes(x.m)}</text>`).join('')}</svg>
+   <div class="legend"><span><i style="background:var(--info)"></i>Medido (atestado)</span><span><i style="background:var(--ok)"></i>Faturado</span><span><i style="background:var(--bad)"></i>Custo (notas)</span></div>`}
+function painelContrato(X){
+  const c=painelCalc(),O=S.D.obra,sf=(v,l)=>({tip:PAINEL_DICA[l]});
+  const totI=S.D.items.length,semMeta=S.D.items.filter(i=>!i.meta_total).length;
+  const idc=(()=>{let cm=0,va=0;S.D.items.forEach(i=>{const r=resItem(i);cm+=r.real;va+=r.va});return cm>0?va/cm:null})();
+  const sem=(ok,warn)=>ok?'ok':warn?'warn':'bad';
+  const desv=[...S.D.items].map(i=>({i,v:S.sd[i.codigo].comp+S.sd[i.codigo].real-i.meta_total})).filter(x=>x.v>0).sort((a,b)=>b.v-a.v).slice(0,6);
+  const nat={};S.D.items.forEach(i=>{nat[i.nat]=nat[i.nat]||{meta:0,real:0};nat[i.nat].meta+=i.meta_total;nat[i.nat].real+=S.sd[i.codigo].comp+S.sd[i.codigo].real});
+  const alerts=[];if(c.atrasado>0)alerts.push(['bad','Gasto atrasado',brl(c.atrasado)]);if(c.atrRec>0)alerts.push(['bad','NF vencida a receber',brl(c.atrRec)]);if(c.lucro<0)alerts.push(['bad','Lucro projetado negativo',brl(c.lucro)]);
+  if(X.semFolga.length)alerts.push(['warn','Itens com meta acima do teto',String(X.semFolga.length)]);if(semMeta)alerts.push(['warn','Itens sem meta de custo',semMeta+' de '+totI]);
+  const bar=(v,m)=>m>0?`<div class="bar"><i class="b" style="width:${Math.min(100,v/m*100)}%"></i></div>`:'<span class="mut">sem meta</span>';
+  return `<div class="sub" style="margin-top:6px">${esc(O.contratante)} · contrato ${esc(O.contrato)} · <b>${esc(O.codigo)}</b> ${esc(O.nome)}. Passe o mouse sobre um valor para ver como foi calculado.</div>
+  <div class="pgrid">
+   ${kv('Contrato',c.contrato,{...sf(0,'contrato'),cls:'big'})}
+   ${kv('Faturado',c.fat,{...sf(0,'fat'),sub:'anteriores '+brl(c.faturadoAnt)})}${kv('Recebido',c.recebido)}${kv('A receber',c.aReceber)}${kv('Atrasado (a receber)',c.atrRec,{neg:0,cls:c.atrRec>0?'bad':''})}
+   ${kv('Fat. direto',c.fatDireto,{tip:'Faturamento direto: pago pelo cliente ao fornecedor (marque na NF).'})}
+   ${kv('Impostos (débito)',c.impDeb,{...sf(0,'impDeb')})}${kv('Impostos (crédito)',c.impCred,{tip:'Créditos de impostos entram na apuração da Fase 14.'})}
+   ${kv('Gasto',c.gasto,{...sf(0,'gasto'),cls:'big'})}${kv('Gasto pago',c.pago)}${kv('Gasto a pagar',c.aPagar)}${kv('Gasto atrasado',c.atrasado,{cls:c.atrasado>0?'bad':''})}${kv('Requisição',c.requisicao,{...sf(0,'requisicao')})}
+   ${kv('Custo fixo',c.custoFixo,{...sf(0,'custoFixo'),sub:(c.pctCF*100).toFixed(2).replace('.',',')+' % do contrato · previsto '+brl(c.cfPrev)})}
+   ${kv('Prov. gasto',c.prov,{...sf(0,'prov')})}${kv('Saldo a faturar',c.saldoFat,{...sf(0,'saldoFat')})}
+   ${kv('Lucro (projetado)',c.lucro,{...sf(0,'lucro'),neg:1,cls:'big '+(c.lucro<0?'bad':''),sub:(c.pctLucro*100).toFixed(2).replace('.',',')+' % · realizado '+brl(c.lucroReal)})}
+  </div>
+  <div class="cols" style="margin-top:14px"><div class="card"><div class="in"><div class="panel-t">Contrato × custos × lucro</div>${svgBarrasContrato(c)}</div></div>
+   <div class="card"><div class="in"><div class="panel-t">Curva S acumulada</div>${svgCurvaS(curvaS())}</div></div></div>
+  <div class="cols" style="margin-top:14px"><div class="card"><div class="in"><div class="panel-t">Saúde da obra</div>
+    <div class="row" style="grid-template-columns:1fr auto"><div><h4>IDC (valor agregado ÷ custo)</h4></div><span class="pill ${idc==null?'mute':sem(idc>=.95,idc>=.9)}">${idc==null?'sem custo':idc.toFixed(2).replace('.',',')}</span></div>
+    <div class="row" style="grid-template-columns:1fr auto"><div><h4>Margem projetada</h4></div><span class="pill ${sem(c.pctLucro>=.05,c.pctLucro>=0)}">${(c.pctLucro*100).toFixed(1).replace('.',',')} %</span></div>
+    <div class="row" style="grid-template-columns:1fr auto"><div><h4>Comprometido ÷ contrato</h4></div><span class="pill ${sem(c.comprom/c.contrato<=.85,c.comprom/c.contrato<=1)}">${(c.comprom/c.contrato*100).toFixed(1).replace('.',',')} %</span></div>
+    <div class="row" style="grid-template-columns:1fr auto"><div><h4>Caixa da obra (recebido − pago)</h4></div><span class="pill ${c.recebido-c.pago>=0?'ok':'bad'}">${brl(c.recebido-c.pago,true)}</span></div></div></div>
+   <div class="card"><div class="in"><div class="panel-t">Alertas</div>${alerts.length?alerts.map(a=>`<div class="row" style="grid-template-columns:1fr auto"><div><h4>${a[1]}</h4></div><span class="pill ${a[0]}">${a[2]}</span></div>`).join(''):'<div class="sub">Nenhum alerta.</div>'}</div></div></div>
+  <div class="cols" style="margin-top:14px"><div class="card"><div class="in"><div class="panel-t">Maiores desvios (acima da meta)</div>${desv.length?`<table class="tbl"><tbody>${desv.map(x=>`<tr class="clk" data-item="${x.i.codigo}"><td class="mono">${x.i.codigo}</td><td>${esc(x.i.descricao.slice(0,50))}</td><td class="r neg">+${brl(x.v)}</td></tr>`).join('')}</tbody></table>`:'<div class="sub">Nenhum item acima da meta.</div>'}</div></div>
+   <div class="card"><div class="in"><div class="panel-t">Custo por natureza (meta × usado)</div><table class="tbl"><tbody>${Object.entries(nat).map(([k,v])=>`<tr><td>${NATNOME[k]||k}</td><td class="r">${brl(v.real,true)} / ${brl(v.meta,true)}</td><td style="width:90px">${bar(v.real,v.meta)}</td></tr>`).join('')}</tbody></table></div></div></div>
+  <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn" data-act="pc-csv">Copiar números (CSV)</button><button class="btn" data-act="pc-conf">Conferir com o Sankhya</button></div>
+  <div class="sub" style="margin-top:8px">Sem dados do Sankhya, a obra ${esc(O.codigo)} só mostra o que foi lançado aqui. Para trazer o histórico financeiro de lá, use a aba <b>Importar</b> (CSV).</div>`}
+ACOES['pc-csv']=()=>{const c=painelCalc(),t='indicador;valor\n'+Object.entries({contrato:c.contrato,faturado:c.fat,recebido:c.recebido,a_receber:c.aReceber,atrasado_receber:c.atrRec,fat_direto:c.fatDireto,impostos_debito:c.impDeb,gasto:c.gasto,gasto_pago:c.pago,gasto_a_pagar:c.aPagar,gasto_atrasado:c.atrasado,requisicao:c.requisicao,custo_fixo:c.custoFixo,prov_gasto:c.prov,saldo_a_faturar:c.saldoFat,lucro:c.lucro}).map(([k,v])=>k+';'+String(v).replace('.',',')).join('\n');
+  try{navigator.clipboard.writeText(t).then(()=>toast('Copiado'),()=>toast('Não consegui copiar'))}catch(e){toast('Não consegui copiar')}};
+ACOES['pc-conf']=()=>{S.tab.pain='conf';render()};
+
+/* ---------- Conferência com o Sankhya ---------- */
+const CONF_L=[['contrato','Contrato'],['fat','Faturado'],['recebido','Recebido'],['aReceber','A receber'],['gasto','Gasto'],['pago','Gasto pago'],['aPagar','Gasto a pagar'],['atrasado','Gasto atrasado'],['custoFixo','Custo fixo'],['prov','Prov. gasto'],['saldoFat','Saldo a faturar'],['lucro','Lucro']];
+const CAUSA={gasto:'Faltam notas/lançamentos aqui (importe o CSV do financeiro) ou há nota sem rateio.',pago:'Há pagamento no Sankhya sem baixa aqui.',aPagar:'Título aberto lá sem nota/lançamento aqui.',atrasado:'Vencimento diferente ou baixa não registrada aqui.',custoFixo:'Custo fixo lá é rateio contábil; aqui só conta natureza ADM.',prov:'Provisão lá sem pedido aprovado aqui.',lucro:'Bases diferentes: o Sankhya usa custo fixo/provisão próprios; confira as linhas acima.',fat:'NF de serviço sem boletim aqui.',recebido:'Recebimento não registrado aqui.',aReceber:'Efeito do faturado/recebido.',saldoFat:'Efeito do faturado.',contrato:'Valor do contrato diferente do cadastrado.'};
+function confView(){
+  const c=painelCalc(),sk=(S.t.par.conf||{}),num=v=>v===''||v==null||isNaN(+v)?null:+v;
+  const rows=CONF_L.map(([k,l])=>{const a=c[k],b=num(sk[k]),d=b==null?null:r2(a-b),ok=d!=null&&Math.abs(d)<=1;
+    return `<tr><td>${l}</td><td class="r">${brl(a)}</td><td class="r"><input class="cf-in" data-cf="${k}" type="number" step="any" value="${b==null?'':b}" placeholder="valor do Sankhya" style="width:150px;text-align:right"></td><td class="r ${d?'neg':''}">${d==null?'—':brl(d)}</td><td>${d==null?'<span class="pill mute">sem valor</span>':ok?'<span class="pill ok">bate</span>':'<span class="pill bad">difere</span>'}</td><td class="mut" style="font-size:12px">${d!=null&&!ok?CAUSA[k]:''}</td></tr>`}).join('');
+  const dif=CONF_L.filter(([k])=>{const b=num(sk[k]);return b!=null&&Math.abs(c[k]-b)>1}).length,pre=CONF_L.filter(([k])=>num(sk[k])!=null).length;
+  return `<div class="sub">Digite os totais do Painel de Contratos do Sankhya desta obra (<b>${esc(S.D.obra.codigo)}</b>). O sistema compara com o que ele calcula e aponta a causa provável. Fica registrado na auditoria.</div>
+  <div class="kpi4"><div><div class="k-l">Valores informados</div><div class="v">${pre}</div></div><div><div class="k-l">Batem</div><div class="v">${pre-dif}</div></div><div><div class="k-l">Diferem</div><div class="v ${dif?'neg':''}">${dif}</div></div><div><div class="k-l">Tolerância</div><div class="v">R$ 1,00</div></div></div>
+  <div class="tw"><table class="tbl"><thead><tr><th>Indicador</th><th class="r">Neste sistema</th><th class="r">Sankhya</th><th class="r">Diferença</th><th>Resultado</th><th>Causa provável</th></tr></thead><tbody>${rows}</tbody></table></div>
+  <div style="margin-top:10px"><button class="btn" data-act="cf-zera">Limpar valores</button></div>`}
+document.addEventListener('change',e=>{const t=e.target;if(t.dataset&&t.dataset.cf!=null){S.t.par.conf={...(S.t.par.conf||{}),[t.dataset.cf]:t.value};log('conferencia_sankhya',S.D.obra.codigo,t.dataset.cf,'',t.value);save();render()}});
+ACOES['cf-zera']=()=>{S.t.par.conf={};log('conferencia_sankhya',S.D.obra.codigo,'limpar','','');save();render()};
+
+/* ---------- Importar lançamentos do financeiro (CSV) ---------- */
+/* Colunas: tipo;numero;fornecedor;descricao;vencimento;valor;pago_em;fat_direto  (tipo: gasto | custo_fixo | provisao). Datas dd/mm/aaaa ou aaaa-mm-dd; valores 1.234,56. */
+const numBR=s=>{s=String(s||'').trim().replace(/[R$\s]/g,'');if(!s)return 0;return s.includes(',')?+s.replace(/\./g,'').replace(',','.'):+s};
+const dataImp=s=>{s=String(s||'').trim();const m=s.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);return m?`${m[3]}-${m[2]}-${m[1]}`:/^\d{4}-\d{2}-\d{2}$/.test(s)?s:''};
+function lfxParse(txt){const out=[],erros=[];String(txt||'').replace(/^﻿/,'').split(/\r?\n/).forEach((ln,i)=>{if(!ln.trim())return;const c=ln.split(';').map(x=>x.trim());
+  if(i===0&&/^tipo$/i.test(c[0]))return;const tp=(c[0]||'').toLowerCase();
+  if(!['gasto','custo_fixo','provisao'].includes(tp))return erros.push(`Linha ${i+1}: tipo "${c[0]}" inválido (use gasto, custo_fixo ou provisao)`);
+  const v=numBR(c[5]),venc=dataImp(c[4]);if(!(v>0))return erros.push(`Linha ${i+1}: valor inválido`);if(!venc)return erros.push(`Linha ${i+1}: vencimento inválido`);
+  out.push({tipo:tp,numero:c[1]||'',forn:c[2]||'',desc:c[3]||'',venc,valor:r2(v),pago:dataImp(c[6])||'',fatDireto:/^(1|s|sim|x)$/i.test(c[7]||'')})});return {out,erros}}
+const lfxChave=l=>[l.tipo,l.numero,l.forn.toLowerCase(),l.venc,l.valor].join('|');
+function lfxImportar(){const r=lfxParse($('#lf-csv').value),ja=new Set(S.t.lfxs.map(lfxChave));
+  if(!r.out.length&&r.erros.length)return toast(r.erros[0]);
+  const novos=r.out.filter(l=>!ja.has(lfxChave(l)));const lote='L'+Date.now();
+  novos.forEach(l=>S.t.lfxs.push({id:'lfx'+Date.now()+Math.random().toString(36).slice(2,6),origem:'Sankhya',lote,...l}));
+  log('lancamentos_importados',lote,'importar','',novos.length+' novos, '+(r.out.length-novos.length)+' repetidos ignorados'+(r.erros.length?', '+r.erros.length+' linhas com erro':''));
+  save();toast(novos.length+' lançamentos importados, '+(r.out.length-novos.length)+' repetidos ignorados'+(r.erros.length?', '+r.erros.length+' com erro':''));S.lfxErros=r.erros;render()}
+function lfxDesfazer(){const ult=S.t.lfxs[S.t.lfxs.length-1];if(!ult)return toast('Nada para desfazer');const n=S.t.lfxs.filter(l=>l.lote===ult.lote).length;
+  S.t.lfxs=S.t.lfxs.filter(l=>l.lote!==ult.lote);log('lancamentos_importados',ult.lote,'desfazer','',n+' removidos');save();toast(n+' lançamentos do último lote removidos');render()}
+ACOES['lf-imp']=()=>{if(!can('lan'))return toast('Só Financeiro importa lançamentos');lfxImportar()};ACOES['lf-undo']=()=>{if(!can('lan'))return toast('Só Financeiro desfaz importação');lfxDesfazer()};
+function impView(){const L=S.t.lfxs;
+  return `<div class="sub">Traga para cá o histórico financeiro que hoje só existe no Sankhya. Colunas separadas por ponto e vírgula: <span class="mono">tipo;numero;fornecedor;descricao;vencimento;valor;pago_em;fat_direto</span>. Tipo: <b>gasto</b>, <b>custo_fixo</b> ou <b>provisao</b>. Deixe <span class="mono">pago_em</span> vazio para títulos em aberto. Linhas repetidas (mesmo tipo, número, fornecedor, vencimento e valor) são ignoradas.</div>
+  <textarea id="lf-csv" rows="6" placeholder="gasto;123;Fornecedor X;Cimento;25/11/2026;2.011,26;;&#10;provisao;;Folha;Provisão de mão de obra;30/11/2026;126.731,81;;"></textarea>
+  <div style="margin-top:8px;display:flex;gap:8px"><button class="btn dark" data-act="lf-imp" ${can('lan')?'':'disabled title="Só Financeiro"'}>Importar</button><button class="btn" data-act="lf-undo" ${can('lan')&&L.length?'':'disabled'}>Desfazer último lote</button></div>
+  ${(S.lfxErros||[]).length?`<div class="err" style="margin-top:8px">${S.lfxErros.slice(0,5).map(esc).join('<br>')}</div>`:''}
+  ${L.length?`<div class="tw"><table class="tbl"><thead><tr><th>Tipo</th><th>Nº</th><th>Fornecedor</th><th>Vencimento</th><th class="r">Valor</th><th>Situação</th></tr></thead><tbody>${L.slice(-30).map(l=>`<tr><td>${l.tipo}${l.fatDireto?' · fat. direto':''}</td><td class="mono">${esc(l.numero)}</td><td>${esc(l.forn)}</td><td>${fdata(l.venc)}</td><td class="r">${brl(l.valor)}</td><td>${l.tipo==='gasto'?(l.pago?'pago '+fdata(l.pago):l.venc<hojeISO()?'<span class="neg">atrasado</span>':'a pagar'):'—'}</td></tr>`).join('')}</tbody></table></div>`:''}`}
+/* ============ FINANCEIRO NATIVO (Fase 13): contas, extrato OFX, baixa múltipla, cobrança, remessa CNAB ============ */
+const contaSel=()=>S.contaSel&&S.t.bancos.some(b=>b.id===S.contaSel)?S.contaSel:(S.t.bancos[0]||{}).id;
+const saldoConta=b=>r2((b.saldoIni||0)+S.t.movs.filter(m=>m.banco===b.id&&!m.dup).reduce((s,m)=>s+m.valor,0));
+function ofxParse(txt){const out=[];String(txt||'').replace(/<STMTTRN>([\s\S]*?)(?=<\/STMTTRN>|<STMTTRN>|<\/BANKTRANLIST>|$)/gi,(_,b)=>{
+  const g=t=>{const m=b.match(new RegExp('<'+t+'>([^<\\r\\n]*)','i'));return m?m[1].trim():''};
+  const d=g('DTPOSTED').slice(0,8),v=numOfx(g('TRNAMT'));if(!/^\d{8}$/.test(d)||!isFinite(v)||v===0)return;
+  out.push({data:`${d.slice(0,4)}-${d.slice(4,6)}-${d.slice(6,8)}`,valor:r2(v),desc:g('MEMO')||g('NAME'),fitid:g('FITID')})});return out}
+const numOfx=s=>{s=String(s).trim();return s.includes(',')&&!s.includes('.')?+s.replace(',','.'):+s};
+function ofxImportar(){const id=contaSel();if(!id)return toast('Cadastre uma conta bancária antes (Suprimentos → Cadastros)');
+  const L=ofxParse($('#ofx-arq').value);if(!L.length)return toast('Nenhuma transação encontrada no OFX');
+  const ja=new Set(S.t.movs.filter(m=>m.banco===id).map(m=>m.fitid).filter(Boolean));let n=0,rep=0;
+  L.forEach(t=>{if(t.fitid&&ja.has(t.fitid)){rep++;return}S.t.movs.push({id:'mv'+Date.now()+Math.random().toString(36).slice(2,6),banco:id,data:t.data,valor:t.valor,desc:t.desc,fitid:t.fitid,origem:'OFX'});n++});
+  const c=conciliaMovs(id);log('extrato','OFX','importar','',n+' movimentos, '+rep+' repetidos, '+c+' conciliados');save();toast(n+' movimentos importados, '+rep+' repetidos, '+c+' conciliados');render()}
+/* concilia saídas com notas pagas de mesmo valor e entradas com recebimentos de mesmo valor */
+function conciliaMovs(id){let c=0;S.t.movs.filter(m=>m.banco===id&&!m.conc&&m.origem!=='baixa').forEach(m=>{
+  if(m.valor<0){/* extrato confirma uma baixa já feita no sistema, ou uma nota paga sem baixa pela conta */
+    const bx=S.t.movs.find(x=>x.banco===id&&x.origem==='baixa'&&!x.conc&&Math.abs(x.valor-m.valor)<.005);
+    if(bx){const n=S.t.notas.find(n=>n.id===bx.nota);bx.conc=m.conc=n?n.num:"baixa";m.dup=true;if(n)n.conc=m.data;c++;return}
+    const n=S.t.notas.find(n=>n.status==='paga'&&!n.conc&&Math.abs(n.valor+(n.encargos||0)-Math.abs(m.valor))<.005);if(n){n.conc=m.data;m.conc=n.num;c++}}
+  else{const r=S.t.recs.find(r=>!r.conc&&Math.abs(r.valor-m.valor)<.005);if(r){r.conc=m.data;m.conc=r.id;c++}}});return c}
+function movManual(){const id=contaSel(),v=+$('#mv-v').value,d=$('#mv-d').value||hojeISO(),ds=$('#mv-t').value.trim();if(!id||!v||!ds)return toast('Informe conta, descrição e valor (negativo = saída)');
+  S.t.movs.push({id:'mv'+Date.now(),banco:id,data:d,valor:r2(v),desc:ds,origem:'manual'});log('extrato','manual','lançar','',brl(v)+' · '+ds);save();toast('Lançado');render()}
+/* baixa múltipla: paga várias notas liberadas de uma vez, com juros, multa e desconto rateados proporcionalmente */
+function baixaMultipla(){const ids=[...document.querySelectorAll('.bx:checked')].map(e=>e.value);if(!ids.length)return toast('Marque as notas');const banco=contaSel();if(!banco)return toast('Cadastre uma conta bancária');
+  const ju=+$('#bx-j').value||0,mu=+$('#bx-m').value||0,de=+$('#bx-d').value||0,dt=$('#bx-dt').value||hojeISO(),ns=ids.map(i=>S.t.notas.find(n=>n.id===i)).filter(n=>n&&n.status==='liberada');
+  if(!ns.length)return toast('Nenhuma nota liberada marcada');const base=ns.reduce((s,n)=>s+n.valor,0),adj=r2(ju+mu-de);let rest=adj;
+  ns.forEach((n,k)=>{const q=k===ns.length-1?rest:r2(adj*n.valor/base);rest=r2(rest-q);n.status='paga';n.pago=dt;n.encargos=q;
+    S.t.movs.push({id:'mv'+Date.now()+k,banco,data:dt,valor:-r2(n.valor+q),desc:'Pagamento '+n.num+' · '+n.emitente,origem:'baixa',nota:n.id});
+    log('nota_fiscal',n.num,'status','liberada','paga (baixa múltipla'+(q?', encargos '+brl(q):'')+')')});
+  save();toast(ns.length+' notas pagas · total '+brl(base+adj));render()}
+ACOES['ofx-imp']=()=>{if(!can('liberar'))return toast('Só Financeiro');ofxImportar()};
+ACOES['mv-novo']=()=>{if(!can('lan'))return toast('Só Financeiro');movManual()};
+ACOES['bx-ok']=()=>{if(!can('liberar'))return toast('Só Financeiro');baixaMultipla()};
+ACOES['conta-sel']=el=>{S.contaSel=el.dataset.id;render()};
+function viewContas(){
+  const B=S.t.bancos,id=contaSel(),b=B.find(x=>x.id===id),M=S.t.movs.filter(m=>m.banco===id).sort((x,y)=>y.data.localeCompare(x.data)),lib=S.t.notas.filter(n=>n.status==='liberada');
+  if(!B.length)return `<div class="empty">Nenhuma conta bancária cadastrada. Cadastre em Suprimentos → Cadastros → Bancos.</div>`;
+  return `<div class="kpi4">${B.map(x=>`<div class="clk" data-act="conta-sel" data-id="${x.id}" style="${x.id===id?'outline:2px solid var(--ink)':''}"><div class="k-l">${esc(x.desc)}</div><div class="v ${saldoConta(x)<0?'neg':''}">${brl(saldoConta(x),true)}</div></div>`).join('')}</div>
+  <div class="cols" style="margin-top:14px"><div class="card"><div class="in"><div class="panel-t">Importar extrato OFX</div><div class="sub">Cole o conteúdo do arquivo .ofx do banco. Transações já importadas (mesmo FITID) são ignoradas e o sistema concilia sozinho com notas pagas e recebimentos de mesmo valor.</div>
+    <textarea id="ofx-arq" rows="4" placeholder="<STMTTRN>…"></textarea><div style="margin-top:8px"><button class="btn dark" data-act="ofx-imp" ${can('liberar')?'':'disabled title="Só Financeiro"'}>Importar e conciliar</button></div></div></div>
+   <div class="card"><div class="in"><div class="panel-t">Lançamento manual na conta</div><div class="g3"><div><label>Data</label><input id="mv-d" type="date" value="${hojeISO()}"></div><div><label>Valor (− saída)</label><input id="mv-v" type="number" step="any"></div><div><label>Descrição</label><input id="mv-t"></div></div><div style="margin-top:8px"><button class="btn" data-act="mv-novo" ${can('lan')?'':'disabled title="Só Financeiro"'}>Lançar</button></div></div></div></div>
+  <div class="panel-t" style="margin-top:16px">Baixa múltipla de notas liberadas</div>
+  ${lib.length?`<div class="tw"><table class="tbl"><tbody>${lib.map(n=>`<tr><td><input type="checkbox" class="bx" value="${n.id}"></td><td class="mono">${n.num}</td><td>${esc(n.emitente)}</td><td>vence ${fdata(vencNota(n))}</td><td class="r">${brl(n.valor)}</td></tr>`).join('')}</tbody></table></div>
+   <div class="g3"><div><label>Juros</label><input id="bx-j" type="number" step="any" value="0"></div><div><label>Multa</label><input id="bx-m" type="number" step="any" value="0"></div><div><label>Desconto</label><input id="bx-d" type="number" step="any" value="0"></div></div><div class="g3"><div><label>Pago em</label><input id="bx-dt" type="date" value="${hojeISO()}"></div></div>
+   <div style="margin-top:8px"><button class="btn dark" data-act="bx-ok" ${can('liberar')?'':'disabled title="Só Financeiro"'}>Pagar marcadas</button> <button class="btn" data-act="cnab-gera" ${can('liberar')?'':'disabled'}>Gerar remessa CNAB 240 (genérica)</button></div>
+   ${S.cnabOut?`<label>Remessa gerada — layout genérico, <b>validar com o banco antes de enviar</b></label><textarea rows="6" readonly style="font-family:monospace;font-size:11px">${esc(S.cnabOut)}</textarea>`:''}`:'<div class="sub">Nenhuma nota liberada para pagamento.</div>'}
+  <div class="panel-t" style="margin-top:16px">Extrato de ${b?esc(b.desc):''}</div>${M.length?`<div class="tw"><table class="tbl"><thead><tr><th>Data</th><th>Descrição</th><th class="r">Valor</th><th>Origem</th><th>Conciliação</th></tr></thead><tbody>${M.slice(0,60).map(m=>`<tr><td>${fdata(m.data)}</td><td>${esc(m.desc)}</td><td class="r ${m.valor<0?'neg':'pos'}">${brl(m.valor)}</td><td>${m.origem}</td><td>${m.conc?'<span class="pill ok">conciliado</span>':'<span class="pill mute">pendente</span>'}</td></tr>`).join('')}</tbody></table></div>`:'<div class="sub">Sem movimentos.</div>'}`}
+/* Remessa CNAB 240 genérica (pagamento a fornecedores). Posições seguem o padrão FEBRABAN de forma simplificada: o banco exige homologação do layout. */
+function cnabGera(){const b=S.t.bancos.find(x=>x.id===contaSel()),ns=S.t.notas.filter(n=>n.status==='liberada');if(!b||!ns.length)return toast('Sem conta ou notas liberadas');
+  const pad=(s,n,c=' ')=>String(s).slice(0,n).padEnd(n,c),num=(v,n)=>String(Math.round(v)).replace(/\D/g,'').padStart(n,'0').slice(-n),dd=hojeISO().split('-').reverse().join('');
+  const emp=S.t.par.emp||{};const L=[pad('00000000'+pad(b.banco,3)+'00000'+'         2'+num((emp.cnpj||'').replace(/\D/g,'')||0,14)+pad(emp.razao||"TAF",30)+pad(b.banco,30)+'          1'+dd,240)];
+  L.push(pad('0000130000100'+'C2001'+'046'+' 2'+num((emp.cnpj||'').replace(/\D/g,'')||0,14),240));
+  ns.forEach((n,k)=>{const f=S.t.forns.find(x=>x.nome===n.emitente)||{};L.push(pad('00000013'+num(k+1,5)+'A000000'+pad(f.banco||'',3,'0')+'00000'+num(0,13)+pad(n.emitente,30)+pad(n.num,20)+dd+'BRL'+num(0,15)+num(n.valor*100,15),240))});
+  L.push(pad('00000015         '+num(ns.length+2,6)+num(ns.reduce((s,n)=>s+n.valor*100,0),18),240));L.push(pad('99999999         000001'+num(ns.length+4,6),240));
+  S.cnabOut=L.join('\r\n');log('remessa','CNAB240','gerar','',ns.length+' pagamentos');save();render()}
+ACOES['cnab-gera']=cnabGera;
+/* ---- cobrança ---- */
+const msgCobr=f=>`Olá! Identificamos que a nota ${f.num} (${brl(fatSaldo(f))}) venceu em ${fdata(f.venc)} e consta em aberto. Pode nos confirmar a previsão de pagamento? Obrigado.`;
+ACOES['cobr-reg']=el=>{if(!can('recFat'))return toast('Sem permissão');const f=S.t.fats.find(x=>x.id===el.dataset.id);S.t.cobrs.push({id:'cb'+Date.now(),fat:f.id,num:f.num,data:hojeISO(),canal:'WhatsApp',quem:user()});log('cobranca',f.num,'enviada','','régua: WhatsApp');save();render()};
+function viewCobranca(){const V=S.t.fats.filter(f=>fatSaldo(f)>0&&f.venc<hojeISO()).sort((a,b)=>a.venc.localeCompare(b.venc)),dias=f=>Math.round((new Date(hojeISO())-new Date(f.venc))/864e5);
+  const etapa=d=>d>60?['bad','Jurídico']:d>30?['bad','Diretoria']:d>15?['warn','Gerente']:['info','Lembrete'];
+  return `<div class="sub">Notas de serviço vencidas e não recebidas. A mensagem abre no WhatsApp para você enviar (o sistema não envia sozinho) e o contato fica registrado.</div>
+  ${V.length?`<div class="tw"><table class="tbl"><thead><tr><th>NF</th><th>Vencida há</th><th class="r">Saldo</th><th>Etapa</th><th>Contatos</th><th></th></tr></thead><tbody>${V.map(f=>{const d=dias(f),e=etapa(d),n=S.t.cobrs.filter(c=>c.fat===f.id).length;return `<tr><td class="mono">${f.num}</td><td>${d} dias</td><td class="r">${brl(fatSaldo(f))}</td><td><span class="pill ${e[0]}">${e[1]}</span></td><td>${n}</td><td class="r"><a class="btn sm" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(msgCobr(f))}">Abrir mensagem</a> <button class="btn sm" data-act="cobr-reg" data-id="${f.id}" ${can('recFat')?'':'disabled'}>Registrar contato</button></td></tr>`}).join('')}</tbody></table></div>`:'<div class="empty">Nenhuma nota vencida a receber.</div>'}`}
 /* ============ inicialização ============ */
 (async()=>{
   $('#today').textContent=new Date().toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'short',year:'numeric'});
