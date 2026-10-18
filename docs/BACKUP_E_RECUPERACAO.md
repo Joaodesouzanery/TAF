@@ -3,7 +3,7 @@
 ## O que existe e onde
 | O quê | Onde | Observação |
 |---|---|---|
-| Código, migrações, testes, planilhas-fonte, dados das obras 342/343/281 | GitHub (repositório privado, branch `claude/obras-compras-management-e4nsfm`) | Tag `rodada-1-fase-18` marca o fim desta rodada |
+| Código, migrações, testes, planilhas-fonte, dados das obras 342/343/281 | GitHub (repositório privado, branch `claude/obras-compras-management-e4nsfm`) | O commit `5ed308a` (Fase 18) marca o fim desta rodada |
 | Dados em uso (documentos, obras, perfis) | Supabase, projeto `TAF` (`kefkgydvjjakqaonyjau`) | Backups automáticos conforme o plano do Supabase (diário; recuperação ponto-a-ponto só em planos pagos) |
 | Backup da obra aberta (JSON) | Administração → Gerar backup | Restaura só no modo demonstração |
 | Demonstração (Artifact) | claude.ai | Dados ficam no navegador de cada pessoa |

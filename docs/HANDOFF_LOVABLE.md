@@ -28,4 +28,4 @@
 
 
 ## Atualização (Fase 18)
-O sistema está completo até a Fase 18: Dashboard no Início, 8 áreas, manuais por papel (`docs/MANUAL_*.md` e botão Ajuda), QA com 17 conjuntos SQL e 14 e2e. Tag `rodada-1-fase-18`. Ao trazer para a Lovable, rode `bash scripts/qa.sh` (precisa de Postgres local e Playwright) ou apenas `node scripts/check_acoes.js` e `python3 scripts/verifica_342.py`.
+O sistema está completo até a Fase 18: Dashboard no Início, 8 áreas, manuais por papel (`docs/MANUAL_*.md` e botão Ajuda), QA com 17 conjuntos SQL e 14 e2e. Fim da rodada: commit `5ed308a`. Ao trazer para a Lovable, rode `bash scripts/qa.sh` (precisa de Postgres local e Playwright) ou apenas `node scripts/check_acoes.js` e `python3 scripts/verifica_342.py`.
