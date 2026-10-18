@@ -5,6 +5,7 @@ from pathlib import Path
 root = Path(__file__).resolve().parent.parent
 h = (root / "dist/tafadmin.html").read_text(encoding="utf-8")
 h = re.sub(r'<script src="data:[^"]*"></script>\n?', "", h)
+h = h.replace("modo: 'supabase'", "modo: 'aberto'")  # o link do Claude bloqueia rede: só demonstração local
 title = re.search(r"<title>.*?</title>", h).group(0)
 fonts = re.findall(r'<link rel="(?:preconnect|stylesheet)"[^>]*>', h)
 style = re.search(r"<style>.*?</style>", h, re.S).group(0)

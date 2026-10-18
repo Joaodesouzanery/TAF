@@ -5,9 +5,9 @@ const {chromium}=require('playwright');
  const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium'});
  const p=await b.newPage({viewport:{width:1400,height:1000}});const errs=[];p.on('pageerror',e=>errs.push(e.message));
  p.on('dialog',d=>d.accept());
- await p.goto('file:///home/user/TAF/dist/tafadmin.html');await p.waitForSelector('.big');
+ await p.goto('file:///home/user/TAF/dist/tafadmin.html?demo=1');await p.waitForSelector('.big');
  ok('abre direto, sem tela de login',!(await p.isVisible('#login.open'))&&(await p.innerText('body')).includes('Bom dia, Administrador!'));
- const role=r=>p.selectOption('#role',r),nav=v=>p.click(`#nav button[data-v=${v}]`),T=async s=>(await p.innerText('body')).toLowerCase().includes(s.toLowerCase());
+ const role=r=>p.selectOption('#role',r),nav=v=>p.evaluate(v=>{S.view=v;render()},v),T=async s=>(await p.innerText('body')).toLowerCase().includes(s.toLowerCase());
  const it=await p.evaluate(()=>{const i=S.D.items.find(i=>i.qtd>=10&&i.preco_venda_total>1000);return {c:i.codigo,pu:i.preco_venda_total/i.qtd}});
  // medição 10 un, atestada
  await role('engenheiro');await nav('med');await p.click('[data-act=nova-med]');await p.selectOption('#m-item',it.c);await p.fill('#m-q','10');await p.click('[data-act=med-ok]');

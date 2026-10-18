@@ -11,12 +11,13 @@ const uid=e=>'u-'+e.split('@')[0];
 const sess=u=>({access_token:'tok-'+u.id,token_type:'bearer',expires_in:3600,expires_at:Math.floor(Date.now()/1000)+3600,refresh_token:'r-'+u.id,user:{id:u.id,aud:'authenticated',email:u.email,app_metadata:{},user_metadata:u.meta||{}}});
 const CORS={'access-control-allow-origin':'*','access-control-allow-headers':'*','access-control-allow-methods':'*','access-control-expose-headers':'*'};
 const json=(route,status,body,extra={})=>route.fulfill({status,headers:{...CORS,'content-type':'application/json',...extra},body:body===undefined?'':JSON.stringify(body)});
-function filtra(rows,sp){return rows.filter(r=>[...sp.entries()].every(([k,v])=>{if(['select','order','limit','on_conflict','columns'].includes(k))return true;const m=/^eq\.(.*)$/.exec(v);return m?String(r[k])===m[1]:true}))}
+function filtra(rows,sp){return rows.filter(r=>[...sp.entries()].every(([k,v])=>{if(['select','order','limit','on_conflict','columns'].includes(k))return true;if(k==='or'){const m=/obra_id\.eq\.([^,]+),tipo\.in\.\(([^)]*)\)/.exec(v);return m?(r.obra_id===m[1]||m[2].split(',').includes(r.tipo)):true}const m=/^eq\.(.*)$/.exec(v);return m?String(r[k])===m[1]:true}))}
 function importar(p){
-  const ob={id:'ob-1',codigo:p.obra.codigo,nome:p.obra.nome,contratante:p.obra.contratante,contrato:p.obra.contrato,municipio:p.obra.municipio,valor_contrato:String(p.obra.valor_contrato),regime:p.obra.regime,tributos_nota:'0.085',estado:{}};db.obra=[ob];
-  db.conta=p.plano.map(c=>({...c}));db.funcao_mo=(p.banco_mo||[]).map(f=>({...f}));
-  db.pacote=p.pacotes.map(x=>({id:'pc-'+x.codigo,obra_id:ob.id,codigo:x.codigo,nome:x.nome,tipo:x.tipo,responsavel:x.responsavel,precisa_em_obra:x.precisa_em_obra,fechar_ate:x.fechar_ate,meta:String(x.meta),teto:String(x.teto),condicao_pagamento:x.condicao_pagamento,observacoes:x.observacoes}));
-  db.item_eap=p.eap.map(e=>({id:'i-'+e.codigo,obra_id:ob.id,codigo:e.codigo,descricao:e.descricao,unidade:e.unidade,qtd:e.qtd==null?null:String(e.qtd),nivel:e.nivel,pai_codigo:e.pai,eh_item:e.tipo_linha==='item',preco_venda_total:String(e.preco_venda_total),meta_total:e.meta_total==null?null:String(e.meta_total),teto_total:e.teto_total==null?null:String(e.teto_total),meta_unit:e.meta_unit==null?null:String(e.meta_unit),fonte_meta:e.fonte_meta,status_cotacao:e.status_cotacao,evento:e.evento,pacote_id:e.pacote?'pc-'+e.pacote:null,tipo:e.tipo,composicao:e.composicao,natureza:e.natureza,hh_unit:e.hh_unit==null?null:String(e.hh_unit)}));
+  const cod=p.obra.codigo,oid=cod==='342'?'ob-1':'ob-'+cod,ob={id:oid,codigo:cod,nome:p.obra.nome,contratante:p.obra.contratante,contrato:p.obra.contrato,municipio:p.obra.municipio,valor_contrato:String(p.obra.valor_contrato),regime:p.obra.regime,tributos_nota:'0.085',estado:{}};
+  if(!db.obra.find(o=>o.codigo===cod))db.obra.push(ob);
+  (p.plano||[]).forEach(c=>{if(!db.conta.find(x=>x.codigo===c.codigo))db.conta.push({...c})});db.funcao_mo=db.funcao_mo.length?db.funcao_mo:(p.banco_mo||[]).map(f=>({...f}));
+  db.pacote.push(...(p.pacotes||[]).map(x=>({id:'pc-'+cod+x.codigo,obra_id:oid,codigo:x.codigo,nome:x.nome,tipo:x.tipo,responsavel:x.responsavel,precisa_em_obra:x.precisa_em_obra,fechar_ate:x.fechar_ate,meta:String(x.meta),teto:String(x.teto),condicao_pagamento:x.condicao_pagamento,observacoes:x.observacoes})));
+  db.item_eap.push(...p.eap.map(e=>({id:'i-'+cod+'-'+e.codigo,obra_id:oid,codigo:e.codigo,descricao:e.descricao,unidade:e.unidade,qtd:e.qtd==null?null:String(e.qtd),nivel:e.nivel,pai_codigo:e.pai,eh_item:e.tipo_linha==='item',preco_venda_total:String(e.preco_venda_total),meta_total:e.meta_total==null?null:String(e.meta_total),teto_total:e.teto_total==null?null:String(e.teto_total),meta_unit:e.meta_unit==null?null:String(e.meta_unit),fonte_meta:e.fonte_meta,status_cotacao:e.status_cotacao,evento:e.evento,pacote_id:e.pacote?'pc-'+cod+e.pacote:null,tipo:e.tipo,composicao:e.composicao,natureza:e.natureza,hh_unit:e.hh_unit==null?null:String(e.hh_unit)})));
 }
 async function mock(page){
   await page.route(URL_SB+'/**',async route=>{
@@ -27,8 +28,12 @@ async function mock(page){
       const user={id:uid(e),email:e,meta:body.data};db.users.push(user);db.perfil.push({user_id:user.id,nome:(body.data&&body.data.nome)||e,papel:db.perfil.length?'pendente':'admin',criado_em:new Date().toISOString()});log.push('signup '+e);return json(route,200,sess(user))}
     if(path==='/auth/v1/token'){const user=db.users.find(x=>x.email===body.email);if(!user)return json(route,400,{error:'invalid_grant',error_description:'Invalid login credentials'});return json(route,200,sess(user))}
     if(path==='/auth/v1/logout')return json(route,204);
+    if(path.startsWith('/rest/v1/rpc/reservar_numeros')){const tok=(req.headers()['authorization']||'').replace('Bearer tok-','');const pf=db.perfil.find(x=>x.user_id===tok);if(!pf||pf.papel==='pendente')return json(route,400,{message:'Sem permissão'});
+      db.contador=db.contador||{};const k=body.p_obra+'|'+body.p_tipo,t=body.p_tipo==='bm'?'med':body.p_tipo;
+      if(db.contador[k]==null)db.contador[k]=db.documento.filter(d=>d.obra_id===body.p_obra&&d.tipo===t).reduce((m,d)=>Math.max(m,parseInt(String(d.dados.num||'').replace(/\D/g,''))||0),0);
+      const a=db.contador[k]+1;db.contador[k]+=body.p_qtd;log.push('reservar '+body.p_tipo);return json(route,200,a)}
     if(path.startsWith('/rest/v1/rpc/importar_obra')){const tok=(req.headers()['authorization']||'').replace('Bearer tok-','');const pf=db.perfil.find(x=>x.user_id===tok);
-      if(!pf||!['admin','gestao','diretoria'].includes(pf.papel))return json(route,400,{message:'Sem permissão para importar'});importar(body.p);log.push('importar_obra');return json(route,200,'ob-1')}
+      if(!pf||!['admin','gestao','diretoria'].includes(pf.papel))return json(route,400,{message:'Sem permissão para importar'});importar(body.p);log.push('importar_obra');return json(route,200,body.p.obra.codigo==='342'?'ob-1':'ob-'+body.p.obra.codigo)}
     if(path.startsWith('/functions/v1/')){const tok=(req.headers()['authorization']||'').replace('Bearer tok-','');if(!db.perfil.find(x=>x.user_id===tok))return json(route,403,{erro:'sem login'});
       if(path.endsWith('nfe-sync')){log.push('fn nfe-sync');return json(route,200,{configurado:true,notas:[{nome:'n1.xml',xml:XML_NFE}],proximaVersao:'9'})}
       if(path.endsWith('sankhya-sync')){log.push('fn sankhya-sync');return json(route,200,{configurado:false})}}
@@ -58,9 +63,9 @@ async function mock(page){
   await p.waitForSelector('[data-act=importar]');ok('primeiro cadastro = admin, sem obra: oferece importar',true);
   await p.click('[data-act=importar]');await p.waitForSelector('.big');
   ok('obra 342 importada e carregada (346 itens)',await T(p,'Bom dia, Administrador!')&&db.item_eap.filter(i=>i.eh_item).length===346);
-  ok('menu Usuários só para admin',await p.isVisible('#nav button[data-v=usuarios]'));
+  ok('menu Usuários só para admin',await p.evaluate(()=>tabVisivel('usuarios')));
   // fluxo gravando no banco
-  await p.click('#nav button[data-v=eap]');await p.click('[data-act=congelar]');await p.click('[data-act=ask-ok]');await p.waitForTimeout(600);
+  await p.evaluate(()=>{S.view='eap';render()});await p.click('[data-act=congelar]');await p.click('[data-act=ask-ok]');await p.waitForTimeout(600);
   ok('congelar grava obra.estado',db.obra[0].estado&&db.obra[0].estado.frozen===true);
   await p.fill('#q','B.3.1.7.1');await p.click('tr[data-item="B.3.1.7.1"]');await p.click('[data-act=nova-sol]');
   await p.fill('#s-desc','Curva 22 30');await p.fill('#s-qtd','2');await p.fill('#s-pu','800');await p.click('[data-act=sol-ok]');await p.waitForTimeout(800);
@@ -69,12 +74,12 @@ async function mock(page){
   // persistência: recarrega e mantém sessão
   await p.reload();await p.waitForSelector('.big');
   ok('sessão persiste e estado volta do banco (linha de base congelada)',!(await T(p,'compras bloqueadas')));
-  await p.click('#nav button[data-v=compras]');ok('SC-0001 volta do banco',await T(p,'SC-0001'));
+  await p.evaluate(()=>{S.view='compras';render()});ok('SC-0001 volta do banco',await T(p,'SC-0001'));
   // Fase 8: apontamento grava em documento (tipo apt) e usa o banco de MO
-  await p.click('#nav button[data-v=campo]');await p.click('[data-act=novo-apt]');
+  await p.evaluate(()=>{S.view='campo';render()});await p.click('[data-act=novo-apt]');
   const ci=await p.evaluate(()=>S.D.items.find(i=>i.hh_unit&&i.qtd>=10).codigo);
   await p.selectOption('#a-item',ci);await p.fill('#a-q','4');await p.click('[data-act=apt-ok]');await p.waitForTimeout(800);
-  const apt=db.documento.find(d=>d.tipo==='apt');ok('apontamento gravado em documento (tipo apt)',!!apt&&apt.dados.num==='AP-0001'&&apt.dados.pessoas.length===1);
+  const apt=db.documento.find(d=>d.tipo==='apt');ok('apontamento gravado em documento (tipo apt)',!!apt&&/^AP-\d{4}$/.test(apt.dados.num)&&apt.dados.pessoas.length===1);
   ok('banco de MO carregado do banco (funcao_mo)',await p.evaluate(()=>S.D.banco_mo.length>20&&custoHora('Pedreiro')>0));
   // offline: a gravação falha por rede, fica na fila local e sobe depois
   await p.route('**/rest/v1/documento**',r=>r.abort('failed'));
@@ -82,15 +87,27 @@ async function mock(page){
   ok('sem rede: registro guardado na fila do aparelho',await p.evaluate(()=>!!localStorage.getItem(filaKey())));
   await p.unroute('**/rest/v1/documento**');await p.evaluate(()=>sbSync());await p.waitForTimeout(900);
   ok('com rede: fila sobe e é limpa',await p.evaluate(()=>!localStorage.getItem(filaKey()))&&db.documento.find(d=>d.tipo==='apt').dados.status==='conferido');
+  // 7b: várias obras no modo conectado
+  await p.evaluate(()=>{S.view='hoje';render()});await p.click('.obra-sel');ok('seletor oferece importar a 343 e a 281 (ainda não estão no banco)',(await p.innerText('#mbox')).includes('ainda não está no banco'));
+  await p.click('[data-act=obra-imp][data-cod="343"]');await p.waitForFunction(()=>S.D&&S.D.obra.codigo==='343'&&S.D.items&&S.byCod);
+  ok('obra 343 importada para o banco e carregada (244 itens, sem meta)',db.obra.length===2&&await p.evaluate(()=>S.D.items.length===244&&S.D.items.every(i=>i.meta_total==null)));
+  await p.click('.obra-sel');await p.click('[data-act=obra-abrir][data-cod="342"]');await p.waitForFunction(()=>S.D&&S.D.obra.codigo==='342'&&S.D.items&&S.t.sols.length>0);
+  ok('voltar à 342 mostra os documentos dela (SC-0001), sem misturar com a 343',await p.evaluate(()=>S.t.sols.some(x=>x.num==='SC-0001')&&S.D.items.length===346));
   // Fase 11: integrações usam funções do servidor (só com login)
-  await p.click('#nav button[data-v=fin]');await p.click('.tabs button[data-t=fech]');await p.click('[data-act=nfe-buscar]');await p.waitForTimeout(900);
+  await p.evaluate(()=>{S.view='fin';render()});await p.click('.tabs button[data-t=fech]');await p.click('[data-act=nfe-buscar]');await p.waitForTimeout(900);
   ok('NF-e automática (função simulada) importa a nota para a fila sem rateio e grava no banco',db.documento.some(d=>d.tipo==='nf'&&d.dados.chave==='4'.repeat(44)&&d.dados.status==='lancada'));
   await p.click('[data-act=nfe-buscar]');await p.waitForTimeout(600);
   ok('mesma chave na segunda busca não duplica',db.documento.filter(d=>d.tipo==='nf'&&d.dados.chave==='4'.repeat(44)).length===1);
   await p.click('[data-act=sk-conexao]');await p.waitForTimeout(500);
   ok('Sankhya sem credenciais no servidor: avisa o que cadastrar',(await p.innerText('body')).includes('SANKHYA_CLIENT_ID'));
+  // Fase 12: números vêm do servidor e não repetem entre pessoas; cadastros são globais
+  const numAdmin=await p.evaluate(()=>nextNum('sol'));
+  await p.evaluate(()=>{S.view='cad';render()});await p.evaluate(()=>{S.role='admin'});
+  await p.click('[data-act=cad-novo]');await p.fill('#c-nome','Fornecedor Global');await p.fill('#c-cnpj','11222333000181');await p.click('[data-act=cad-ok]');await p.waitForTimeout(800);
+  ok('cadastro de fornecedor grava em documento (tipo forn)',db.documento.some(d=>d.tipo==='forn'&&d.dados.nome==='Fornecedor Global'));
+  ok('número de solicitação vem da faixa reservada no servidor',/^SC-\d{4}$/.test(numAdmin)&&db.contador&&Object.keys(db.contador).some(k=>k.endsWith('|sol')));
   // usuários: libera o segundo
-  await p.click('#nav button[data-v=usuarios]');await p.waitForTimeout(200);
+  await p.evaluate(()=>{S.view='usuarios';render()});await p.waitForTimeout(200);
   await p.screenshot({path:out+'/usuarios.png'});
   // ---- segundo usuário: pendente ----
   const seg=await novo();await seg.p.goto('file:///home/user/TAF/dist/tafadmin.html?sb=1');await seg.p.waitForSelector('#login.open');
@@ -98,14 +115,16 @@ async function mock(page){
   ok('novo usuário fica aguardando liberação',await T(seg.p,'Aguardando liberação'));
   await seg.ctx.close();
   // admin atribui engenheiro
-  await p.reload();await p.waitForSelector('.big');await p.click('#nav button[data-v=usuarios]');
+  await p.reload();await p.waitForSelector('.big');await p.evaluate(()=>{S.view='usuarios';render()});
   await p.selectOption('select[data-perfil="u-eng"]','engenheiro');await p.waitForTimeout(500);
   ok('admin atribui papel (grava perfil)',db.perfil.find(x=>x.user_id==='u-eng').papel==='engenheiro');
   // ---- engenheiro entra e vê a SC, sem menu Usuários ----
   const e2=await novo();await e2.p.goto('file:///home/user/TAF/dist/tafadmin.html?sb=1');await e2.p.waitForSelector('#login.open');
   await entrar(e2.p,'eng@taf.com',false);await e2.p.waitForSelector('.big');
-  ok('engenheiro entra, vê o estado compartilhado e não vê Usuários',!(await e2.p.isVisible('#nav button[data-v=usuarios]'))&&(await e2.p.textContent('#userbox')).includes('Engenheiro'));
-  await e2.p.click('#nav button[data-v=compras]');ok('engenheiro vê SC-0001 criada pelo admin',await T(e2.p,'SC-0001'));
+  ok('engenheiro entra, vê o estado compartilhado e não vê Usuários',!(await e2.p.evaluate(()=>tabVisivel('usuarios')))&&(await e2.p.textContent('#userbox')).includes('Engenheiro'));
+  await e2.p.evaluate(()=>{S.view='compras';render()});ok('engenheiro vê SC-0001 criada pelo admin',await T(e2.p,'SC-0001'));
+  ok('engenheiro enxerga o fornecedor cadastrado pelo admin (cadastro global)',await e2.p.evaluate(()=>S.t.forns.some(f=>f.nome==='Fornecedor Global')));
+  const numEng=await e2.p.evaluate(()=>nextNum('sol'));ok('engenheiro recebe número diferente do admin (sem repetição)',numEng!==numAdmin&&/^SC-\d{4}$/.test(numEng));
   await e2.p.screenshot({path:out+'/login_eng.png'});
   // ---- sair ----
   await e2.p.click('[data-act=sair]');await e2.p.waitForSelector('#login.open');ok('sair volta ao login',true);

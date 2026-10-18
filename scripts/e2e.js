@@ -7,11 +7,11 @@ const {chromium}=require('playwright');
  await p.goto('file:///home/user/TAF/dist/tafadmin.html?demo=1');await p.waitForSelector('.big');
  const T=async s=>(await p.textContent('body')).includes(s);
  const role=async r=>{await p.selectOption('#role',r)};
- const nav=async v=>p.click(`#nav button[data-v=${v}]`);
+ const nav=async v=>p.evaluate(v=>{S.view=v;render()},v);
  const out=[];const ok=(n,c)=>out.push((c?'OK   ':'FALHA ')+n);
  // 1. bloqueado antes de congelar
  await nav('eap');await p.click('[data-item]').catch(()=>{});
- await p.click('#nav button[data-v=eap]');
+ await p.evaluate(()=>{S.view='eap';render()});
  await p.fill('#q','B.3.1.7.1');await p.waitForSelector('tr[data-item]');await p.click('tr[data-item="B.3.1.7.1"]');
  await p.click('[data-act=nova-sol]');
  await p.fill('#s-desc','Curva 22 30');await p.fill('#s-qtd','2');await p.fill('#s-pu','800');

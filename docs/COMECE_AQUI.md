@@ -6,7 +6,7 @@ SaaS de gestão de obras da **TAF** (saneamento). Cada obra é um centro de cust
 ## Onde está cada coisa
 | Parte | Caminho |
 |---|---|
-| App (arquivo único, JS puro) | `web/index.html` (+ `web/config.js`, `web/data/obra342.json`, `web/vendor/supabase.js`) |
+| App (JS puro, fonte modular) | `web/src/` → `web/index.html` (+ `web/config.js`, `web/data/obra*.json`, `web/vendor/supabase.js`) |
 | Gera o arquivo único para entregar | `python3 scripts/build_html.py` → `dist/tafadmin.html`; `python3 scripts/build_artifact.py` → `dist/tafadmin_artifact.html` (versão do link do Claude) |
 | Banco (Postgres/Supabase) | `supabase/migrations/0001…0008`, seeds em `supabase/seed/`, testes em `supabase/tests/` |
 | Importador das planilhas | `python3 -I scripts/import_planilhas.py fontes/OBRA_342_ESTUDO_DE_OBRA_INTERNO_REV10.xlsx` (gera JSON e seeds) |
@@ -35,6 +35,14 @@ Regras de negócio vivem em JS (`prep`, `saldos`, `semaforo`, `derive`) e espelh
 6. As planilhas já enviadas bastam; não esperar REV13/META REV02.
 7. Sem autenticação por enquanto.
 8. Guardar tudo no GitHub (migração de conta) e guardar as planilhas no repositório.
+
+## Fase 12 (18/10/2026): base do ERP
+Decisão do usuário: **não integrar com o Sankhya; criar as funções equivalentes aqui**, em 8 áreas de menu com abas internas, com login e banco compartilhado. Plano das fases 12 a 18 em `docs/PLANO_E_HISTORICO.md`; rastreio de cada item do inventário em `docs/MATRIZ_SANKHYA_X_TAF.md` (gerada por `scripts/gera_matriz.py`).
+- **Código modular**: edite `web/src/` (`shell.html`, `style.css`, `js/NN_*.js`) e rode `python3 scripts/build_web.py` (gera `web/index.html`, que a Vercel publica) e `python3 scripts/build_html.py` (arquivo único `dist/tafadmin.html`, com as 3 obras embutidas). `scripts/build_artifact.py` gera a versão do link do Claude (modo aberto, sem Supabase).
+- **Login é o padrão** (`web/config.js`, `modo: 'supabase'`). **O link do Claude bloqueia rede**: lá o app roda só em demonstração. O link de uso real é o da Vercel (`tafadmin.vercel.app`). O **primeiro cadastro vira Administrador**: crie a sua conta antes de passar o link a alguém e depois feche o cadastro aberto (Supabase → Authentication → Sign In / Providers → desligar "Allow new users to sign up"; novos usuários entram só por convite).
+- Numeração (SC-, OC-, NF-…) vem do servidor (`reservar_numeros`, migração `0009`), sem repetir entre pessoas.
+- Cadastros base (fornecedores e clientes, insumos, contas bancárias) valem para todas as obras (documentos `forn`, `ins`, `banc`).
+- Várias obras: seletor no topo do menu. 343 (só preço licitado, sem estudo de custo) e 281 (histórico do consórcio, tudo no item S.1) vêm de `web/data/` (gerados por `scripts/import_outras_obras.py`); no banco entram por "Importar" (Gestão/Diretoria).
 
 ## Fase 11 (18/10/2026)
 Alçadas por faixa de valor, atualização das metas pela planilha, apuração estimada de tributos, e as integrações de NF-e e Sankhya em funções do Supabase (`supabase/functions/`), prontas para ligar. Leia `docs/INTEGRACOES.md` e `docs/SANKHYA_PESQUISA.md`. A atualização pela planilha grava a nova linha de base em `obra.estado` (campos `baseOv` e `basePac`); o `item_eap` do banco guarda a versão 1.

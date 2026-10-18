@@ -6,7 +6,7 @@ const {chromium}=require('playwright');
  const p=await b.newPage({viewport:{width:1400,height:1000}});const errs=[];p.on('pageerror',e=>errs.push(e.message));
  p.on('dialog',d=>d.accept(d.type()==='prompt'?'2099-01-01':undefined));
  await p.goto('file:///home/user/TAF/dist/tafadmin.html?demo=1');await p.waitForSelector('.big');
- const role=r=>p.selectOption('#role',r),nav=v=>p.click(`#nav button[data-v=${v}]`),T=async s=>(await p.innerText('body')).toLowerCase().includes(s.toLowerCase());
+ const role=r=>p.selectOption('#role',r),nav=v=>p.evaluate(v=>{S.view=v;render()},v),T=async s=>(await p.innerText('body')).toLowerCase().includes(s.toLowerCase());
  const cod=await p.evaluate(()=>{const i=S.D.items.find(i=>i.hh_unit&&i.qtd>=10&&i.meta_unit);return i.codigo});
  // --- Campo ---
  await role('encarregado');await nav('campo');

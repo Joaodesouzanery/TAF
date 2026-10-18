@@ -5,8 +5,8 @@ const {chromium}=require('playwright');const fs=require('fs');
  const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium'});
  const p=await b.newPage({viewport:{width:1400,height:1000}});const errs=[];p.on('pageerror',e=>errs.push(e.message));
  await p.route('https://cdnjs.cloudflare.com/**',r=>r.fulfill({status:200,contentType:'application/javascript',body:fs.readFileSync(__dirname+'/vendor_test/xlsx.full.min.js','utf8')}));
- await p.goto('file:///home/user/TAF/dist/tafadmin.html');await p.waitForSelector('.big');
- const role=r=>p.selectOption('#role',r),nav=v=>p.click(`#nav button[data-v=${v}]`),T=async s=>(await p.innerText('body')).toLowerCase().includes(s.toLowerCase());
+ await p.goto('file:///home/user/TAF/dist/tafadmin.html?demo=1');await p.waitForSelector('.big');
+ const role=r=>p.selectOption('#role',r),nav=v=>p.evaluate(v=>{S.view=v;render()},v),T=async s=>(await p.innerText('body')).toLowerCase().includes(s.toLowerCase());
  // ---- 1. alçadas por faixa ----
  const A=await p.evaluate(()=>{S.t.par.limite=1000;S.t.par.gerenteAte=50000;return [alcadaDe('verde',500),alcadaDe('verde',5000),alcadaDe('amarelo',20000),alcadaDe('amarelo',60000),alcadaDe('vermelho',100)]});
  ok('faixas: verde pequeno sem alçada, verde grande e amarelo no Gerente, acima da faixa e vermelho na Diretoria',JSON.stringify(A)==='[null,"gerente","gerente","diretoria","diretoria"]');
