@@ -51,7 +51,7 @@ function curvaS(){
   const L=[...ms].filter(Boolean).sort();if(L.length<2)L.unshift(addMes(L[0],-1));
   const c={medido:0,fat:0,custo:0};return L.map(m=>{c.medido+=S.t.meds.filter(x=>x.status==='atestada'&&mesDe(x.periodo)===m).reduce((s,x)=>s+medValor(x),0);
     c.fat+=S.t.fats.filter(f=>mesDe(f.emissao)===m).reduce((s,f)=>s+f.valor,0);
-    c.custo+=S.t.notas.filter(n=>n.status!=='lancada'&&mesDe(n.emissao)===m).reduce((s,n)=>s+n.valor,0);return {m,...c}})}
+    c.custo+=S.t.notas.filter(n=>n.status!=='lancada'&&mesDe(n.emissao)===m).reduce((s,n)=>s+n.valor,0);return {m,...c}}).filter(x=>{const M=typeof mesesPeriodo==='function'?mesesPeriodo():null;return !M||M.has(x.m)})}
 function svgCurvaS(r){
   const W=560,H=210,P=28,mx=Math.max(1,...r.map(x=>Math.max(x.medido,x.fat,x.custo))),X=i=>P+i*(W-2*P)/Math.max(1,r.length-1),Y=v=>H-P-(v/mx)*(H-2*P);
   const ln=(k,col)=>`<polyline fill="none" stroke="${col}" stroke-width="2" points="${r.map((x,i)=>X(i)+','+Y(x[k])).join(' ')}"/>`+r.map((x,i)=>`<circle cx="${X(i)}" cy="${Y(x[k])}" r="3" fill="${col}"><title>${fmes(x.m)} · ${k}: ${brl(x[k])}</title></circle>`).join('');
@@ -67,7 +67,7 @@ function painelContrato(X){
   const alerts=[];if(c.atrasado>0)alerts.push(['bad','Gasto atrasado',brl(c.atrasado)]);if(c.atrRec>0)alerts.push(['bad','NF vencida a receber',brl(c.atrRec)]);if(c.lucro<0)alerts.push(['bad','Lucro projetado negativo',brl(c.lucro)]);
   if(X.semFolga.length)alerts.push(['warn','Itens com meta acima do teto',String(X.semFolga.length)]);if(semMeta)alerts.push(['warn','Itens sem meta de custo',semMeta+' de '+totI]);
   const bar=(v,m)=>m>0?`<div class="bar"><i class="b" style="width:${Math.min(100,v/m*100)}%"></i></div>`:'<span class="mut">sem meta</span>';
-  return `<div class="sub" style="margin-top:6px">${esc(O.contratante)} · contrato ${esc(O.contrato)} · <b>${esc(O.codigo)}</b> ${esc(O.nome)}. Passe o mouse sobre um valor para ver como foi calculado.</div>
+  return `<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:6px"><label class="f-l" style="margin:0">Período da Curva S e do caixa <select id="d-per" aria-label="Período"><option value="all" ${biPar().periodo==='all'?'selected':''}>Todo o período</option><option value="3m" ${biPar().periodo==='3m'?'selected':''}>Últimos 3 meses</option><option value="mes" ${biPar().periodo==='mes'?'selected':''}>Mês atual</option></select></label></div><div class="sub" style="margin-top:6px">${esc(O.contratante)} · contrato ${esc(O.contrato)} · <b>${esc(O.codigo)}</b> ${esc(O.nome)}. Passe o mouse sobre um valor para ver como foi calculado.</div>
   <div class="pgrid">
    ${kv('Contrato',c.contrato,{...sf(0,'contrato'),cls:'big'})}
    ${kv('Faturado',c.fat,{k:'fat',...sf(0,'fat'),sub:'anteriores '+brl(c.faturadoAnt)})}${kv('Recebido',c.recebido,{k:'recebido'})}${kv('A receber',c.aReceber,{k:'aReceber'})}${kv('Atrasado (a receber)',c.atrRec,{k:'atrRec',neg:0,cls:c.atrRec>0?'bad':''})}
@@ -81,7 +81,7 @@ function painelContrato(X){
   <div class="cols" style="margin-top:14px"><div class="card"><div class="in"><div class="panel-t">Contrato × custos × lucro</div>${svgBarrasContrato(c)}</div></div>
    <div class="card"><div class="in"><div class="panel-t">Curva S acumulada</div>${svgCurvaS(curvaS())}</div></div></div>
   <div class="cols" style="margin-top:14px"><div class="card"><div class="in"><div class="panel-t">Saúde da obra</div>
-    <div class="row" style="grid-template-columns:1fr auto"><div><h4>IDC (valor agregado ÷ custo)</h4></div><span class="pill ${idc==null?'mute':sem(idc>=.95,idc>=.9)}">${idc==null?'sem custo':idc.toFixed(2).replace('.',',')}</span></div>
+    <div class="row" style="grid-template-columns:1fr auto"><div><h4>IDC (valor agregado ÷ custo)</h4></div><span class="pill ${idc==null?'mute':sem(idc>=.95,idc>=.9)}">${idc==null?'0,00':idc.toFixed(2).replace('.',',')}</span></div>
     <div class="row" style="grid-template-columns:1fr auto"><div><h4>Margem projetada</h4></div><span class="pill ${sem(c.pctLucro>=.05,c.pctLucro>=0)}">${(c.pctLucro*100).toFixed(1).replace('.',',')} %</span></div>
     <div class="row" style="grid-template-columns:1fr auto"><div><h4>Comprometido ÷ contrato</h4></div><span class="pill ${sem(c.comprom/c.contrato<=.85,c.comprom/c.contrato<=1)}">${(c.comprom/c.contrato*100).toFixed(1).replace('.',',')} %</span></div>
     <div class="row" style="grid-template-columns:1fr auto"><div><h4>Caixa da obra (recebido − pago)</h4></div><span class="pill ${c.recebido-c.pago>=0?'ok':'bad'}">${brl(c.recebido-c.pago,true)}</span></div></div></div>

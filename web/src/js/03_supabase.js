@@ -58,7 +58,7 @@ async function doLogin(novo){
 function telaAviso(titulo,texto,acao){$('#view').innerHTML=`<div class="soon"><h2>${titulo}</h2><div style="max-width:520px">${texto}</div><div style="display:flex;gap:8px;margin-top:10px">${acao||''}<button class="btn" data-act="sair">Sair</button></div></div>`;$('#nav').innerHTML='';}
 async function sbBoot(){
   $('#role').parentNode.style.display='none';
-  if(!window.supabase){telaAviso('Biblioteca não carregou','Não consegui carregar o supabase-js. Abra com <code>?demo=1</code> para usar a demonstração.');return}
+  if(!window.supabase){telaAviso('Biblioteca não carregou','Não consegui carregar o supabase-js. Abra com <code>?demo=1</code> para usar sem login.');return}
   SB.c=window.supabase.createClient(CFG.supabaseUrl,CFG.supabaseKey);
   const {data}=await SB.c.auth.getSession();
   if(!data.session){telaLogin();$('#view').innerHTML='';return}

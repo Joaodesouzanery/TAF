@@ -42,3 +42,6 @@ Execução: `bash scripts/qa.sh` (sobe Postgres 16 local, aplica `supabase/migra
 - **Acessibilidade**: modais com `role=dialog`, foco inicial, armadilha de Tab e Esc; linhas clicáveis acessíveis por teclado; `th scope`; `:focus-visible`; movimento reduzido; alvos de 44 px no celular; **contraste AA** medido em 10 telas nos dois temas (pills corrigidas com tokens `--*-ink`).
 - **Segurança** (`get_advisors`): corrigido o gatilho de competência chamável por RPC (migração 0015). Restam apenas avisos informativos das tabelas relacionais antigas sem uso (documentado em `BACKUP_E_RECUPERACAO.md`).
 - **Limites conhecidos**: acesso temporário, suplência e horário valem só na interface; login real no Supabase não é testável deste ambiente (testado com Auth simulado e em uso manual); CNAB é layout genérico; SPED/Reinf só como arquivo de apoio.
+
+## Fase 19
+`bash scripts/qa.sh` verde: 15 e2e (e2e_fase19 com 35 checks: tema, só 342, zeros, filtros, contraste nos dois temas, sem overflow a 400/1400 px), SQL, ações, desempenho (164 ms @1000, 600 ms @3000), conferência 342.

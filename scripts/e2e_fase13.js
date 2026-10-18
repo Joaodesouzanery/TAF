@@ -64,7 +64,7 @@ const {chromium}=require('playwright');
  ok('drill-down: soma das linhas = bloco, para todos os blocos',await p.evaluate(()=>{const c=painelCalc(),m={fat:'fat',recebido:'recebido',aReceber:'aReceber',atrRec:'atrRec',gasto:'gasto',pago:'pago',aPagar:'aPagar',atrasado:'atrasado',requisicao:'requisicao',custoFixo:'custoFixo',prov:'prov'};
   return Object.entries(m).every(([k,f])=>Math.abs(painelLinhas(k).reduce((s,x)=>s+x.valor,0)-c[f])<0.01)}));
  await p.click('.pk[data-k=gasto]');ok('clique abre a composição do gasto',await T('Composição'));await p.click('[data-act=fechar]');
- ok('carteira lista as 3 obras',await T('Carteira de obras')&&await T('343')&&await T('281'));
+ ok('carteira mostra só a obra 342',await T('Carteira de obras')&&await p.evaluate(()=>OBRAS_PADRAO.length===1&&!document.querySelector('#view').innerText.includes('Mozarl')));
  await p.evaluate(()=>{S.t.titulos.push({id:'tP',oc:'ocP',ocNum:'OC-P',forn:'Forn P',valor:1000,venc:'2999-01-31'},{id:'tQ',oc:'ocQ',ocNum:'OC-Q',forn:'Forn P',valor:500,venc:'2999-02-15'},{id:'tR',oc:'ocR',ocNum:'OC-R',forn:'Forn R',valor:100,venc:'2999-02-15'});S.view='fin';S.tab.fin='tit';render()});
  await p.click('[data-act=tit-parc][data-id=tP]');await p.fill('#pa-n','3');await p.click('[data-act=tit-parc-ok]');
  ok('parcelas somam o título (333,33+333,33+333,34)',await p.evaluate(()=>{const t=S.t.titulos.find(x=>x.id==='tP');return t.parcelas.length===3&&r2(t.parcelas.reduce((s,q)=>s+q.valor,0))===1000&&t.parcelas[2].valor===333.34}));

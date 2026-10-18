@@ -88,6 +88,7 @@ async function mock(page){
   await p.unroute('**/rest/v1/documento**');await p.evaluate(()=>sbSync());await p.waitForTimeout(900);
   ok('com rede: fila sobe e é limpa',await p.evaluate(()=>!localStorage.getItem(filaKey()))&&db.documento.find(d=>d.tipo==='apt').dados.status==='conferido');
   // 7b: várias obras no modo conectado
+  await p.evaluate(([a,b])=>{window.TAF_OBRAS[343]=a;window.TAF_OBRAS[281]=b;if(!OBRAS_PADRAO.some(o=>o[0]==='343'))OBRAS_PADRAO.push(['343','CAESB · Subadutora Sobradinho I'],['281','SANEAGO · Mozarlândia (consórcio)'])},[JSON.parse(require('fs').readFileSync('/home/user/TAF/web/data/obra343.json','utf8')),JSON.parse(require('fs').readFileSync('/home/user/TAF/web/data/obra281.json','utf8'))]);
   await p.evaluate(()=>{S.view='hoje';render()});await p.click('.obra-sel');ok('seletor oferece importar a 343 e a 281 (ainda não estão no banco)',(await p.innerText('#mbox')).includes('ainda não está no banco'));
   await p.click('[data-act=obra-imp][data-cod="343"]');await p.waitForFunction(()=>S.D&&S.D.obra.codigo==='343'&&S.D.items&&S.byCod);
   ok('obra 343 importada para o banco e carregada (244 itens, sem meta)',db.obra.length===2&&await p.evaluate(()=>S.D.items.length===244&&S.D.items.every(i=>i.meta_total==null)));

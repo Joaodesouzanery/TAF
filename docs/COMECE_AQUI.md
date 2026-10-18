@@ -107,3 +107,10 @@ Decidido (delegado ao Claude pelo usuário): o **custo realizado do item vem da 
 **Como trabalhar**: edite `web/src`, rode `python3 scripts/build_web.py && python3 scripts/build_html.py`, depois `bash scripts/qa.sh`. Mudança de banco = nova migração + teste SQL; no Supabase aplique em partes pequenas por `execute_sql` se `apply_migration` der timeout.
 
 **Pendências do usuário** (não dependem de código): criar a conta Admin e fechar o cadastro aberto; definir valores de alçada e metas dos cartões; confirmar alíquotas e plano de contas com o contador; exportar do Sankhya os lançamentos da 343/342 para a conferência; decidir se um dia o custo do material passa a ser por consumo (hoje é pela nota).
+
+## Fase 19 — Tema claro/escuro, só obra 342, vazio = 0, filtros em tudo
+- **Tema**: botões **Claro | Escuro** no topo (`web/src/js/41_tema.js`); a escolha fica em `localStorage.taf_tema`; sem escolha, segue o sistema.
+- **Só a 342**: o sistema não mostra mais textos/botões de "demonstração" nem as obras 343/281. Elas ficam guardadas em `web/data/` e voltam acrescentando uma linha em `OBRAS_PADRAO` (`28_obras.js`) e em `scripts/build_html.py` (`TAF_OBRAS`).
+- **Vazio = 0**: o que não tem dado aparece como `0` (`43_zeros.js`), nunca "—".
+- **Filtros** (`42_filtros.js`): cada tabela ganha busca, filtro por coluna, datas, faixa de valor, ordenação no cabeçalho, "só alertas", duplo clique para filtrar por valor, Limpar e Copiar CSV. Dashboard e Painel da obra têm filtro de período (e natureza).
+- Teste: `scripts/e2e_fase19.js` (incluído em `qa.sh`).

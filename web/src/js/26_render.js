@@ -1,5 +1,5 @@
 /* ============ render / eventos ============ */
-function render(){S.memo={};try{renderCore()}finally{S.memo=null}if(typeof a11yPass==='function')a11yPass()}
+function render(){S.memo={};try{renderCore()}finally{S.memo=null}if(typeof zerosPass==='function')zerosPass();if(typeof filtrosPass==='function')filtrosPass();if(typeof a11yPass==='function')a11yPass()}
 function renderCore(){
   const X=derive();S.X=X;
   const AR=areaDe(S.view);
@@ -43,7 +43,7 @@ document.addEventListener('click',e=>{
 });
 
 async function load(cod){
-  const d=await obraData(cod||'342');S.src=window.TAF_DATA?['Arquivo único','Dados embutidos (demo)']:['Demonstração','Dados da planilha · estado salvo neste navegador'];return d}
+  const d=await obraData(cod||'342');S.src=window.TAF_DATA?['Obra 342','Dados da planilha embutidos']:['Obra 342','Dados da planilha · lançamentos salvos neste navegador'];return d}
 async function abreDemo(cod){
   try{S.D=await load(cod);S.t=loadT();S.exp=new Set();S.tab={};S.view='dash';prep();
     S.D.eap.filter(e=>e.nivel<=2).forEach(e=>S.exp.add(e.codigo));

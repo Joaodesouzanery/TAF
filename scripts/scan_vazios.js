@@ -1,0 +1,8 @@
+// Lista, por tela, textos de "vazio" (—, sem dados, Nenhum…) na obra 342 recém-aberta. Uso: node scripts/scan_vazios.js
+const {chromium}=require('playwright');
+(async()=>{const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium'});const p=await b.newPage({viewport:{width:1400,height:900}});const errs=[];p.on('pageerror',e=>errs.push(e.message));
+ await p.goto('file:///home/user/TAF/dist/tafadmin.html?demo=1');await p.waitForSelector('.big');
+ const R=await p.evaluate(()=>{const out=[];const tabs={pain:['contrato','compras','obra','dre','prod','lean','carteira','conf','imp'],ctb:['bal','diario','razao','dre','orc','fech','liv','plano'],est:['saldo','mov','inv','nec'],pes:['col','pto','rh','custo'],fin:['tit','conc','contas','cobr','apur','fech'],fat:['bc','nf','caixa'],compras:['sols','ocs','aprov'],cad:['forn','ins','banc','emp'],med:['res','bm'],lean:['pauta','look','rest','ppc','tar'],campo:['apt']};
+  const keyOf={pain:'pain',ctb:'ctb',est:'est',pes:'pes',fin:'fin',fat:'fat',compras:'compras',cad:'cad',med:'med',lean:'lean',campo:'campo'};
+  S.role='admin';for(const v of areasVisiveis().flatMap(a=>a.tabs.map(t=>t[0]))){for(const s of (tabs[v]||[null])){S.view=v;S.tab={};if(s)S.tab[keyOf[v]]=s;render();const T=document.querySelector('#view').innerText;const hits=[];T.split('\n').forEach(l=>{if(/(^|\s)—(\s|$)|sem dados|sem custo|sem base|^nenhum|^nenhuma|^sem |ainda\.|nada por|nada pend/i.test(l.trim()))if(!/^0 /.test(l.trim()))hits.push(l.trim().slice(0,90))});if(hits.length)out.push(v+(s?':'+s:'')+' → '+[...new Set(hits)].slice(0,6).join(' | '))}}return out});
+ R.forEach(x=>console.log(x));console.log('telas com vazios:',R.length,'· erros JS:',JSON.stringify(errs));await b.close()})();
