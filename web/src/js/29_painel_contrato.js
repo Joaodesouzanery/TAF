@@ -1,5 +1,5 @@
 /* ============ PAINEL DE CONTRATOS / OBRA (Fase 13) ============ */
-/* Mesmos blocos do Painel de Contratos do Sankhya, calculados dos registros do sistema (+ lançamentos importados). */
+/* Painel de Contratos da obra, calculado dos registros do sistema (+ lançamentos importados). */
 const mesCorr=()=>mesDe(hojeISO());
 const lfxDe=tp=>S.t.lfxs.filter(l=>l.tipo===tp);
 function vencNota(n){const t=S.t.titulos.find(x=>x.oc&&x.oc===n.oc&&!x.cancelado);return t?t.venc:addDias(n.emissao||hojeISO(),30)}
@@ -67,7 +67,7 @@ function painelContrato(X){
   const alerts=[];if(c.atrasado>0)alerts.push(['bad','Gasto atrasado',brl(c.atrasado)]);if(c.atrRec>0)alerts.push(['bad','NF vencida a receber',brl(c.atrRec)]);if(c.lucro<0)alerts.push(['bad','Lucro projetado negativo',brl(c.lucro)]);
   if(X.semFolga.length)alerts.push(['warn','Itens com meta acima do teto',String(X.semFolga.length)]);if(semMeta)alerts.push(['warn','Itens sem meta de custo',semMeta+' de '+totI]);
   const bar=(v,m)=>m>0?`<div class="bar"><i class="b" style="width:${Math.min(100,v/m*100)}%"></i></div>`:'<span class="mut">sem meta</span>';
-  return `<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:6px"><label class="f-l" style="margin:0">Período da Curva S e do caixa <select id="d-per" aria-label="Período"><option value="all" ${biPar().periodo==='all'?'selected':''}>Todo o período</option><option value="3m" ${biPar().periodo==='3m'?'selected':''}>Últimos 3 meses</option><option value="mes" ${biPar().periodo==='mes'?'selected':''}>Mês atual</option></select></label></div><div class="sub" style="margin-top:6px">${esc(O.contratante)} · contrato ${esc(O.contrato)} · <b>${esc(O.codigo)}</b> ${esc(O.nome)}. Passe o mouse sobre um valor para ver como foi calculado.</div>
+  return `<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:6px"><span class="mut" style="font-size:12px">Período da Curva S e do caixa</span>${barraFiltros()}</div><div class="sub" style="margin-top:6px">${esc(O.contratante)} · contrato ${esc(O.contrato)} · <b>${esc(O.codigo)}</b> ${esc(O.nome)}. Passe o mouse sobre um valor para ver como foi calculado.</div>
   <div class="pgrid">
    ${kv('Contrato',c.contrato,{...sf(0,'contrato'),cls:'big'})}
    ${kv('Faturado',c.fat,{k:'fat',...sf(0,'fat'),sub:'anteriores '+brl(c.faturadoAnt)})}${kv('Recebido',c.recebido,{k:'recebido'})}${kv('A receber',c.aReceber,{k:'aReceber'})}${kv('Atrasado (a receber)',c.atrRec,{k:'atrRec',neg:0,cls:c.atrRec>0?'bad':''})}
@@ -88,27 +88,29 @@ function painelContrato(X){
    <div class="card"><div class="in"><div class="panel-t">Alertas</div>${alerts.length?alerts.map(a=>`<div class="row" style="grid-template-columns:1fr auto"><div><h4>${a[1]}</h4></div><span class="pill ${a[0]}">${a[2]}</span></div>`).join(''):'<div class="sub">Nenhum alerta.</div>'}</div></div></div>
   <div class="cols" style="margin-top:14px"><div class="card"><div class="in"><div class="panel-t">Maiores desvios (acima da meta)</div>${desv.length?`<table class="tbl"><tbody>${desv.map(x=>`<tr class="clk" data-item="${x.i.codigo}"><td class="mono">${x.i.codigo}</td><td>${esc(x.i.descricao.slice(0,50))}</td><td class="r neg">+${brl(x.v)}</td></tr>`).join('')}</tbody></table>`:'<div class="sub">Nenhum item acima da meta.</div>'}</div></div>
    <div class="card"><div class="in"><div class="panel-t">Custo por natureza (meta × usado)</div><table class="tbl"><tbody>${Object.entries(nat).map(([k,v])=>`<tr><td>${NATNOME[k]||k}</td><td class="r">${brl(v.real,true)} / ${brl(v.meta,true)}</td><td style="width:90px">${bar(v.real,v.meta)}</td></tr>`).join('')}</tbody></table></div></div></div>
-  <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn" data-act="pc-csv">Copiar números (CSV)</button><button class="btn" data-act="pc-conf">Conferir com o Sankhya</button></div>
+  <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn" data-act="pc-csv">Copiar números (CSV)</button><button class="btn" data-act="pc-conf">Conferir os números</button></div>
   ${consumoView()}${pessoalView()}${carteiraView()}
-  <div class="sub" style="margin-top:8px">Sem dados do Sankhya, a obra ${esc(O.codigo)} só mostra o que foi lançado aqui. Para trazer o histórico financeiro de lá, use a aba <b>Importar</b> (CSV).</div>`}
+  <div class="sub" style="margin-top:8px">A obra ${esc(O.codigo)} mostra o que foi lançado aqui. Para trazer histórico financeiro de planilhas, use a aba <b>Importar</b> (CSV).</div>`}
 ACOES['pc-csv']=()=>{const c=painelCalc(),t='indicador;valor\n'+Object.entries({contrato:c.contrato,faturado:c.fat,recebido:c.recebido,a_receber:c.aReceber,atrasado_receber:c.atrRec,fat_direto:c.fatDireto,impostos_debito:c.impDeb,gasto:c.gasto,gasto_pago:c.pago,gasto_a_pagar:c.aPagar,gasto_atrasado:c.atrasado,requisicao:c.requisicao,custo_fixo:c.custoFixo,prov_gasto:c.prov,saldo_a_faturar:c.saldoFat,lucro:c.lucro}).map(([k,v])=>k+';'+String(v).replace('.',',')).join('\n');
   try{navigator.clipboard.writeText(t).then(()=>toast('Copiado'),()=>toast('Não consegui copiar'))}catch(e){toast('Não consegui copiar')}};
 ACOES['pc-conf']=()=>{S.tab.pain='conf';render()};
 
-/* ---------- Conferência com o Sankhya ---------- */
-const CONF_L=[['contrato','Contrato'],['fat','Faturado'],['recebido','Recebido'],['aReceber','A receber'],['gasto','Gasto'],['pago','Gasto pago'],['aPagar','Gasto a pagar'],['atrasado','Gasto atrasado'],['custoFixo','Custo fixo'],['prov','Prov. gasto'],['saldoFat','Saldo a faturar'],['lucro','Lucro']];
-const CAUSA={gasto:'Faltam notas/lançamentos aqui (importe o CSV do financeiro) ou há nota sem rateio.',pago:'Há pagamento no Sankhya sem baixa aqui.',aPagar:'Título aberto lá sem nota/lançamento aqui.',atrasado:'Vencimento diferente ou baixa não registrada aqui.',custoFixo:'Custo fixo lá é rateio contábil; aqui só conta natureza ADM.',prov:'Provisão lá sem pedido aprovado aqui.',lucro:'Bases diferentes: o Sankhya usa custo fixo/provisão próprios; confira as linhas acima.',fat:'NF de serviço sem boletim aqui.',recebido:'Recebimento não registrado aqui.',aReceber:'Efeito do faturado/recebido.',saldoFat:'Efeito do faturado.',contrato:'Valor do contrato diferente do cadastrado.'};
+/* ---------- Conferência interna (o sistema confere os próprios números) ---------- */
+function confChecks(){const c=painelCalc(),X=S.X||derive(),T=S.t,nt=T.notas.filter(n=>n.status!=='lancada'),
+  rat=r2(nt.reduce((s,n)=>s+n.rateio.reduce((a,l)=>a+ +l.valor,0),0)),vnt=r2(nt.reduce((s,n)=>s+n.valor,0));
+  return [
+  {t:'Contrato × venda da EAP',a:['Contrato',c.contrato],b:['Soma da venda da EAP',X.venda],causa:'O valor do contrato cadastrado difere da soma dos itens vendidos na EAP.'},
+  {t:'Notas × rateio',a:['Valor das notas',vnt],b:['Total rateado nos itens',rat],causa:'Há nota sem rateio de 100 % nos itens da EAP.'},
+  {t:'Gasto lançado × realizado na EAP',a:['Gasto (pago + a pagar + atrasado)',c.gasto],b:['Realizado na EAP',X.real],causa:'Há lançamento importado sem item da EAP, ou nota sem rateio.'},
+  {t:'Faturado × recebido + a receber',a:['Faturado',c.fat],b:['Recebido + a receber',r2(c.recebido+c.aReceber)],causa:'Recebimento registrado sem fatura, ou fatura sem saldo calculado.'},
+  {t:'Gasto = pago + a pagar + atrasado',a:['Gasto',c.gasto],b:['Soma das três faixas',r2(c.pago+c.aPagar+c.atrasado)],causa:'Nota com vencimento ou situação inconsistente.'},
+  {t:'Comprometido dentro do teto',a:['Gasto + custo fixo + provisão',c.comprom],b:['Teto da EAP',X.teto],modo:'max',causa:'O comprometido passou do teto: revise pedidos e rateios por item.'}]}
 function confView(){
-  const c=painelCalc(),sk=(S.t.par.conf||{}),num=v=>v===''||v==null||isNaN(+v)?null:+v;
-  const rows=CONF_L.map(([k,l])=>{const a=c[k],b=num(sk[k]),d=b==null?null:r2(a-b),ok=d!=null&&Math.abs(d)<=1;
-    return `<tr><td>${l}</td><td class="r">${brl(a)}</td><td class="r"><input class="cf-in" data-cf="${k}" type="number" step="any" value="${b==null?'':b}" placeholder="valor do Sankhya" style="width:150px;text-align:right"></td><td class="r ${d?'neg':''}">${d==null?'—':brl(d)}</td><td>${d==null?'<span class="pill mute">sem valor</span>':ok?'<span class="pill ok">bate</span>':'<span class="pill bad">difere</span>'}</td><td class="mut" style="font-size:12px">${d!=null&&!ok?CAUSA[k]:''}</td></tr>`}).join('');
-  const dif=CONF_L.filter(([k])=>{const b=num(sk[k]);return b!=null&&Math.abs(c[k]-b)>1}).length,pre=CONF_L.filter(([k])=>num(sk[k])!=null).length;
-  return `<div class="sub">Digite os totais do Painel de Contratos do Sankhya desta obra (<b>${esc(S.D.obra.codigo)}</b>). O sistema compara com o que ele calcula e aponta a causa provável. Fica registrado na auditoria.</div>
-  <div class="kpi4"><div><div class="k-l">Valores informados</div><div class="v">${pre}</div></div><div><div class="k-l">Batem</div><div class="v">${pre-dif}</div></div><div><div class="k-l">Diferem</div><div class="v ${dif?'neg':''}">${dif}</div></div><div><div class="k-l">Tolerância</div><div class="v">R$ 1,00</div></div></div>
-  <div class="tw"><table class="tbl"><thead><tr><th>Indicador</th><th class="r">Neste sistema</th><th class="r">Sankhya</th><th class="r">Diferença</th><th>Resultado</th><th>Causa provável</th></tr></thead><tbody>${rows}</tbody></table></div>
-  <div style="margin-top:10px"><button class="btn" data-act="cf-zera">Limpar valores</button></div>`}
-document.addEventListener('change',e=>{const t=e.target;if(t.dataset&&t.dataset.cf!=null){S.t.par.conf={...(S.t.par.conf||{}),[t.dataset.cf]:t.value};log('conferencia_sankhya',S.D.obra.codigo,t.dataset.cf,'',t.value);save();render()}});
-ACOES['cf-zera']=()=>{S.t.par.conf={};log('conferencia_sankhya',S.D.obra.codigo,'limpar','','');save();render()};
+  const L=confChecks().map(x=>{const d=r2(x.a[1]-x.b[1]),ok=x.modo==='max'?d<=1:Math.abs(d)<=1;return {...x,d,ok}}),dif=L.filter(x=>!x.ok).length;
+  const rows=L.map(x=>`<tr><td>${x.t}</td><td class="r">${brl(x.a[1])}<div class="mut" style="font-size:11px">${x.a[0]}</div></td><td class="r">${brl(x.b[1])}<div class="mut" style="font-size:11px">${x.b[0]}</div></td><td class="r ${x.ok?'':'neg'}">${brl(x.d)}</td><td>${x.ok?'<span class="pill ok">bate</span>':'<span class="pill bad">difere</span>'}</td><td class="mut" style="font-size:12px">${x.ok?'':x.causa}</td></tr>`).join('');
+  return `<div class="sub">O sistema confere os próprios números da obra <b>${esc(S.D.obra.codigo)}</b>: contrato, EAP, notas, rateio, financeiro e teto. Nada precisa ser digitado.</div>
+  <div class="kpi4"><div><div class="k-l">Verificações</div><div class="v">${L.length}</div></div><div><div class="k-l">Batem</div><div class="v">${L.length-dif}</div></div><div><div class="k-l">Diferem</div><div class="v ${dif?'neg':''}">${dif}</div></div><div><div class="k-l">Tolerância</div><div class="v">R$ 1,00</div></div></div>
+  <div class="tw"><table class="tbl"><thead><tr><th>Verificação</th><th class="r">Valor A</th><th class="r">Valor B</th><th class="r">Diferença</th><th>Resultado</th><th>Causa provável</th></tr></thead><tbody>${rows}</tbody></table></div>`}
 
 /* ---------- Importar lançamentos do financeiro (CSV) ---------- */
 /* Colunas: tipo;numero;fornecedor;descricao;vencimento;valor;pago_em;fat_direto  (tipo: gasto | custo_fixo | provisao). Datas dd/mm/aaaa ou aaaa-mm-dd; valores 1.234,56. */
@@ -123,14 +125,14 @@ const lfxChave=l=>[l.tipo,l.numero,l.forn.toLowerCase(),l.venc,l.valor].join('|'
 function lfxImportar(){const r=lfxParse($('#lf-csv').value),ja=new Set(S.t.lfxs.map(lfxChave));
   if(!r.out.length&&r.erros.length)return toast(r.erros[0]);
   const novos=r.out.filter(l=>!ja.has(lfxChave(l)));const lote='L'+Date.now();
-  novos.forEach(l=>S.t.lfxs.push({id:'lfx'+Date.now()+Math.random().toString(36).slice(2,6),origem:'Sankhya',lote,...l}));
+  novos.forEach(l=>S.t.lfxs.push({id:'lfx'+Date.now()+Math.random().toString(36).slice(2,6),origem:'Importado',lote,...l}));
   log('lancamentos_importados',lote,'importar','',novos.length+' novos, '+(r.out.length-novos.length)+' repetidos ignorados'+(r.erros.length?', '+r.erros.length+' linhas com erro':''));
   save();toast(novos.length+' lançamentos importados, '+(r.out.length-novos.length)+' repetidos ignorados'+(r.erros.length?', '+r.erros.length+' com erro':''));S.lfxErros=r.erros;render()}
 function lfxDesfazer(){const ult=S.t.lfxs[S.t.lfxs.length-1];if(!ult)return toast('Nada para desfazer');const n=S.t.lfxs.filter(l=>l.lote===ult.lote).length;
   S.t.lfxs=S.t.lfxs.filter(l=>l.lote!==ult.lote);log('lancamentos_importados',ult.lote,'desfazer','',n+' removidos');save();toast(n+' lançamentos do último lote removidos');render()}
 ACOES['lf-imp']=()=>{if(!can('lan'))return toast('Só Financeiro importa lançamentos');lfxImportar()};ACOES['lf-undo']=()=>{if(!can('lan'))return toast('Só Financeiro desfaz importação');lfxDesfazer()};
 function impView(){const L=S.t.lfxs;
-  return `<div class="sub">Traga para cá o histórico financeiro que hoje só existe no Sankhya. Colunas separadas por ponto e vírgula: <span class="mono">tipo;numero;fornecedor;descricao;vencimento;valor;pago_em;fat_direto</span>. Tipo: <b>gasto</b>, <b>custo_fixo</b> ou <b>provisao</b>. Deixe <span class="mono">pago_em</span> vazio para títulos em aberto. Linhas repetidas (mesmo tipo, número, fornecedor, vencimento e valor) são ignoradas.</div>
+  return `<div class="sub">Traga para cá o histórico financeiro de planilhas ou de outros controles. Colunas separadas por ponto e vírgula: <span class="mono">tipo;numero;fornecedor;descricao;vencimento;valor;pago_em;fat_direto</span>. Tipo: <b>gasto</b>, <b>custo_fixo</b> ou <b>provisao</b>. Deixe <span class="mono">pago_em</span> vazio para títulos em aberto. Linhas repetidas (mesmo tipo, número, fornecedor, vencimento e valor) são ignoradas.</div>
   <textarea id="lf-csv" rows="6" placeholder="gasto;123;Fornecedor X;Cimento;25/11/2026;2.011,26;;&#10;provisao;;Folha;Provisão de mão de obra;30/11/2026;126.731,81;;"></textarea>
   <div style="margin-top:8px;display:flex;gap:8px"><button class="btn dark" data-act="lf-imp" ${can('lan')?'':'disabled title="Só Financeiro"'}>Importar</button><button class="btn" data-act="lf-undo" ${can('lan')&&L.length?'':'disabled'}>Desfazer último lote</button></div>
   ${(S.lfxErros||[]).length?`<div class="err" style="margin-top:8px">${S.lfxErros.slice(0,5).map(esc).join('<br>')}</div>`:''}
@@ -139,7 +141,7 @@ function impView(){const L=S.t.lfxs;
 /* ---------- drill-down: lista que compõe cada número ---------- */
 function painelLinhas(k){const T=S.t,h=hojeISO(),R=[],add=(ref,desc,valor,data)=>R.push({ref,desc,valor:r2(valor),data});
   const nt=T.notas.filter(n=>n.status!=='lancada'),lg=lfxDe('gasto');
-  const nota=n=>add(n.num,n.emitente+(n.status==='paga'?' · paga':''),n.valor,n.status==='paga'?n.pago:vencNota(n)),lf=l=>add('Sankhya '+(l.numero||''),l.forn+' · '+l.desc,l.valor,l.pago||l.venc);
+  const nota=n=>add(n.num,n.emitente+(n.status==='paga'?' · paga':''),n.valor,n.status==='paga'?n.pago:vencNota(n)),lf=l=>add('Importado '+(l.numero||''),l.forn+' · '+l.desc,l.valor,l.pago||l.venc);
   if(k==='fat')T.fats.forEach(f=>add(f.num,f.bcNum,f.valor,f.emissao));
   if(k==='recebido')T.recs.forEach(r=>add(r.id,'Recebimento',r.valor,r.data));
   if(k==='aReceber')T.fats.filter(f=>fatSaldo(f)>0).forEach(f=>add(f.num,'saldo a receber',fatSaldo(f),f.venc));

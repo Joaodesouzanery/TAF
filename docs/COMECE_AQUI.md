@@ -30,14 +30,14 @@ Regras de negócio vivem em JS (`prep`, `saldos`, `semaforo`, `derive`) e espelh
 1. Design como nas 4 imagens de referência (limpo, cartões, pílulas, barras de marcas).
 2. Entregar por fases, sempre com HTML atualizado; depois: entregar como **link**.
 3. Saudação fixa "Bom dia, Administrador!".
-4. Ordem: Supabase → Apontamento e Lean → BM/faturamento e DRE → NF-e/fiscal/Sankhya.
-5. Fiscal: provedor externo + exportar ao contador. Sankhya: só API oficial; REA não se aplica.
+4. Ordem: Supabase → Apontamento e Lean → BM/faturamento e DRE → NF-e/fiscal/ERP de referência.
+5. Fiscal: provedor externo + exportar ao contador. ERP de referência: só API oficial; REA não se aplica.
 6. As planilhas já enviadas bastam; não esperar REV13/META REV02.
 7. Sem autenticação por enquanto.
 8. Guardar tudo no GitHub (migração de conta) e guardar as planilhas no repositório.
 
 ## Fase 12 (18/10/2026): base do ERP
-Decisão do usuário: **não integrar com o Sankhya; criar as funções equivalentes aqui**, em 8 áreas de menu com abas internas, com login e banco compartilhado. Plano das fases 12 a 18 em `docs/PLANO_E_HISTORICO.md`; rastreio de cada item do inventário em `docs/MATRIZ_SANKHYA_X_TAF.md` (gerada por `scripts/gera_matriz.py`).
+Decisão do usuário: **não integrar com o ERP de referência; criar as funções equivalentes aqui**, em 8 áreas de menu com abas internas, com login e banco compartilhado. Plano das fases 12 a 18 em `docs/PLANO_E_HISTORICO.md`; rastreio de cada item do inventário em `docs/MATRIZ_FUNCIONALIDADES.md` (gerada por `scripts/gera_matriz.py`).
 - **Código modular**: edite `web/src/` (`shell.html`, `style.css`, `js/NN_*.js`) e rode `python3 scripts/build_web.py` (gera `web/index.html`, que a Vercel publica) e `python3 scripts/build_html.py` (arquivo único `dist/tafadmin.html`, com as 3 obras embutidas). `scripts/build_artifact.py` gera a versão do link do Claude (modo aberto, sem Supabase).
 - **Login é o padrão** (`web/config.js`, `modo: 'supabase'`). **O link do Claude bloqueia rede**: lá o app roda só em demonstração. O link de uso real é o da Vercel (`tafadmin.vercel.app`). O **primeiro cadastro vira Administrador**: crie a sua conta antes de passar o link a alguém e depois feche o cadastro aberto (Supabase → Authentication → Sign In / Providers → desligar "Allow new users to sign up"; novos usuários entram só por convite).
 - Numeração (SC-, OC-, NF-…) vem do servidor (`reservar_numeros`, migração `0009`), sem repetir entre pessoas.
@@ -45,31 +45,31 @@ Decisão do usuário: **não integrar com o Sankhya; criar as funções equivale
 - Várias obras: seletor no topo do menu. 343 (só preço licitado, sem estudo de custo) e 281 (histórico do consórcio, tudo no item S.1) vêm de `web/data/` (gerados por `scripts/import_outras_obras.py`); no banco entram por "Importar" (Gestão/Diretoria).
 
 ## Fase 11 (18/10/2026)
-Alçadas por faixa de valor, atualização das metas pela planilha, apuração estimada de tributos, e as integrações de NF-e e Sankhya em funções do Supabase (`supabase/functions/`), prontas para ligar. Leia `docs/INTEGRACOES.md` e `docs/SANKHYA_PESQUISA.md`. A atualização pela planilha grava a nova linha de base em `obra.estado` (campos `baseOv` e `basePac`); o `item_eap` do banco guarda a versão 1.
+Alçadas por faixa de valor, atualização das metas pela planilha, apuração estimada de tributos, e as integrações de NF-e e ERP de referência em funções do Supabase (`supabase/functions/`), prontas para ligar. Leia `docs/INTEGRACOES.md` e `docs/a pesquisa em fontes/`. A atualização pela planilha grava a nova linha de base em `obra.estado` (campos `baseOv` e `basePac`); o `item_eap` do banco guarda a versão 1.
 
 ## Pendências do usuário
 1. Renomear o projeto Vercel para `tafadmin` (e conferir Domains e a Production Branch).
 2. Decidir quando reativar o login (e fechar o cadastro aberto no Supabase).
-3. Credenciais de API do Sankhya (com o administrador de lá), contratar/habilitar o provedor de NF-e, cadastrar os secrets e publicar as funções (passo a passo em `docs/INTEGRACOES.md`). Exige reativar o login.
+3. Credenciais de API do ERP de referência (com o administrador de lá), contratar/habilitar o provedor de NF-e, cadastrar os secrets e publicar as funções (passo a passo em `docs/INTEGRACOES.md`). Exige reativar o login.
 4. Definir valores de alçada (R$: hoje verde sem confirmação até 100.000, Gerente até 250.000) e a tolerância nota × pedido (2%), e conferir as alíquotas da apuração com o contador.
 5. Confirmar a versão vigente da META (REV13/META REV02), quando existir.
 
 ## Próximos passos sugeridos
 - **7b**: importar a EAP da obra 343 (Viabilidade CAESB, preço unitário) e o histórico da 281 (aba 08D do TAF rev6) para a fila "sem item".
 - Numeração de documentos no servidor (evita repetir número com vários usuários).
-- Quando houver credencial: função no Supabase para Sankhya e para o provedor de NF-e.
+- Quando houver credencial: função no Supabase para ERP de referência e para o provedor de NF-e.
 - Reabrir login e testar com contas reais de cada papel.
 
 ## Cuidados
 - No link do Claude: `alert/confirm/prompt` não aparecem, downloads são bloqueados e só scripts de cdnjs/jsdelivr/unpkg carregam. O app foi ajustado para isso (janelas na página, texto copiável).
 - Ao editar `web/index.html`, rode `bash scripts/qa.sh` antes de publicar.
 
-## Fase 13 — Painel de Contratos/Obra, conferência Sankhya e financeiro nativo
-- **Painel**: Início → Painéis → aba *Contrato da obra* (`29_painel_contrato.js`): mesmos blocos do Painel de Contratos do Sankhya (contrato, faturado, fat. direto, impostos, gasto pago/a pagar/atrasado, requisição, custo fixo, prov. gasto, saldo a faturar, lucro) + gráfico contrato×custos×lucro, Curva S, saúde (IDC, margem), alertas, desvios, custo por natureza, cópia CSV.
-- **Conferência Sankhya** (aba): digita os totais do Sankhya e vê bate/difere + causa provável. **Importar lançamentos** (aba): CSV `tipo;numero;fornecedor;descricao;vencimento;valor;pago_em;fat_direto` (tipo gasto|custo_fixo|provisao), sem duplicar, com desfazer.
+## Fase 13 — Painel de Contratos/Obra, conferência ERP de referência e financeiro nativo
+- **Painel**: Início → Painéis → aba *Contrato da obra* (`29_painel_contrato.js`): mesmos blocos do Painel de Contratos do ERP de referência (contrato, faturado, fat. direto, impostos, gasto pago/a pagar/atrasado, requisição, custo fixo, prov. gasto, saldo a faturar, lucro) + gráfico contrato×custos×lucro, Curva S, saúde (IDC, margem), alertas, desvios, custo por natureza, cópia CSV.
+- **Conferência** (aba): digita os totais do ERP de referência e vê bate/difere + causa provável. **Importar lançamentos** (aba): CSV `tipo;numero;fornecedor;descricao;vencimento;valor;pago_em;fat_direto` (tipo gasto|custo_fixo|provisao), sem duplicar, com desfazer.
 - **Financeiro** → *Contas e extrato* (OFX, baixa múltipla com juros/multa/desconto, CNAB 240 genérico — validar com o banco) e *Cobrança* (mensagem + link WhatsApp manual).
 - Migração `0010_fase13.sql` (tipos lfx, mov, cobr) já aplicada no Supabase TAF. Testes: `supabase/tests/fase13.sql`, `scripts/e2e_fase13.js`.
-- Os prints do Sankhya são da obra **343**; só o contrato (R$ 5.226.634,03) existia nas planilhas — gasto/provisão/custo fixo vêm do financeiro do Sankhya (importar CSV para conferir).
+- Os prints do ERP de referência são da obra **343**; só o contrato (R$ 5.226.634,03) existia nas planilhas — gasto/provisão/custo fixo vêm do financeiro do ERP de referência (importar CSV para conferir).
 
 ## Fase 13 (fechamento) e Fase 14 — Contabilidade
 - **Fase 13 fechada**: clique nos números do painel abre a composição (drill-down); Financeiro → Contas a pagar ganhou Parcelar, Renegociar (histórico no título) e Agrupar (mesmo fornecedor); painel mostra o comparativo da carteira (342/343/281).
@@ -106,7 +106,7 @@ Decidido (delegado ao Claude pelo usuário): o **custo realizado do item vem da 
 
 **Como trabalhar**: edite `web/src`, rode `python3 scripts/build_web.py && python3 scripts/build_html.py`, depois `bash scripts/qa.sh`. Mudança de banco = nova migração + teste SQL; no Supabase aplique em partes pequenas por `execute_sql` se `apply_migration` der timeout.
 
-**Pendências do usuário** (não dependem de código): criar a conta Admin e fechar o cadastro aberto; definir valores de alçada e metas dos cartões; confirmar alíquotas e plano de contas com o contador; exportar do Sankhya os lançamentos da 343/342 para a conferência; decidir se um dia o custo do material passa a ser por consumo (hoje é pela nota).
+**Pendências do usuário** (não dependem de código): criar a conta Admin e fechar o cadastro aberto; definir valores de alçada e metas dos cartões; confirmar alíquotas e plano de contas com o contador; exportar do ERP de referência os lançamentos da 343/342 para a conferência; decidir se um dia o custo do material passa a ser por consumo (hoje é pela nota).
 
 ## Fase 19 — Tema claro/escuro, só obra 342, vazio = 0, filtros em tudo
 - **Tema**: botões **Claro | Escuro** no topo (`web/src/js/41_tema.js`); a escolha fica em `localStorage.taf_tema`; sem escolha, segue o sistema.
@@ -114,3 +114,10 @@ Decidido (delegado ao Claude pelo usuário): o **custo realizado do item vem da 
 - **Vazio = 0**: o que não tem dado aparece como `0` (`43_zeros.js`), nunca "—".
 - **Filtros** (`42_filtros.js`): cada tabela ganha busca, filtro por coluna, datas, faixa de valor, ordenação no cabeçalho, "só alertas", duplo clique para filtrar por valor, Limpar e Copiar CSV. Dashboard e Painel da obra têm filtro de período (e natureza).
 - Teste: `scripts/e2e_fase19.js` (incluído em `qa.sh`).
+
+## Fase 20 — Tema discreto, filtros do Início, sem Sankhya
+- **Tema**: dois ícones (sol/lua) no fim da sidebar; o escuro agora é cinza (`--bg:#1c1d21`).
+- **Início**: barra de período (**Hoje** padrão · 7 dias · Mês · 3 meses · Ano · Tudo · Personalizado De/Até) e natureza em popover com chip ×. Mesma barra no Painel da obra. Código: `periodoRange()` e `barraFiltros()` em `37_gestao.js`.
+- **Sem Sankhya**: removidos da tela, dos testes e das funções de servidor. A aba **Conferência** agora confere o próprio sistema (contrato × EAP, notas × rateio, gasto × realizado, faturado × recebido, comprometido × teto). A matriz virou `docs/MATRIZ_FUNCIONALIDADES.md`. As `fontes/` originais não foram alteradas.
+- **Obra**: o bloco no topo da sidebar (com ▾) abre o seletor de obras.
+- Teste: `scripts/e2e_fase20.js` (no `qa.sh`).

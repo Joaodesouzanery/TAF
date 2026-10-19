@@ -1,4 +1,4 @@
-// E2E Fase 13 (demo): Painel de Contratos/Obra, conferência com o Sankhya e importação de lançamentos.
+// E2E Fase 13 (demo): Painel de Contratos/Obra, conferência interna e importação de lançamentos.
 const {chromium}=require('playwright');
 (async()=>{
  const res=[];const ok=(n,c)=>res.push((c?'OK   ':'FALHA ')+n);
@@ -7,7 +7,7 @@ const {chromium}=require('playwright');
  await p.goto('file:///home/user/TAF/dist/tafadmin.html?demo=1');await p.waitForSelector('.big');
  const T=async s=>(await p.innerText('body')).toLowerCase().includes(s.toLowerCase());
  await p.evaluate(()=>{S.role='financeiro';S.view='pain';S.tab.pain='contrato';render()});await p.selectOption('#role','financeiro');
- ok('painel mostra os blocos do Sankhya',await T('Fat. direto')&&await T('Prov. gasto')&&await T('Saldo a faturar')&&await T('Custo fixo')&&await T('Lucro (projetado)'));
+ ok('painel mostra os blocos do painel',await T('Fat. direto')&&await T('Prov. gasto')&&await T('Saldo a faturar')&&await T('Custo fixo')&&await T('Lucro (projetado)'));
  ok('contrato da 342 = 3.257.970,74',await p.evaluate(()=>painelCalc().contrato===3257970.74));
  ok('zerado sem lançamentos: gasto 0, saldo a faturar = contrato',await p.evaluate(()=>{const c=painelCalc();return c.gasto===0&&c.saldoFat===c.contrato&&c.fat===0}));
  // importa lançamentos (cenário: gasto pago, a pagar, atrasado, provisão, custo fixo)
@@ -25,10 +25,9 @@ const {chromium}=require('playwright');
  await p.fill('#lf-csv',csv);await p.click('[data-act=lf-imp]');
  // conferência
  await p.evaluate(()=>{S.tab.pain='conf';render()});
- await p.fill('[data-cf=gasto]','10098.65');await p.press('[data-cf=gasto]','Tab');await p.fill('[data-cf=lucro]','-136830.46');await p.press('[data-cf=lucro]','Tab');
- ok('gasto bate',await p.evaluate(()=>document.querySelector('[data-cf=gasto]').closest('tr').innerText.toLowerCase().includes('bate')));
- ok('lucro difere e mostra causa',await p.evaluate(()=>{const t=document.querySelector('[data-cf=lucro]').closest('tr').innerText.toLowerCase();return t.includes('difere')&&t.includes('bases diferentes')}));
- ok('conferência vai para a auditoria',await p.evaluate(()=>S.t.aud.some(a=>a.ent==='conferencia_sankhya')));
+ ok('conferência automática: 6 verificações, sem campos para digitar',await p.evaluate(()=>document.querySelectorAll('[data-cf]').length===0&&document.querySelectorAll('.tbl tbody tr').length===6));
+ ok('"gasto = pago + a pagar + atrasado" bate',await p.evaluate(()=>[...document.querySelectorAll('.tbl tbody tr')].some(r=>/pago \+ a pagar/.test(r.innerText)&&/bate/i.test(r.innerText))));
+ ok('verificação que difere mostra a causa',await p.evaluate(()=>{const r=[...document.querySelectorAll('.tbl tbody tr')].filter(r=>/difere/i.test(r.innerText));return r.every(x=>x.cells[5].innerText.length>5)}));
  // permissão
  await p.selectOption('#role','engenheiro');await p.evaluate(()=>{S.tab.pain='imp';render()});
  ok('engenheiro não importa',await p.isDisabled('[data-act=lf-imp]'));

@@ -36,7 +36,7 @@ async function mock(page){
       if(!pf||!['admin','gestao','diretoria'].includes(pf.papel))return json(route,400,{message:'Sem permissão para importar'});importar(body.p);log.push('importar_obra');return json(route,200,body.p.obra.codigo==='342'?'ob-1':'ob-'+body.p.obra.codigo)}
     if(path.startsWith('/functions/v1/')){const tok=(req.headers()['authorization']||'').replace('Bearer tok-','');if(!db.perfil.find(x=>x.user_id===tok))return json(route,403,{erro:'sem login'});
       if(path.endsWith('nfe-sync')){log.push('fn nfe-sync');return json(route,200,{configurado:true,notas:[{nome:'n1.xml',xml:XML_NFE}],proximaVersao:'9'})}
-      if(path.endsWith('sankhya-sync')){log.push('fn sankhya-sync');return json(route,200,{configurado:false})}}
+      }
     const t=path.replace('/rest/v1/','');
     if(!db[t])return json(route,404,{message:'tabela '+t});
     const single=(req.headers()['accept']||'').includes('vnd.pgrst.object');
@@ -99,8 +99,6 @@ async function mock(page){
   ok('NF-e automática (função simulada) importa a nota para a fila sem rateio e grava no banco',db.documento.some(d=>d.tipo==='nf'&&d.dados.chave==='4'.repeat(44)&&d.dados.status==='lancada'));
   await p.click('[data-act=nfe-buscar]');await p.waitForTimeout(600);
   ok('mesma chave na segunda busca não duplica',db.documento.filter(d=>d.tipo==='nf'&&d.dados.chave==='4'.repeat(44)).length===1);
-  await p.click('[data-act=sk-conexao]');await p.waitForTimeout(500);
-  ok('Sankhya sem credenciais no servidor: avisa o que cadastrar',(await p.innerText('body')).includes('SANKHYA_CLIENT_ID'));
   // Fase 12: números vêm do servidor e não repetem entre pessoas; cadastros são globais
   const numAdmin=await p.evaluate(()=>nextNum('sol'));
   await p.evaluate(()=>{S.view='cad';render()});await p.evaluate(()=>{S.role='admin'});

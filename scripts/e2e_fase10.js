@@ -33,7 +33,6 @@ const {chromium}=require('playwright');
  const csv=await p.inputValue('#f-out');
  ok('arquivo do contador traz chave, CNPJ, conta, item e CNO',csv.includes(chave)&&csv.includes('12345678000195')&&csv.includes(cod)&&csv.includes('90.123.45678/12')&&csv.split('\n').length>=2);
  ok('valores com vírgula decimal e separador ;',csv.includes('1600,00')&&csv.split('\n')[0].includes(';'));
- await p.click('[data-act=fech-sk]');ok('arquivo de apoio Sankhya gerado',(await p.inputValue('#f-out')).startsWith('centro_resultado;natureza_conta'));
  await p.click('[data-act=fech-fechar]');ok('competência fechada e registrada',await p.evaluate(()=>S.t.fechs.length===1)&&await T('Fechada em'));
  await p.screenshot({path:out+'/fiscal.png'});
  await role('almox');await nav('fin');await p.click('.tabs button[data-t=fech]');ok('almoxarife não fecha competência',await p.isDisabled('[data-act=fech-fechar]'));

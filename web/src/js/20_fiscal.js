@@ -1,6 +1,5 @@
 /* ============ FISCAL: XML de NF-e, fechamento ao contador e integrações (Fase 10) ============ */
 const FISCAL={provedor:null};   // provedor externo (ex.: Focus NFe) ainda não contratado: nada é chamado sem credencial
-const SANKHYA={url:'',appkey:'',token:''};   // API oficial; credenciais só do administrador do Sankhya (docs/INTEGRACOES.md)
 const norm=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
 function xmlTxt(doc,tag){const e=doc.getElementsByTagName(tag)[0];return e?e.textContent.trim():''}
 function parseNFe(txt){
@@ -47,9 +46,6 @@ function linhasFechamento(comp){
   return L}
 const CAB_FECH=['emissao','competencia','fornecedor','cnpj','nota','chave','valor_nota','valor_rateado','retencao_inss','retencao_iss','obra','cno','item_eap','descricao_item','conta_plano','natureza','status','pago_em'];
 const montaCsv=(cab,L)=>'﻿'+[cab,...L].map(r=>r.map(csvCel).join(';')).join('\r\n');
-function csvSankhya(comp){
-  const L=[];S.t.notas.filter(n=>n.status!=='lancada'&&mesDe(n.emissao)===comp).forEach(n=>n.rateio.forEach(l=>L.push([S.D.obra.codigo,l.conta,n.cnpj||'',n.emitente,n.nfNum||n.num,n.emissao,csvNum(l.valor)])));
-  return montaCsv(['centro_resultado','natureza_conta','parceiro_cnpj','parceiro_nome','numero_nota','data','valor'],L)}
 function viewFiscal(){
   const comp=S.comp||mesDe(hojeISO()),L=linhasFechamento(comp),sem=S.t.notas.filter(n=>n.status==='lancada'&&mesDe(n.emissao)===comp);
   const tot=L.reduce((s,r)=>s+parseFloat(String(r[7]).replace(',','.')),0);
@@ -57,10 +53,10 @@ function viewFiscal(){
   return `<div class="g3" style="grid-template-columns:1fr 1fr 2fr;margin-top:12px"><div><label style="margin-top:0">Competência</label><input id="f-comp" type="month" value="${comp}"></div><div><label style="margin-top:0">CNO da obra</label><input id="f-cno" value="${esc(S.t.par.cno||'')}" placeholder="ex.: 90.123.45678/12"></div><div><label style="margin-top:0">Município de execução</label><input id="f-mun" value="${esc(S.t.par.mun||S.D.obra.municipio||'')}"></div></div>
   <div class="kpi4"><div><div class="k-l">Notas rateadas no mês</div><div class="v">${new Set(L.map(r=>r[4]+r[5])).size}</div></div><div><div class="k-l">Valor rateado</div><div class="v">${brl(tot,true)}</div></div><div><div class="k-l">Ainda sem rateio</div><div class="v ${sem.length?'neg':''}">${sem.length}</div></div><div><div class="k-l">Situação</div><div class="v" style="font-size:16px">${fe?'Fechada em '+fdata(fe.quando.slice(0,10)):'Aberta'}</div></div></div>
   ${sem.length?`<div class="alert" style="margin-top:12px"><div class="g" style="color:var(--warn)">!</div><div><b>${sem.length} nota(s) do mês sem rateio</b><p>Não entram no arquivo do contador até serem rateadas.</p></div></div>`:''}
-  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button class="btn dark" data-act="fech-csv" ${L.length?'':'disabled'}>Gerar arquivo do contador</button><button class="btn" data-act="fech-sk" ${L.length?'':'disabled'}>Arquivo de apoio para o Sankhya</button><button class="btn ok" data-act="fech-fechar" ${L.length&&!fe&&can('recFat')?'':'disabled title="Só Financeiro, Adm ou Diretoria, com notas no mês"'}>Fechar competência</button></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button class="btn dark" data-act="fech-csv" ${L.length?'':'disabled'}>Gerar arquivo do contador</button><button class="btn ok" data-act="fech-fechar" ${L.length&&!fe&&can('recFat')?'':'disabled title="Só Financeiro, Adm ou Diretoria, com notas no mês"'}>Fechar competência</button></div>
   ${S.csvOut?`<label>Arquivo gerado (copie ou baixe)</label><textarea id="f-out" rows="6" readonly>${esc(S.csvOut.replace('﻿',''))}</textarea><div style="display:flex;gap:8px;margin-top:8px"><button class="btn" data-act="fech-copy">Copiar</button><a class="btn" id="f-dl" download="${S.csvNome||'fechamento.csv'}" href="${'data:text/csv;charset=utf-8,'+encodeURIComponent(S.csvOut)}">Baixar .csv</a></div>`:''}
-  <div class="sub" style="margin-top:10px">Cada linha é um item da EAP com sua conta do plano, para o contador conciliar custo por obra e CNO. O arquivo do Sankhya traz as colunas básicas (centro de resultado, natureza, parceiro, nota, valor); o layout final depende da rotina de importação configurada lá.</div>
+  <div class="sub" style="margin-top:10px">Cada linha é um item da EAP com sua conta do plano, para o contador conciliar custo por obra e CNO.</div>
   ${viewIntegracoes(comp)}`}
-function fechGerar(sk){const comp=S.comp||mesDe(hojeISO());S.csvOut=sk?csvSankhya(comp):montaCsv(CAB_FECH,linhasFechamento(comp));S.csvNome=(sk?'sankhya_':'contador_')+S.D.obra.codigo+'_'+comp+'.csv';log('fechamento',comp,sk?'arquivo_sankhya':'arquivo_contador','','gerado');render()}
+function fechGerar(){const comp=S.comp||mesDe(hojeISO());S.csvOut=montaCsv(CAB_FECH,linhasFechamento(comp));S.csvNome='contador_'+S.D.obra.codigo+'_'+comp+'.csv';log('fechamento',comp,'arquivo_contador','','gerado');render()}
 function fechFechar(){const comp=S.comp||mesDe(hojeISO());if(S.t.fechs.some(f=>f.comp===comp&&!f.reaberta))return;const L=linhasFechamento(comp);
   S.t.fechs.push({id:'fe'+Date.now(),comp,quando:new Date().toISOString(),quem:user(),linhas:L.length});log('fechamento',comp,'competência','aberta','fechada · '+L.length+' linhas');save();toast('Competência '+comp+' fechada');render()}

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3 -I
-"""Gera docs/MATRIZ_SANKHYA_X_TAF.md a partir do inventário em fontes/ e das decisões abaixo."""
+"""Gera docs/MATRIZ_FUNCIONALIDADES.md a partir do inventário em fontes/ e das decisões abaixo."""
 import re
 from pathlib import Path
 root = Path(__file__).resolve().parent.parent
-txt = (root / "fontes/Pesquisa_extensa_o_que_o_Sankhya_faz.md").read_text(encoding="utf-8")
+txt = (root / "fontes/Pesquisa_extensa_o_que_o_ERP de referência_faz.md").read_text(encoding="utf-8")
 FZ, SI, NF = "Fazer", "Fazer simplificado", "Não fazer"
 R = []   # (prefixo, de, até, decisão, fase, observação)
 def r(p, a, b, d, f, o=""): R.append((p, a, b, d, f, o))
@@ -90,7 +90,7 @@ r("IN",1,1,NF,"","BPMN")
 r("IN",2,2,SI,"17","Tarefas com SLA no Lean")
 r("IN",3,12,NF,"","Personalização do ERP do fornecedor")
 r("IN",13,13,SI,"13","Troca de arquivo bancário (CNAB/OFX)")
-r("IN",14,20,NF,"","Integração com o Sankhya: não será usada")
+r("IN",14,20,NF,"","Integração com o ERP de referência: não será usada")
 r("AT",1,8,NF,"","Atendimento omnichannel")
 r("SV",1,6,NF,"","Serviços do fornecedor (a TAF usa Supabase e Vercel)")
 
@@ -110,11 +110,11 @@ for line in txt.splitlines():
     d, f, o = decide(pref, n)
     rows.append((ident, desc, d, f, o))
 conta = {k: sum(1 for x in rows if x[2] == k) for k in (FZ, SI, NF, "A decidir")}
-out = ["# Matriz: inventário do Sankhya × TAF Obras", "",
-       f"Fonte: `fontes/Pesquisa_extensa_o_que_o_Sankhya_faz.md` ({len(rows)} entradas com identificador). **Decisão do usuário (18/10/2026): não integrar com o Sankhya; criar as funções equivalentes dentro do TAF Obras.** O que exige certificado, banco, Sefaz ou lei fica como relatório/arquivo de apoio; o que é de outro ramo (varejo, agro, indústria, WMS, TMS, marketplaces) não será feito.", "",
+out = ["# Matriz: inventário do ERP de referência × TAF Obras", "",
+       f"Fonte: `fontes/Pesquisa_extensa_o_que_o_ERP de referência_faz.md` ({len(rows)} entradas com identificador). **Decisão do usuário (18/10/2026): não integrar com o ERP de referência; criar as funções equivalentes dentro do TAF Obras.** O que exige certificado, banco, Sefaz ou lei fica como relatório/arquivo de apoio; o que é de outro ramo (varejo, agro, indústria, WMS, TMS, marketplaces) não será feito.", "",
        f"Resumo: **{conta[FZ]} fazer**, **{conta[SI]} fazer simplificado**, **{conta[NF]} não fazer**, {conta['A decidir']} sem decisão.", "",
        "Fase: números do plano (12 base e cadastros, 13 financeiro, 14 contábil/fiscal, 15 suprimentos e estoque, 16 contratos/projetos/patrimônio/frota, 17 pessoas, gestão e administração); número isolado menor que 12 indica fase já entregue.", "",
        "| ID | Capacidade | Decisão | Fase | Observação |", "|---|---|---|---|---|"]
 out += [f"| {a} | {b.replace('|','/')} | {c} | {d} | {e} |" for a, b, c, d, e in rows]
-(root / "docs/MATRIZ_SANKHYA_X_TAF.md").write_text("\n".join(out) + "\n", encoding="utf-8")
+(root / "docs/MATRIZ_FUNCIONALIDADES.md").write_text("\n".join(out) + "\n", encoding="utf-8")
 print(conta, len(rows))

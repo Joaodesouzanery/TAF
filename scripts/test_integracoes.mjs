@@ -1,8 +1,7 @@
-// Testa os adaptadores de NF-e e Sankhya contra servidores simulados (sem credenciais reais). Node >= 22.6 (strip-types).
+// Testa os adaptadores de NF-e contra servidores simulados (sem credenciais reais). Node >= 22.6 (strip-types).
 import http from 'node:http';
 import assert from 'node:assert/strict';
 const { buscaNotas } = await import('../supabase/functions/_shared/nfe.ts');
-const sk = await import('../supabase/functions/_shared/sankhya.ts');
 const calls = [];
 const srv = http.createServer((req, res) => {
   let body = ''; req.on('data', (d) => body += d); req.on('end', () => {
@@ -32,17 +31,4 @@ r = await buscaNotas({ NFE_PROVIDER_TOKEN: 'T', NFE_CNPJ: '12.345.678/0001-95', 
 ok('NF-e lista, ignora chave inválida e baixa o XML', () => { assert.equal(r.notas.length, 1); assert.equal(r.notas[0].nome, '3'.repeat(44) + '.xml'); assert.equal(r.proximaVersao, '77'); });
 ok('NF-e usa Basic auth com o token e CNPJ só com dígitos', () => { const c = calls[0]; assert.equal(c.a, 'Basic ' + Buffer.from('T:').toString('base64')); assert.match(c.u, /cnpj=12345678000195&versao=5/); });
 
-// Sankhya
-const env = { SANKHYA_URL: url, SANKHYA_CLIENT_ID: 'cid', SANKHYA_CLIENT_SECRET: 'sec', SANKHYA_TOKEN: 'tok' };
-ok('Sankhya: configurado só com os 4 secrets', () => { assert.equal(sk.configurado(env), true); assert.equal(sk.configurado({ SANKHYA_URL: url }), false); });
-const tk = await sk.autentica(env, fetch);
-ok('Sankhya: OAuth devolve o token e envia X-Token', () => assert.equal(tk, 'AT1'));
-await assert.rejects(() => sk.autentica({ ...env, SANKHYA_CLIENT_ID: 'x' }, fetch), /recusada/).then(() => out.push('OK   Sankhya: credencial errada é recusada'));
-const nat = await sk.lista(env, fetch, tk, 'Natureza', ['CODNAT', 'DESCRNAT']);
-ok('Sankhya: lê naturezas em objetos nomeados', () => assert.deepEqual(nat, [{ CODNAT: '10101', DESCRNAT: 'Materiais' }]));
-const l = { nota: '123', data: '18/10/2026', cnpj: '1', nome: 'Forn', natureza: '10101', centro: '342', valor: 1600 };
-ok('Sankhya: simulação monta o corpo sem chamar a API', () => { const n = calls.length; const p = sk.montaFinanceiro(l, env); assert.equal(p.dataSet.dataRow.localFields.VLRDESDOB.$, '1600.00'); assert.equal(p.dataSet.dataRow.localFields.CODNAT.$, '10101'); assert.equal(calls.length, n); });
-await assert.rejects(() => sk.envia(env, fetch, tk, [l]), /desligada/).then(() => out.push('OK   Sankhya: escrita bloqueada por padrão'));
-const e2 = await sk.envia({ ...env, SANKHYA_ALLOW_WRITE: 'true' }, fetch, tk, [l]);
-ok('Sankhya: com a trava liberada, envia e reporta por nota', () => assert.deepEqual(e2, [{ nota: '123', ok: true }]));
 console.log(out.join('\n')); srv.close();

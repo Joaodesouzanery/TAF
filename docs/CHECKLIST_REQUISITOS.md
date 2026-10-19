@@ -23,7 +23,7 @@ Legenda: **OK** = feito e coberto por teste. **Parcial** = feito com limite desc
 | 17 | Saber se cada item dá **lucro ou prejuízo** | Resultado por item e por pacote: receita × custo, VA, IDC, EAC | e2e | OK |
 | 18 | **Fluxograma** do processo da nota | `docs/FLUXO_NF.md` (mermaid) | revisão | OK |
 | 19 | Planilha e sistema **sincronizados** | Importador Excel→JSON→SQL repetível (`scripts/import_planilhas.py`) | seeds, contagens | Parcial: importação é por carga; não há leitura contínua da planilha |
-| 20 | Lançamento de nota como no **Sankhya** (SANKEA) | Fechamento ao contador + arquivo de apoio Sankhya; XML de NF-e | e2e_fase10 | Parcial: API do Sankhya depende de credenciais |
+| 20 | Lançamento de nota como no **ERP de referência** (SANKEA) | Fechamento ao contador + arquivo de apoio ERP de referência; XML de NF-e | e2e_fase10 | Parcial: API do ERP de referência depende de credenciais |
 | 21 | Faturar o cliente, DRE, caixa | Faturamento e caixa, DRE em Painéis | e2e_fase9 | OK |
 | 22 | Lean (restrições, lookahead, PPC) | Lean e planejamento | e2e_fase8 | OK |
 | 23 | Auditoria: ninguém apaga | Auditoria; cancelar muda status e grava motivo | e2e, rls.sql | OK |
@@ -40,7 +40,7 @@ Itens que ainda dependem de decisão ou acesso do usuário estão em `COMECE_AQU
 | BM / faturamento | OK | Boletim, glosa, NF de serviço, recebimento, conciliação |
 | DRE e plano de contas | OK | 38 contas; DRE da obra sem rateio de administração central |
 | NF-e automática | Pronto para ligar | Função `nfe-sync` testada com provedor simulado; falta contratar/habilitar o provedor, cadastrar secrets e ativar o login |
-| Sankhya | Pronto para ligar | Função `sankhya-sync` (OAuth, naturezas, centros, envio simulado e real) testada com servidor simulado; falta credencial, validar campos com o administrador e ativar o login |
+| ERP de referência | Pronto para ligar | Função `ERP de referência-sync` (OAuth, naturezas, centros, envio simulado e real) testada com servidor simulado; falta credencial, validar campos com o administrador e ativar o login |
 | Fiscal | OK como estimativa | Aba Apuração: tributos sobre faturamento e retenções em serviços tomados com alíquotas editáveis; o contador valida; sem SPED |
 | Alçadas em R$ | OK | Verde sem confirmação até R$ X; Gerente aprova até R$ Y; acima, Diretoria; tolerância nota × pedido editável (padrões: 100.000 / 250.000 / 2%, a definir) |
 | Sincronização planilha ↔ sistema | OK | Orçamento → Atualizar pela planilha: lê o .xlsx (abas 11/12) ou .json, mostra diferenças e aplica como nova versão da linha de base |

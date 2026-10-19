@@ -1,6 +1,6 @@
 /* ============ GESTÃO / BI: indicadores com meta, Dashboard do Início e painel dinâmico (Fase 17) ============ */
 Object.assign(CAN,{bi:['diretoria','gestao','gerente','planejamento']});
-const biPar=()=>S.t.par.bi||(S.t.par.bi={cards:['contrato','gasto','lucro','margem','idc','caixa','estoque','absenteismo'],meta:{},secoes:{}, periodo:'all'});
+const biPar=()=>S.t.par.bi||(S.t.par.bi={cards:['contrato','gasto','lucro','margem','idc','caixa','estoque','absenteismo'],meta:{},secoes:{}, periodo:'hoje'});
 const pctF=v=>(v*100).toFixed(1).replace('.',',')+'%';
 const IND=[
  ['contrato','Contrato da obra','brl','max',()=>S.D.obra.valor_contrato],
@@ -27,8 +27,21 @@ function cartoesInd(){const B=biPar();return `<div class="pgrid">${B.cards.map(k
 /* ---- dashboard do Início ---- */
 const SECOES=[['cartoes','Indicadores com meta'],['contrato','Contrato, custos e Curva S'],['caixa','Fluxo de caixa'],['natureza','Custo por natureza e pacote'],['desvios','Maiores desvios'],['funil','Funil de compras'],['campo','Campo e Lean'],['estoque','Estoque'],['pessoas','Pessoas'],['carteira','Carteira de obras'],['pend','Pendências']];
 const secOn=k=>biPar().secoes[k]!==false;
-const mesesPeriodo=()=>{const p=biPar().periodo,h=mesDe(hojeISO());return p==='mes'?new Set([h]):p==='3m'?new Set([h,addMes(h,-1),addMes(h,-2)]):null};
-const noPer=(d,M)=>!M||M.has(mesDe(d));
+const PERIODOS=[['hoje','Hoje'],['7d','7 dias'],['mes','Mês'],['3m','3 meses'],['ano','Ano'],['tudo','Tudo'],['custom','Personalizado']];
+function periodoRange(){const B=biPar();if(B.periodo==='all')B.periodo='tudo';const p=B.periodo||'hoje',h=hojeISO(),dia=n=>{const d=new Date(h+'T12:00:00');d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)};
+  let ini,fim=h;if(p==='tudo')return null;if(p==='hoje')ini=h;else if(p==='7d')ini=dia(-6);else if(p==='mes')ini=h.slice(0,7)+'-01';else if(p==='3m')ini=addMes(mesDe(h),-2)+'-01';else if(p==='ano')ini=h.slice(0,4)+'-01-01';else{ini=B.de||h.slice(0,7)+'-01';fim=B.ate||h;if(ini>fim)[ini,fim]=[fim,ini]}
+  return {ini,fim,has:x=>{x=String(x||'');return x.length>=10?(x.slice(0,10)>=ini&&x.slice(0,10)<=fim):(x>=mesDe(ini)&&x<=mesDe(fim))}}}
+const mesesPeriodo=periodoRange;
+const fmtD=iso=>iso.slice(8,10)+'/'+iso.slice(5,7)+'/'+iso.slice(0,4);
+function periodoResumo(){const R=periodoRange();if(!R)return 'Todo o período';return R.ini===R.fim?fmtD(R.ini):fmtD(R.ini)+' a '+fmtD(R.fim)}
+const NATCOR={MO:'#7c9cf0',MAT:'#4cc582',EQP:'#e7b04a',TER:'#c58cf0',ADM:'#ef6a5f'};
+function barraFiltros(){const B=biPar(),R=periodoRange(),n=dashNatSel();
+  return `<div class="pbar" role="toolbar" aria-label="Filtros do painel"><div class="pseg" role="group" aria-label="Período">${PERIODOS.map(([k,t])=>`<button data-act="dash-per" data-p="${k}" aria-pressed="${(B.periodo||'hoje')===k}">${t}</button>`).join('')}</div>
+  ${B.periodo==='custom'?`<span class="prange"><input type="date" id="d-de" aria-label="De" value="${esc(R.ini)}"><span>até</span><input type="date" id="d-ate" aria-label="Até" value="${esc(R.fim)}"></span>`:''}
+  <span class="pwrap"><button class="pill${n?' on':''}" data-act="dash-natpop" aria-haspopup="listbox" aria-expanded="${!!S.popNat}">${n?`<i class="pdot" style="background:${NATCOR[n]}"></i>${esc(NATNOME[n])}`:'Natureza: todas'}<span aria-hidden="true">▾</span></button>${n?`<button class="pill x" data-act="dash-nat" data-n="" aria-label="Limpar natureza">×</button>`:''}
+  ${S.popNat?`<div class="pop" role="listbox" aria-label="Natureza"><button role="option" data-act="dash-nat" data-n="" aria-selected="${!n}">Todas as naturezas</button>${Object.entries(NATNOME).map(([k,v])=>`<button role="option" data-act="dash-nat" data-n="${k}" aria-selected="${n===k}"><i class="pdot" style="background:${NATCOR[k]}"></i>${esc(v)}</button>`).join('')}</div>`:''}</span>
+  <span class="presumo">${esc(periodoResumo())} · ${n?esc(NATNOME[n]):'todas as naturezas'}</span></div>`}
+const noPer=(d,M)=>!M||M.has(d);
 const hbar=(lab,parts,mx,extra='')=>`<div style="display:grid;grid-template-columns:150px 1fr 90px;gap:8px;align-items:center;margin:5px 0;font-size:12.5px"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(lab)}">${esc(lab)}</span><div style="display:flex;height:12px;background:var(--line);border-radius:4px;overflow:hidden">${parts.map(p=>`<i style="width:${mx>0?Math.min(100,p.v/mx*100):0}%;background:${p.c}" title="${esc(p.t)}: ${brl(p.v)}"></i>`).join('')}</div><span style="text-align:right">${extra}</span></div>`;
 const dashNatSel=()=>S.dashNat||'';
 function dashNatureza(){const nat={};S.D.items.filter(i=>!dashNatSel()||i.nat===dashNatSel()).forEach(i=>{const x=nat[i.nat]=nat[i.nat]||{meta:0,comp:0,real:0};x.meta+=i.meta_total;x.comp+=S.sd[i.codigo].comp;x.real+=S.sd[i.codigo].real});const mx=Math.max(1,...Object.values(nat).map(x=>Math.max(x.meta,x.comp+x.real)));
@@ -49,7 +62,7 @@ function dashPend(X){const A=alertas(X),n=k=>A.filter(a=>a[0]===k).length;
   return `<div class="kpi4" style="grid-template-columns:repeat(3,1fr)"><div><div class="k-l">Alertas críticos</div><div class="v ${n('bad')?'neg':''}">${n('bad')}</div></div><div><div class="k-l">Atenção</div><div class="v">${n('warn')}</div></div><div><div class="k-l">Informativos</div><div class="v">${n('info')}</div></div></div>${P.map(([l,v])=>hbar(l,[{v,c:v?'var(--bad)':'var(--ok)',t:l}],Math.max(1,...P.map(x=>x[1])),String(v))).join('')}`}
 function viewDash(X){const B=biPar(),M=mesesPeriodo(),c=painelCalc(),sec=(k,t,h)=>secOn(k)?`<div class="card" style="margin-top:14px"><div class="in"><div class="panel-t">${t}</div>${h}</div></div>`:'';
   const cx=caixa(),rows=cx.rows.filter(r=>!M||M.has(r.m));
-  return `<div class="head"><div><h1>Dashboard</h1><p class="lead">Visão de gestão da obra ${esc(S.D.obra.codigo)}: indicadores com meta, custos, caixa, compras, campo, estoque e pessoas.</p></div><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><select id="d-per" aria-label="Período"><option value="all" ${B.periodo==='all'?'selected':''}>Todo o período</option><option value="3m" ${B.periodo==='3m'?'selected':''}>Últimos 3 meses</option><option value="mes" ${B.periodo==='mes'?'selected':''}>Mês atual</option></select><select id="d-nat" aria-label="Natureza"><option value="">Todas as naturezas</option>${Object.entries(NATNOME).map(([k,v])=>`<option value="${k}" ${dashNatSel()===k?'selected':''}>${v}</option>`).join('')}</select><button class="btn" data-act="dash-cfg">Escolher o que mostrar</button></div></div>
+  return `<div class="head"><div><h1>Dashboard</h1><p class="lead">Visão de gestão da obra ${esc(S.D.obra.codigo)}: indicadores com meta, custos, caixa, compras, campo, estoque e pessoas.</p></div><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><button class="btn" data-act="dash-cfg">Escolher o que mostrar</button></div></div>${barraFiltros()}
   <div class="big" style="font-size:22px;font-weight:500;letter-spacing:-.02em;margin-top:4px">${brl(S.D.obra.valor_contrato,true)} <span class="sub" style="font-size:13px;font-weight:400">contrato · ${esc(S.D.obra.contratante)} · ${esc(S.D.obra.municipio||'')}</span></div>
   ${secOn('cartoes')?`<div style="margin-top:6px">${cartoesInd()}</div>`:''}
   ${secOn('contrato')?`<div class="cols" style="margin-top:14px"><div class="card"><div class="in"><div class="panel-t">Contrato × custos × lucro</div>${svgBarrasContrato(c)}</div></div><div class="card"><div class="in"><div class="panel-t">Curva S acumulada</div>${svgCurvaS(curvaS())}</div></div></div>`:''}
@@ -61,7 +74,12 @@ function viewDash(X){const B=biPar(),M=mesesPeriodo(),c=painelCalc(),sec=(k,t,h)
   ${sec('pessoas','Pessoas: frequência, absenteísmo e efetivo',rhPaineis())}
   ${secOn('carteira')?carteiraView():''}
   ${sec('pend','Pendências e alertas',dashPend(X))}`}
-document.addEventListener('change',e=>{if(e.target.id==='d-per'){biPar().periodo=e.target.value;save();render()}else if(e.target.id==='d-nat'){S.dashNat=e.target.value;render()}});
+document.addEventListener('change',e=>{const i=e.target.id;if(i==='d-de'||i==='d-ate'){const B=biPar();B[i==='d-de'?'de':'ate']=e.target.value;save();render()}});
+ACOES['dash-per']=el=>{const B=biPar();B.periodo=el.dataset.p;if(B.periodo==='custom'&&!B.de){B.de=hojeISO().slice(0,7)+'-01';B.ate=hojeISO()}save();render()};
+ACOES['dash-natpop']=()=>{S.popNat=!S.popNat;render();if(S.popNat){const o=document.querySelector('.pop [aria-selected=true]');o&&o.focus()}};
+ACOES['dash-nat']=el=>{S.dashNat=el.dataset.n||'';S.popNat=false;render()};
+document.addEventListener('keydown',e=>{if(S.popNat&&e.key==='Escape'){S.popNat=false;render();const b=document.querySelector('[data-act=dash-natpop]');b&&b.focus()}else if(S.popNat&&(e.key==='ArrowDown'||e.key==='ArrowUp')){const L=[...document.querySelectorAll('.pop button')],i=L.indexOf(document.activeElement);if(L.length){e.preventDefault();L[(i+(e.key==='ArrowDown'?1:-1)+L.length)%L.length].focus()}}});
+document.addEventListener('click',e=>{if(S.popNat&&!e.target.closest('.pwrap')){S.popNat=false;render()}});
 ACOES['dash-cfg']=()=>{const B=biPar();modal(`<h3>Escolher o que mostrar</h3><div class="panel-t">Seções do Dashboard</div>${SECOES.map(([k,l])=>`<label style="display:flex;gap:8px;align-items:center;text-transform:none;font-family:inherit;letter-spacing:0"><input type="checkbox" class="dc-s" value="${k}" ${secOn(k)?'checked':''} style="width:auto"> ${l}</label>`).join('')}<div class="panel-t" style="margin-top:12px">Cartões de indicadores e metas</div>${IND.map(d=>`<div style="display:grid;grid-template-columns:20px 1fr 110px;gap:8px;align-items:center;margin:4px 0"><input type="checkbox" class="dc-i" value="${d[0]}" ${B.cards.includes(d[0])?'checked':''} style="width:auto"><span style="font-size:13px">${d[1]}</span><input class="dc-m" data-k="${d[0]}" type="number" step="any" placeholder="meta" value="${B.meta[d[0]]??''}" ${can('bi')?'':'disabled'}></div>`).join('')}
   <div class="acts"><button class="btn" data-act="fechar">Cancelar</button><button class="btn dark" data-act="dash-ok">Salvar</button></div>`)};
 ACOES['dash-ok']=()=>{const B=biPar();const s={};document.querySelectorAll('.dc-s').forEach(e=>s[e.value]=e.checked);B.secoes=s;B.cards=[...document.querySelectorAll('.dc-i:checked')].map(e=>e.value);

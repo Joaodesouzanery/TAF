@@ -1,6 +1,6 @@
-# Matriz: inventário do Sankhya × TAF Obras
+# Matriz: inventário do ERP de referência × TAF Obras
 
-Fonte: `fontes/Pesquisa_extensa_o_que_o_Sankhya_faz.md` (276 entradas com identificador). **Decisão do usuário (18/10/2026): não integrar com o Sankhya; criar as funções equivalentes dentro do TAF Obras.** O que exige certificado, banco, Sefaz ou lei fica como relatório/arquivo de apoio; o que é de outro ramo (varejo, agro, indústria, WMS, TMS, marketplaces) não será feito.
+Fonte: `fontes/Pesquisa_extensa_o_que_o_ERP de referência_faz.md` (276 entradas com identificador). **Decisão do usuário (18/10/2026): não integrar com o ERP de referência; criar as funções equivalentes dentro do TAF Obras.** O que exige certificado, banco, Sefaz ou lei fica como relatório/arquivo de apoio; o que é de outro ramo (varejo, agro, indústria, WMS, TMS, marketplaces) não será feito.
 
 **Status final (Fase 18):** as decisões "Fazer" e "Fazer simplificado" foram entregues nas fases indicadas, cada fase com testes automatizados do que foi construído (`scripts/e2e_fase*.js`, `supabase/tests/*.sql`); a matriz não é um teste item a item do inventário. As decisões "Não fazer" estão justificadas na coluna Observação (serviço de terceiro, base licenciada ou fora do escopo de obra).
 
@@ -26,7 +26,7 @@ Fase: números do plano (12 base e cadastros, 13 financeiro, 14 contábil/fiscal
 | FP-14 | Pix Imediato: cobrança via API com retorno, baixa e conciliação automáticos. | Não fazer |  | Boleto, Pix, pagamento, DDA e Score exigem API bancária/serviço contratado |
 | FP-15 | Pague Rápido: pagamento de boletos, até três níveis de aprovação e rastreamento do título. | Não fazer |  | Boleto, Pix, pagamento, DDA e Score exigem API bancária/serviço contratado |
 | FP-16 | Busca DDA: captura boletos contra a empresa e vincula-os às contas a pagar. | Não fazer |  | Boleto, Pix, pagamento, DDA e Score exigem API bancária/serviço contratado |
-| FP-17 | Sankhya Score: análise de risco com dados/IA, capacidade de pagamento e ofertas de crédito. | Não fazer |  | Boleto, Pix, pagamento, DDA e Score exigem API bancária/serviço contratado |
+| FP-17 | ERP de referência Score: análise de risco com dados/IA, capacidade de pagamento e ofertas de crédito. | Não fazer |  | Boleto, Pix, pagamento, DDA e Score exigem API bancária/serviço contratado |
 | FP-18 | Painéis de receitas, despesas, agenda, fluxo de caixa, DRE, comparativos e tesouraria. | Fazer | 13 | Painéis de receita, despesa, agenda, caixa e DRE |
 | FP-19 | Configurar plano de contas e vínculo com plano referencial para escrituração. | Fazer | 14 | Plano de contas contábil e referencial |
 | FP-20 | Integrar os eventos da folha à contabilidade, inclusive exceções por folha/departamento. | Fazer simplificado | 14 | Só custo de pessoal por obra, não a folha legal |
@@ -66,7 +66,7 @@ Fase: números do plano (12 base e cadastros, 13 financeiro, 14 contábil/fiscal
 | FP-54 | Dar acesso a holerites, férias e solicitações por portal e aplicativo. | Não fazer |  | Folha legal, férias, rescisão e eSocial: sistema de folha/contador |
 | FP-55 | Exibir indicadores de custos de pessoas, turnover, movimentações, promoções e salários. | Fazer simplificado | 17 | Indicadores de custo de pessoal |
 | FP-56 | Gerar remessa bancária dos pagamentos calculados da folha para crédito aos colaboradores. | Não fazer |  | Remessa de folha, talentos e IA preditiva |
-| FP-57 | Mindsight · Recrutar/selecionar candidatos e sincronizar a admissão com a folha Sankhya. | Não fazer |  | Remessa de folha, talentos e IA preditiva |
+| FP-57 | Mindsight · Recrutar/selecionar candidatos e sincronizar a admissão com a folha ERP de referência. | Não fazer |  | Remessa de folha, talentos e IA preditiva |
 | FP-58 | Mindsight · Gerenciar performance, desenvolvimento e engajamento de talentos. | Não fazer |  | Remessa de folha, talentos e IA preditiva |
 | FP-59 | Mindsight · Produzir People Analytics e avaliações com modelos de ciência comportamental/inteligência preditiva. | Não fazer |  | Remessa de folha, talentos e IA preditiva |
 | FP-60 | Pontotel · Registrar ponto digital, controlar banco de horas/atestados e integrar jornada à folha. | Fazer simplificado | 17 | Ponto simples por frente |
@@ -133,12 +133,12 @@ Fase: números do plano (12 base e cadastros, 13 financeiro, 14 contábil/fiscal
 | C56 | Flowbiz — recuperação de carrinhos · Aciona campanhas multicanal ligadas ao abandono de compra. | Não fazer |  | Varejo, CRM, marketing e marketplaces |
 | C57 | Flowbiz — criação de campanhas com IA · Apresenta AI Studio para estratégia, texto, layout e seleção de produtos. | Não fazer |  | Varejo, CRM, marketing e marketplaces |
 | C58 | Flowbiz — medição de marketing · Mostra envios, cliques, conversões e retorno por canal/jornada. | Não fazer |  | Varejo, CRM, marketing e marketplaces |
-| C59 | Sankhya Hub/Magis5 — pedidos multicanal · Centraliza vendas de marketplaces e seus pedidos/clientes. | Não fazer |  | Varejo, CRM, marketing e marketplaces |
-| C60 | Sankhya Hub/Magis5 — anúncios e kits · Administra catálogo, anúncios e kits de diferentes canais. | Não fazer |  | Varejo, CRM, marketing e marketplaces |
-| C61 | Sankhya Hub/Magis5 — estoque dos canais · Integra disponibilidade e atualização de estoque com o ERP. | Não fazer |  | Varejo, CRM, marketing e marketplaces |
-| C62 | Sankhya Hub/Magis5 — operação dos pedidos · Automatiza separação, expedição e emissão de documentos. | Não fazer |  | Varejo, CRM, marketing e marketplaces |
+| C59 | ERP de referência Hub/Magis5 — pedidos multicanal · Centraliza vendas de marketplaces e seus pedidos/clientes. | Não fazer |  | Varejo, CRM, marketing e marketplaces |
+| C60 | ERP de referência Hub/Magis5 — anúncios e kits · Administra catálogo, anúncios e kits de diferentes canais. | Não fazer |  | Varejo, CRM, marketing e marketplaces |
+| C61 | ERP de referência Hub/Magis5 — estoque dos canais · Integra disponibilidade e atualização de estoque com o ERP. | Não fazer |  | Varejo, CRM, marketing e marketplaces |
+| C62 | ERP de referência Hub/Magis5 — operação dos pedidos · Automatiza separação, expedição e emissão de documentos. | Não fazer |  | Varejo, CRM, marketing e marketplaces |
 | C63 | Magis5 — desempenho do comércio digital · Apresenta vendas, receita, estoque e margem por produtos/marcas. | Não fazer |  | Varejo, CRM, marketing e marketplaces |
-| C64 | Mercos: força de vendas móvel e e-commerce B2B · Parceiro integrado ao Sankhya. O produto Mercos fornece catálogo, pedidos offline e loja B2B; o escopo contrata | Não fazer |  | Varejo, CRM, marketing e marketplaces |
+| C64 | Mercos: força de vendas móvel e e-commerce B2B · Parceiro integrado ao ERP de referência. O produto Mercos fornece catálogo, pedidos offline e loja B2B; o escopo contrata | Não fazer |  | Varejo, CRM, marketing e marketplaces |
 | C65 | ANYMARKET: integração com marketplaces · Integração documentada sincroniza produtos, preços, estoque, pedidos, faturamento e cancelamentos. Não foi classificado | Não fazer |  | Varejo, CRM, marketing e marketplaces |
 | OP01 | Planejar capacidade produtiva pelo MRP II, considerando equipes por turno, equipamentos, materiais e prioridades. · I, S1 | Não fazer |  | MRP/PCP industrial |
 | OP02 | Calcular necessidades de materiais pela explosão da estrutura BOM a partir do plano mestre MPS. · D, S2 | Não fazer |  | MRP/PCP industrial |
@@ -170,7 +170,7 @@ Fase: números do plano (12 base e cadastros, 13 financeiro, 14 contábil/fiscal
 | OP28 | Fazer inventários globais ou rotativos, com segunda contagem quando há divergência. · D, S15 | Não fazer |  | WMS com coletor, logística e TMS |
 | OP29 | Controlar validade e registrar números de série na expedição. · D, S15 | Não fazer |  | WMS com coletor, logística e TMS |
 | OP30 | Formar volumes, registrar pesos e imprimir etiquetas para expedição. · D, S15 | Não fazer |  | WMS com coletor, logística e TMS |
-| OP31 | Executar operações do armazém pelo aplicativo Coletor WMS Sankhya em Android. · I, S17 | Não fazer |  | WMS com coletor, logística e TMS |
+| OP31 | Executar operações do armazém pelo aplicativo Coletor WMS ERP de referência em Android. · I, S17 | Não fazer |  | WMS com coletor, logística e TMS |
 | OP32 | Otimizar rotas, cargas e veículos; rastrear por telemetria. · I, S18 | Não fazer |  | WMS com coletor, logística e TMS |
 | OP33 | Monitorar entregas por torre de controle e disponibilizar status WISMO. · I, S18 | Não fazer |  | WMS com coletor, logística e TMS |
 | OP34 | Cotar, provisionar e auditar fretes; selecionar transportadoras. · I, S18 | Não fazer |  | WMS com coletor, logística e TMS |
@@ -194,7 +194,7 @@ Fase: números do plano (12 base e cadastros, 13 financeiro, 14 contábil/fiscal
 | OP52 | Faturar serviços em lote e integrar cobranças ao financeiro. · I, S23 | Fazer simplificado | 9 | Faturamento por boletim já existe; sem lote por contrato |
 | OP53 | Suspender serviços parcial ou totalmente por inadimplência, conforme regra. · I, S23 | Não fazer |  | Suspensão por inadimplência |
 | OP54 | Emitir e acompanhar ordens de serviço e seu faturamento. · I, S23 | Fazer simplificado | 16 | OS de frota/serviço |
-| OP55 | Apontar serviços pelo aplicativo nativo Sankhya Tasks. · I, S23 | Não fazer |  | Aplicativo nativo; o Campo cobre o apontamento |
+| OP55 | Apontar serviços pelo aplicativo nativo ERP de referência Tasks. · I, S23 | Não fazer |  | Aplicativo nativo; o Campo cobre o apontamento |
 | OP56 | Gerenciar agenda integrada, SLA, executantes, horas produtivas e retrabalho. · I, S24 | Fazer simplificado | 8 | Agenda e SLA no Lean |
 | OP57 | Criar projetos/FAP por modelos e organizar etapas, equipes e cronogramas. · D, S25–S26 | Fazer | 16 | Projetos com etapas, equipes e horas apropriadas |
 | OP58 | Apropriar horas de OS às etapas de projetos e gerir requisitos, anexos e documentos. · D, S26–S27 | Fazer | 16 | Projetos com etapas, equipes e horas apropriadas |
@@ -218,7 +218,7 @@ Fase: números do plano (12 base e cadastros, 13 financeiro, 14 contábil/fiscal
 | ES05 | Integrar a operação imobiliária a portais online · Processo e tipos de imóveis configurados para os portais utilizados. | Não fazer |  | Imobiliária e comércio exterior |
 | ES06 | Importar dados de DI de um XML de pré-nota · Rotina de Comércio Exterior com layout e campos delimitados. | Não fazer |  | Imobiliária e comércio exterior |
 | ES07 | Informar DI e adições por item para NF-e de importação · A rotina da Central de Compras documentada exige digitação; não confundir com automação do SOP. | Não fazer |  | Imobiliária e comércio exterior |
-| PL01 | Integrar áreas empresariais em uma base operacional · ERP Sankhya Om; a composição funcional depende da contratação. | Fazer | 1-12 | Base única e acesso web/celular |
+| PL01 | Integrar áreas empresariais em uma base operacional · ERP ERP de referência Om; a composição funcional depende da contratação. | Fazer | 1-12 | Base única e acesso web/celular |
 | PL02 | Acesso web e recursos móveis · A disponibilidade por dispositivo varia conforme tela e aplicativo. | Fazer | 1-12 | Base única e acesso web/celular |
 | PL03 | Parametrizar tipos de operação — TOP · Definir o comportamento dos documentos e das movimentações de compra, venda, devolução e outros processos. | Fazer simplificado | 17 | Tipos de documento e natureza fazem o papel da TOP |
 | PL04 | Configurar efeitos da operação sobre estoque e documentos fiscais · Regras vinculadas à TOP, ao cadastro e ao cenário da empresa. | Não fazer |  | Efeito fiscal por operação |
@@ -239,7 +239,7 @@ Fase: números do plano (12 base e cadastros, 13 financeiro, 14 contábil/fiscal
 | BI05 | Executar ações em componentes tabulares · Depende da entidade e dos dados associados ao componente. | Fazer | 17 | Painéis configuráveis com filtros e detalhamento |
 | BI06 | Usar fontes de dados externas em dashboards · Requer configurar a fonte e a conectividade. | Não fazer |  | Fontes externas |
 | BI07 | Exibir cartões inteligentes na área de trabalho · Restrições específicas de estrutura e filtros. | Fazer | 17 | Cartões no Início |
-| BI08 | Visualizar dashboards no celular com Sankhya Vision · Aplicativo de visualização; não oferece todas as interações/exportações do painel web. | Fazer | 12 | Painéis no celular (layout responsivo) |
+| BI08 | Visualizar dashboards no celular com ERP de referência Vision · Aplicativo de visualização; não oferece todas as interações/exportações do painel web. | Fazer | 12 | Painéis no celular (layout responsivo) |
 | BI09 | Programar TV corporativa · Sequência de componentes de BI, sites, RSS e vídeos. | Não fazer |  | TV corporativa |
 | IA01 | BIA · Responder dúvidas sobre uso do sistema com contexto da operação. | Não fazer |  | Assistentes de IA do fornecedor |
 | IA02 | BIA · Consultar e abrir tickets com informações e histórico do problema. | Não fazer |  | Assistentes de IA do fornecedor |
@@ -252,7 +252,7 @@ Fase: números do plano (12 base e cadastros, 13 financeiro, 14 contábil/fiscal
 | IA09 | Analytics AI · Explorar gráficos interativos e análises automatizadas. | Não fazer |  | Assistentes de IA do fornecedor |
 | IA10 | Analytics AI · Projetar receita, churn e tendências, segundo a descrição comercial. | Não fazer |  | Assistentes de IA do fornecedor |
 | IA11 | Deploy Agent · Configurar processos essenciais com base em dados e XMLs da empresa. | Não fazer |  | Assistentes de IA do fornecedor |
-| IN01 | Modelar processos no Sankhya Flow · Diagramas BPMN para representar e executar fluxos de negócio. | Não fazer |  | BPMN |
+| IN01 | Modelar processos no ERP de referência Flow · Diagramas BPMN para representar e executar fluxos de negócio. | Não fazer |  | BPMN |
 | IN02 | Distribuir e acompanhar tarefas de usuários · Participação humana no fluxo e acompanhamento das atividades. | Fazer simplificado | 17 | Tarefas com SLA no Lean |
 | IN03 | Usar telas nativas dentro do Flow · O manual informa consumo de licença do Flow e do módulo da tela utilizada. | Não fazer |  | Personalização do ERP do fornecedor |
 | IN04 | Chamar serviços internos do ERP pelo Flow · Reutilizar serviços do Om nas tarefas de processo. | Não fazer |  | Personalização do ERP do fornecedor |
@@ -265,13 +265,13 @@ Fase: números do plano (12 base e cadastros, 13 financeiro, 14 contábil/fiscal
 | IN11 | Criar e distribuir add-ons · Pacotes de funcionalidades por ferramentas oficiais de desenvolvimento. | Não fazer |  | Personalização do ERP do fornecedor |
 | IN12 | Estender regras em pontos do ciclo documental · Add-on Studio documenta callbacks, regras de negócio e listeners. | Não fazer |  | Personalização do ERP do fornecedor |
 | IN13 | Trocar arquivos por EDI · Integrações baseadas em layouts, inclusive processos bancários. | Fazer simplificado | 13 | Troca de arquivo bancário (CNAB/OFX) |
-| IN14 | Consolidar dados para análise · Tabelas de consolidação usadas como base para dashboards. | Não fazer |  | Integração com o Sankhya: não será usada |
-| IN15 | Integrar outros sistemas por API · Consultas, cadastros e operações expostas pelos serviços públicos. | Não fazer |  | Integração com o Sankhya: não será usada |
-| IN16 | Usar serviços comerciais pelo Gateway · A documentação contempla movimentações como pedidos de compra e venda. | Não fazer |  | Integração com o Sankhya: não será usada |
-| IN17 | Consultar estoque de vários produtos por API · O endpoint consultado informa que não considera os estoques do WMS. | Não fazer |  | Integração com o Sankhya: não será usada |
-| IN18 | Autenticar integrações com OAuth 2.0 · Fluxo Client Credentials com Client ID, Client Secret e X-Token. | Não fazer |  | Integração com o Sankhya: não será usada |
-| IN19 | Administrar soluções, componentes e acessos de integração · Portal do Desenvolvedor e configurações do Gateway. | Não fazer |  | Integração com o Sankhya: não será usada |
-| IN20 | Ativar conexões com produtos do grupo em uma central · Requer versão/permissões compatíveis; não substitui contratação dos produtos. | Não fazer |  | Integração com o Sankhya: não será usada |
+| IN14 | Consolidar dados para análise · Tabelas de consolidação usadas como base para dashboards. | Não fazer |  | Integração com o ERP de referência: não será usada |
+| IN15 | Integrar outros sistemas por API · Consultas, cadastros e operações expostas pelos serviços públicos. | Não fazer |  | Integração com o ERP de referência: não será usada |
+| IN16 | Usar serviços comerciais pelo Gateway · A documentação contempla movimentações como pedidos de compra e venda. | Não fazer |  | Integração com o ERP de referência: não será usada |
+| IN17 | Consultar estoque de vários produtos por API · O endpoint consultado informa que não considera os estoques do WMS. | Não fazer |  | Integração com o ERP de referência: não será usada |
+| IN18 | Autenticar integrações com OAuth 2.0 · Fluxo Client Credentials com Client ID, Client Secret e X-Token. | Não fazer |  | Integração com o ERP de referência: não será usada |
+| IN19 | Administrar soluções, componentes e acessos de integração · Portal do Desenvolvedor e configurações do Gateway. | Não fazer |  | Integração com o ERP de referência: não será usada |
+| IN20 | Ativar conexões com produtos do grupo em uma central · Requer versão/permissões compatíveis; não substitui contratação dos produtos. | Não fazer |  | Integração com o ERP de referência: não será usada |
 | AT01 | Reunir WhatsApp, chat, voz, redes sociais e e-mail em uma operação de atendimento. | Não fazer |  | Atendimento omnichannel |
 | AT02 | Encaminhar solicitações a atendentes conforme regras e histórico. | Não fazer |  | Atendimento omnichannel |
 | AT03 | Atender automaticamente por chatbots, inclusive fora do expediente. | Não fazer |  | Atendimento omnichannel |
@@ -280,7 +280,7 @@ Fase: números do plano (12 base e cadastros, 13 financeiro, 14 contábil/fiscal
 | AT06 | Automatizar acompanhamento de orçamentos e ativação de clientes. | Não fazer |  | Atendimento omnichannel |
 | AT07 | Apoiar fechamento de pedidos pelo WhatsApp com rastreabilidade. | Não fazer |  | Atendimento omnichannel |
 | AT08 | Acompanhar NPS, tempo de atendimento e satisfação. | Não fazer |  | Atendimento omnichannel |
-| SV01 | Hospedagem gerenciada Sankhya Cloud · Infraestrutura, banco de dados, rede e administração do ambiente em nuvem. | Não fazer |  | Serviços do fornecedor (a TAF usa Supabase e Vercel) |
+| SV01 | Hospedagem gerenciada ERP de referência Cloud · Infraestrutura, banco de dados, rede e administração do ambiente em nuvem. | Não fazer |  | Serviços do fornecedor (a TAF usa Supabase e Vercel) |
 | SV02 | Monitoramento e backups do ambiente Cloud · Frequência e atendimento descritos na documentação; retenção, recuperação e SLA precisam ser conferidos no contrato  | Não fazer |  | Serviços do fornecedor (a TAF usa Supabase e Vercel) |
 | SV03 | Implantação e parametrização dos processos · Serviço com divisão de responsabilidades entre fornecedor, unidade/parceiro e cliente. | Não fazer |  | Serviços do fornecedor (a TAF usa Supabase e Vercel) |
 | SV04 | Suporte e Central de Ajuda · Artigos, manuais e atendimento contextual acessível pelo ERP. | Não fazer |  | Serviços do fornecedor (a TAF usa Supabase e Vercel) |

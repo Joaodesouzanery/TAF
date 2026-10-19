@@ -6,8 +6,8 @@ Pesquisa avançada do gerenciador de projetos. Gestor da TAF, e a partir da gest
 1. Ler as planilhas e o documento de fluxo como base e implementar o sistema por fases; design aprovado pelas 4 imagens de referência (já aplicado).
 2. Gerar um HTML único, sempre atualizado, e entregar como **link** (não arquivo).
 3. Saudação "Bom dia, Administrador!". Projeto Vercel deveria se chamar `tafadmin` (ainda a renomear pelo usuário).
-4. Supabase real (projeto "TAF"), depois apontamento diário + Lean, depois BM/faturamento + DRE + caixa, depois NF-e/fiscal/Sankhya.
-5. Fiscal: provedor externo + exportar para o contador. Sankhya: só pela API oficial (REA não se aplica).
+4. Supabase real (projeto "TAF"), depois apontamento diário + Lean, depois BM/faturamento + DRE + caixa, depois NF-e/fiscal/ERP de referência.
+5. Fiscal: provedor externo + exportar para o contador. ERP de referência: só pela API oficial (REA não se aplica).
 6. As planilhas enviadas já são tudo o necessário (não esperar REV13/META REV02).
 7. **Sem autenticação por enquanto** (modo aberto).
 8. QA completo, tudo versionado no GitHub (o usuário vai trocar de conta do Claude).

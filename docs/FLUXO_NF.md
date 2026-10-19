@@ -24,7 +24,7 @@ flowchart TD
   O --> P[Boletim ao cliente → aprovação\ncom glosa → NF de serviço → recebimento]
   P --> Q[DRE da obra e caixa]
   L --> Q
-  L --> R[Fechamento mensal\narquivo do contador / Sankhya]
+  L --> R[Fechamento mensal\narquivo do contador / ERP de referência]
 ```
 
 Regras que o sistema trava: obra sem linha de base não compra (E01); nota sem rateio não vira custo; rateio ≠ 100% não grava; chave de NF-e repetida é recusada; pagamento só com recebimento; quem lança não aprova; medido não passa do orçado; tudo fica na auditoria.

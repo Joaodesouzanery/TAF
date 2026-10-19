@@ -6,7 +6,7 @@
 - **Contas e extrato**: importe o **OFX** (concilia sozinho), **baixa múltipla** com juros, multa e desconto, remessa **CNAB 240 genérica** (validar com o banco).
 - **Cobrança**: mensagem pronta e link do WhatsApp para NFs vencidas; registre o contato.
 - **Faturamento** (Financeiro → Faturamento e caixa): boletim de medição → aprovação do cliente → NF de serviço → recebimento. Fluxo de caixa e DRE.
-- **Painel da obra** (Início → Painéis → Contrato da obra): mesmos blocos do Sankhya; **Conferência** com os totais de lá; **Importar lançamentos** (CSV) do financeiro antigo.
+- **Painel da obra** (Início → Painéis → Contrato da obra): mesmos blocos do ERP de referência; **Conferência** com os totais de lá; **Importar lançamentos** (CSV) do financeiro antigo.
 - **Contabilidade**: Balancete (débito = crédito), Diário, Razão, DRE e Balanço, Orçamento por conta, **Fechamento** da competência, livros em CSV.
 
 ## Regras que bloqueiam

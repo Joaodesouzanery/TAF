@@ -18,10 +18,10 @@ Especificação: *SaaS de Gestão de Obras TAF — Fluxo Completo do Sistema (re
 | 7 | Supabase real: login, papéis, RLS, documentos gravados no banco, importação da obra 342, tela Usuários | feita |
 | 8 | **Campo** (apontamento diário: rascunho → conferido → aprovado, HH, produtividade × CPU, custo de MO, fila offline) e **Lean** (pauta de segunda, lookahead de 6 semanas, restrições com limite de 8 por dono e escalonamento, PPC com Pareto, tarefas) | feita |
 | 9 | **Faturamento e caixa**: boletim ao cliente (medições atestadas + reajuste, aprovação com glosa), NF de serviço, recebimento e conciliação de extrato, caixa mensal; **DRE** por obra e visão medido × executado × meta | feita |
-| 10 | **Importar XML de NF-e** (chave única, sugestão de OC), **fechamento mensal ao contador** (CSV), arquivo de apoio Sankhya; API do Sankhya e provedor de NF-e aguardam credenciais | feita (sem integrações externas) |
-| 11 | Alçadas por faixa de valor, atualizar metas pela planilha (nova versão da linha de base), apuração estimada de tributos, funções de NF-e automática e Sankhya (prontas para ligar, exigem login e credenciais) | feita |
+| 10 | **Importar XML de NF-e** (chave única, sugestão de OC), **fechamento mensal ao contador** (CSV), arquivo de apoio ERP de referência; API do ERP de referência e provedor de NF-e aguardam credenciais | feita (sem integrações externas) |
+| 11 | Alçadas por faixa de valor, atualizar metas pela planilha (nova versão da linha de base), apuração estimada de tributos, funções de NF-e automática e ERP de referência (prontas para ligar, exigem login e credenciais) | feita |
 | 12 | Base do ERP: login por padrão, código modular, menu em 8 áreas, cadastros (fornecedores, insumos, bancos, empresa), numeração no servidor, várias obras (343 e 281 importadas) | feita |
-| 13 | **Painel de Contratos/Obra** (mesmos blocos do Sankhya), conferência com o Sankhya, importação de lançamentos, financeiro nativo (OFX, baixa múltipla, parcelas, renegociação, CNAB genérico, cobrança) | feita |
+| 13 | **Painel de Contratos/Obra** (mesmos blocos do ERP de referência), conferência interna, importação de lançamentos, financeiro nativo (OFX, baixa múltipla, parcelas, renegociação, CNAB genérico, cobrança) | feita |
 | 14 | **Contabilidade**: partidas dobradas automáticas, Diário, Razão, Balancete, DRE/Balanço, orçamento por conta, fechamento de competência (também no banco), livros de apoio | feita |
 | 15 | **Suprimentos e estoque**: cotação colada, devolução, ocorrências, kardex, custo médio, inventário, transferência entre obras | feita |
 | 16 | **Contratos, projetos, patrimônio (depreciação no Diário) e frota** (custo/h alimenta o Campo) | feita |

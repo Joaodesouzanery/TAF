@@ -58,12 +58,7 @@ const {chromium}=require('playwright');const fs=require('fs');
  await p.click('.tabs button[data-t=fech]');await p.click('[data-act=fech-csv]');const csv=await p.inputValue('#f-out');
  ok('arquivo do contador traz a retenção de INSS calculada',csv.includes('1100,00'));
  // ---- 4. integrações sem login ----
- await p.fill('#sk-centro','342');await p.dispatchEvent('#sk-centro','change');
- await p.fill('[data-skmap="4.4.01"]','10404');await p.dispatchEvent('[data-skmap="4.4.01"]','change');
- await p.click('[data-act=sk-previa]');ok('pré-visualização do envio mostra natureza e centro mapeados',await T('10404')&&await p.evaluate(()=>INTEG.prev.ls.some(x=>x.natureza==='10404'&&x.centro==='342')));
  await p.click('[data-act=nfe-buscar]');ok('NF-e automática sem login explica que exige login',await T('exigem o login'));
- await p.click('[data-act=sk-conexao]');ok('Sankhya sem login explica que exige login',await T('exigem o login'));
- ok('enviar ao Sankhya exige simulação no servidor primeiro',await p.evaluate(()=>!INTEG.simulou));
  await p.screenshot({path:out+'/integracoes.png'});
  console.log(res.join('\n'));console.log('erros JS:',JSON.stringify(errs));await b.close();
 })().catch(e=>{console.log('ERRO TESTE',e.message.split('\n').slice(0,4).join(' '));process.exit(1)});
