@@ -121,3 +121,8 @@ Decidido (delegado ao Claude pelo usuário): o **custo realizado do item vem da 
 - **Sem Sankhya**: removidos da tela, dos testes e das funções de servidor. A aba **Conferência** agora confere o próprio sistema (contrato × EAP, notas × rateio, gasto × realizado, faturado × recebido, comprometido × teto). A matriz virou `docs/MATRIZ_FUNCIONALIDADES.md`. As `fontes/` originais não foram alteradas.
 - **Obra**: o bloco no topo da sidebar (com ▾) abre o seletor de obras.
 - Teste: `scripts/e2e_fase20.js` (no `qa.sh`).
+
+## Link na Vercel (sem login)
+- Projeto Vercel `taf` (liga ao GitHub; a branch padrão do repositório é `claude/obras-compras-management-e4nsfm`, então cada push publica). Serve a pasta `web/` (`vercel.json`).
+- `web/config.js` está em `modo: 'aberto'` (sem login, cada navegador guarda os próprios dados). Para ligar login e banco compartilhado, troque para `modo: 'supabase'`.
+- Sem login, quem tiver o link vê a obra 342.
