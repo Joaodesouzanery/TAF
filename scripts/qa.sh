@@ -14,7 +14,7 @@ for f in supabase/migrations/*.sql supabase/seed/342.sql supabase/seed/plano_con
 $PS "psql -q -d taf_qa -c 'grant usage on schema public to anon,authenticated' -c 'grant all on all tables in schema public to anon,authenticated'" >/dev/null 2>&1
 for t in semaforo fase6 rls fase8 fase9 fase10 fase12 fase13 fase14 fase15 fase16 fase17; do
   r=$($PS "psql -q -d taf_qa -f $ROOT/supabase/tests/$t.sql" 2>&1 | grep -ci "error\|assert"); [ "$r" = 0 ] && log "SQL $t" OK || { log "SQL $t" "FALHOU"; fail=1; }; done
-for t in e2e e2e_fase8 e2e_fase9 e2e_fase10 e2e_fase11 e2e_fase12 e2e_fase13 e2e_fase14 e2e_fase15 e2e_fase16 e2e_fase17 e2e_fase18 e2e_fase19 e2e_fase20 e2e_sb; do
+for t in e2e e2e_fase8 e2e_fase9 e2e_fase10 e2e_fase11 e2e_fase12 e2e_fase13 e2e_fase14 e2e_fase15 e2e_fase16 e2e_fase17 e2e_fase18 e2e_fase19 e2e_fase20 e2e_fase21 e2e_sb; do
   o=$(timeout 150 node scripts/$t.js $SH 2>&1); n=$(echo "$o" | grep -c '^OK'); f=$(echo "$o" | grep -c 'FALHA\|ERRO TESTE'); j=$(echo "$o" | grep 'erros JS' | grep -vc '\[\]')
   if [ "$f" = 0 ] && [ "$j" = 0 ] && [ "$n" -gt 0 ]; then log "E2E $t" "OK ($n checks)"; else log "E2E $t" "FALHOU"; echo "$o" | grep 'FALHA\|ERRO' | head -3; fail=1; fi; done
 c=$(node scripts/check_acoes.js 2>&1 | tail -2); echo "$c" | grep -q "^OK" && log "Ações sem handler" "OK" || { log "Ações sem handler" "FALHOU"; echo "$c"; fail=1; }

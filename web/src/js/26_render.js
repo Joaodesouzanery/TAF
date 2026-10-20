@@ -45,7 +45,7 @@ document.addEventListener('click',e=>{
 async function load(cod){
   const d=await obraData(cod||'342');S.src=window.TAF_DATA?['Obra 342','Dados da planilha embutidos']:['Obra 342','Dados da planilha · lançamentos salvos neste navegador'];return d}
 async function abreDemo(cod){
-  try{S.D=await load(cod);S.t=loadT();S.exp=new Set();S.tab={};S.view='dash';prep();
+  try{S.D=await load(cod);S.t=loadT();await seedExtrato();S.exp=new Set();S.tab={};S.view='dash';prep();
     S.D.eap.filter(e=>e.nivel<=2).forEach(e=>S.exp.add(e.codigo));
     $('#obra-av').textContent=S.D.obra.codigo;$('#obra-nome').textContent=S.D.obra.contratante+' · '+S.D.obra.nome;$('#obra-sub').textContent='Centro de custo '+S.D.obra.codigo;
     $('#src-label').textContent=S.src[0];$('#src-sub').textContent=S.src[1];render();

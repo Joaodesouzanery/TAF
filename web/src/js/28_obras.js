@@ -1,6 +1,6 @@
 /* ============ VÁRIAS OBRAS e histórico da 281 (Fase 12, item 7b) ============ */
-/* Só a obra 342 está ativa na interface. 343 e 281 estão guardadas em web/data (obra343.json, obra281.json): para reativar, acrescente-as aqui. */
-const OBRAS_PADRAO=[['342','SANEAGO · UTR ETA Santo Antônio do Descoberto']];
+/* Obras ativas: 342, 343 e 281 (dados em web/data/obraNNN.json). */
+const OBRAS_PADRAO=[['342','SANEAGO · UTR ETA Santo Antônio do Descoberto'],['343','CAESB · Subadutora de Água Tratada Sobradinho I'],['281','SANEAGO · Ampliação do SAA de Mozarlândia/GO, Lote I (consórcio)']];
 async function obraData(cod){if(window.TAF_OBRAS&&window.TAF_OBRAS[cod])return window.TAF_OBRAS[cod];if(cod==='342'&&window.TAF_DATA)return window.TAF_DATA;
   const r=await fetch('data/obra'+cod+'.json');if(!r.ok)throw new Error('Dados da obra '+cod+' indisponíveis');return r.json()}
 const obraGuardada=()=>{try{return localStorage.getItem('taf_obra_sel')}catch(e){return null}};

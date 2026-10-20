@@ -20,20 +20,20 @@ const {chromium}=require('playwright');
  ok('contraste da barra de filtros e ícones nos dois temas',cr===true,cr);
  await p.click('#t-claro');
  // início
- ok('Início abre com período "Hoje"',await E(()=>biPar().periodo==='hoje'&&document.querySelector('.pseg [aria-pressed=true]').innerText.trim()==='Hoje'&&/Hoje|\d{2}\/\d{2}\/\d{4}/.test(document.querySelector('.presumo').innerText)));
+ ok('Início abre com período "Hoje"',await E(()=>biPar().periodo==='hoje'&&document.querySelector('.pseg [aria-pressed=true]').innerText.trim()==='Hoje'&&/Hoje|\d{2}\/\d{2}\/\d{4}/.test(document.querySelector('.pseg').parentElement.querySelector('.presumo').innerText)));
  ok('barra com 7 períodos e sem <select> de período/natureza',await E(()=>document.querySelectorAll('.pseg button').length===7&&!document.querySelector('#d-per,#d-nat')));
  for(const k of ['7d','mes','3m','ano','tudo']){await p.click(`[data-act=dash-per][data-p="${k}"]`);ok('período '+k+' aplica',await E(k=>biPar().periodo===k&&document.querySelector('.pseg [aria-pressed=true]').dataset.p===k,k))}
  await p.click('[data-act=dash-per][data-p=custom]');ok('personalizado mostra De/Até',await p.isVisible('#d-de')&&await p.isVisible('#d-ate'));
  await p.fill('#d-de','2026-01-01');await p.dispatchEvent('#d-de','change');await p.fill('#d-ate','2026-03-31');await p.dispatchEvent('#d-ate','change');
- ok('intervalo personalizado vale no resumo',await E(()=>/01\/01\/2026 a 31\/03\/2026/.test(document.querySelector('.presumo').innerText)));
+ ok('intervalo personalizado vale no resumo',await E(()=>/01\/01\/2026 a 31\/03\/2026/.test(document.querySelector('.pseg').parentElement.querySelector('.presumo').innerText)));
  ok('intervalo filtra por data e por mês',await E(()=>{const R=periodoRange();return R.has('2026-02-10')&&!R.has('2026-04-01')&&R.has('2026-03')&&!R.has('2026-04')}));
  // natureza
  await p.click('[data-act=dash-natpop]');ok('popover de natureza lista as 5 + Todas',await E(()=>document.querySelectorAll('.pop [role=option]').length===6));
  await p.keyboard.press('Escape');ok('Esc fecha o popover',await E(()=>!document.querySelector('.pop')));
  await p.click('[data-act=dash-natpop]');await p.click('.pop [data-n=MAT]');
- ok('natureza aplicada aparece como chip com ×',await E(()=>S.dashNat==='MAT'&&!!document.querySelector('.pill.x')&&/Material/.test(document.querySelector('.pbar').innerText)));
- await p.click('.pill.x');ok('× limpa a natureza',await E(()=>S.dashNat===''));
- await p.click('[data-act=dash-natpop]');await p.mouse.click(700,20);ok('clique fora fecha o popover',await E(()=>!document.querySelector('.pop')));
+ ok('natureza aplicada aparece como chip com ×',await E(()=>S.dashNat==='MAT'&&!!document.querySelector('.pseg').parentElement.querySelector('.pill.x')&&/Material/.test(document.querySelector('.pseg').parentElement.innerText)));
+ await p.click('.pseg ~ .pwrap .pill.x');ok('× limpa a natureza',await E(()=>S.dashNat===''));
+ await p.click('[data-act=dash-natpop]');await p.click('#crumb');ok('clique fora fecha o popover',await E(()=>!document.querySelector('.pop')));
  // painel da obra com a mesma barra
  await E(()=>{S.view='pain';S.tab={pain:'contrato'};render()});ok('Painel da obra usa a mesma barra',await E(()=>!!document.querySelector('#view .pbar')));
  // conferência

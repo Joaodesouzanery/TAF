@@ -48,3 +48,6 @@ Execução: `bash scripts/qa.sh` (sobe Postgres 16 local, aplica `supabase/migra
 
 ## Fase 20
 `bash scripts/qa.sh` verde: 16 e2e (e2e_fase20 com 26 checks), SQL, desempenho 181 ms @1000 / 580 ms @3000, conferência 342.
+
+## Fase 21
+`bash scripts/qa.sh`: ver resultado no commit; novo `e2e_fase21` (filtros, cartões = export da 342, detalhe, colunas, cadastro, extrato colado, contraste, mobile) e checagens do extrato 342 em `verifica_342.py`.

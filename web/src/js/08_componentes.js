@@ -26,7 +26,7 @@ function ring(p,c){return `<div class="ring" style="--p:${Math.round(p*100)};--c
 function bar(a,b,tot){const w=x=>tot>0?Math.min(100,Math.max(0,x/tot*100)):0;return `<div class="bar" title="comprometido ${brl(a)} · realizado ${brl(b)} · meta ${brl(tot)}"><i class="b" style="width:${w(b)}%"></i><i class="a" style="width:${Math.min(w(a),100-w(b))}%"></i></div>`}
 function tabs(id,list,cur){return `<div class="tabs" data-tabs="${id}">${list.map(([k,l,n])=>`<button data-t="${k}" class="${cur===k?'on':''}">${l}${n?` <em>${n}</em>`:''}</button>`).join('')}</div>`}
 let FOCO_ANT=null;
-function modal(html){if(!$('#modal').classList.contains('open'))FOCO_ANT=document.activeElement;$('#mbox').innerHTML=html;const h=$('#mbox').querySelector('h3');$('#mbox').setAttribute('aria-label',h?h.textContent:'Janela');$('#modal').classList.add('open');
+function modal(html){$('#mbox').classList.remove('wide');if(!$('#modal').classList.contains('open'))FOCO_ANT=document.activeElement;$('#mbox').innerHTML=html;const h=$('#mbox').querySelector('h3');$('#mbox').setAttribute('aria-label',h?h.textContent:'Janela');$('#modal').classList.add('open');
   setTimeout(()=>{const f=$('#mbox').querySelector('input:not([type=hidden]),select,textarea,button');if(f&&!$('#mbox').contains(document.activeElement))f.focus()},0)}
 function closeModal(){$('#modal').classList.remove('open');if(FOCO_ANT&&FOCO_ANT.focus&&document.contains(FOCO_ANT)){try{FOCO_ANT.focus()}catch(e){}}FOCO_ANT=null}
 const itemOptions=(sel)=>S.D.items.map(i=>`<option value="${i.codigo}" ${sel===i.codigo?'selected':''}>${i.codigo} · ${esc(i.descricao.slice(0,70))}</option>`).join('');

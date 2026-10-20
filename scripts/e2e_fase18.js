@@ -4,7 +4,7 @@ const {chromium}=require('playwright');
  const res=[];const ok=(n,c,d)=>res.push((c?'OK   ':'FALHA ')+n+(c||!d?'':' · '+d));
  const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium'});
  const p=await b.newPage({viewport:{width:1400,height:1000}});const errs=[];p.on('pageerror',e=>errs.push(e.message));
- await p.goto('file:///home/user/TAF/dist/tafadmin.html?demo=1');await p.waitForSelector('.big');
+ await p.goto('file:///home/user/TAF/dist/tafadmin.html?demo=1');await p.waitForSelector('.big');await p.evaluate(()=>{S.t.lfxs=[];save();render()});
  const E=(f,a)=>p.evaluate(f,a);
  // cenário completo mínimo, montado direto nos dados
  await E(()=>{S.role='admin';const it=S.D.items,h=hojeISO(),i0=it[0].codigo,i1=it[1].codigo;

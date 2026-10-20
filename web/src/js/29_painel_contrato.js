@@ -1,33 +1,37 @@
 /* ============ PAINEL DE CONTRATOS / OBRA (Fase 13) ============ */
 /* Painel de Contratos da obra, calculado dos registros do sistema (+ lançamentos importados). */
 const mesCorr=()=>mesDe(hojeISO());
-const lfxDe=tp=>S.t.lfxs.filter(l=>l.tipo===tp);
+const lfxDe=tp=>S.t.lfxs.filter(l=>l.tipo===tp&&!l.detalhe);
+const natDe=()=>S.t.lfxs.filter(l=>l.tipo==='nat');
+const nSum=(L,k)=>r2(L.reduce((s,x)=>s+(+x[k]||0),0));
+const provLigada=()=>S.provTmp!==undefined?S.provTmp:provPref();
 function vencNota(n){const t=S.t.titulos.find(x=>x.oc&&x.oc===n.oc&&!x.cancelado);return t?t.venc:addDias(n.emissao||hojeISO(),30)}
 function painelCalc(){return memo('pc',painelCalcRaw)}
 function painelCalcRaw(){
   const T=S.t,h=hojeISO(),O=S.D.obra,X=S.X||derive(),contrato=O.valor_contrato||X.venda,trib=O.tributos_nota||0;
-  const fats=T.fats,recs=T.recs,fat=r2(fats.reduce((s,f)=>s+f.valor,0));
+  const NT=natDe(),NG=NT.filter(x=>!x.foraGasto),fats=T.fats,recs=T.recs,fat=r2(fats.reduce((s,f)=>s+f.valor,0)+nSum(NT,'fat'));
   const faturadoAnt=r2(fats.filter(f=>mesDe(f.emissao)<mesCorr()).reduce((s,f)=>s+f.valor,0));
-  const recebido=r2(recs.reduce((s,r)=>s+r.valor,0)),aReceber=r2(fats.reduce((s,f)=>s+fatSaldo(f),0));
-  const atrRec=r2(fats.filter(f=>f.venc<h).reduce((s,f)=>s+fatSaldo(f),0));
+  const recebido=r2(recs.reduce((s,r)=>s+r.valor,0)+nSum(NT,'rec')),aReceber=r2(fats.reduce((s,f)=>s+fatSaldo(f),0)+nSum(NT,'areceber'));
+  const atrRec=r2(fats.filter(f=>f.venc<h).reduce((s,f)=>s+fatSaldo(f),0)+nSum(NT,'atrasoRec'));
   const fatDireto=r2(fats.filter(f=>f.fatDireto).reduce((s,f)=>s+f.valor,0)+T.notas.filter(n=>n.fatDireto&&n.status!=='lancada').reduce((s,n)=>s+n.valor,0)+lfxDe('gasto').filter(l=>l.fatDireto).reduce((s,l)=>s+l.valor,0));
-  const impDeb=r2(fat*trib);
+  const impDeb=r2(fat*trib+nSum(NT,'impD')),impCred=nSum(NT,'impC');
   const nt=T.notas.filter(n=>n.status!=='lancada'),npg=nt.filter(n=>n.status==='paga'),nab=nt.filter(n=>n.status!=='paga');
   const lg=lfxDe('gasto');
-  const pago=r2(npg.reduce((s,n)=>s+n.valor,0)+lg.filter(l=>l.pago).reduce((s,l)=>s+l.valor,0));
-  const atrasado=r2(nab.filter(n=>vencNota(n)<h).reduce((s,n)=>s+n.valor,0)+lg.filter(l=>!l.pago&&l.venc<h).reduce((s,l)=>s+l.valor,0));
-  const aPagar=r2(nab.filter(n=>vencNota(n)>=h).reduce((s,n)=>s+n.valor,0)+lg.filter(l=>!l.pago&&l.venc>=h).reduce((s,l)=>s+l.valor,0));
+  const pago=r2(npg.reduce((s,n)=>s+n.valor,0)+lg.filter(l=>l.pago).reduce((s,l)=>s+l.valor,0)+nSum(NG,'pago'));
+  const atrasado=r2(nab.filter(n=>vencNota(n)<h).reduce((s,n)=>s+n.valor,0)+lg.filter(l=>!l.pago&&l.venc<h).reduce((s,l)=>s+l.valor,0)+nSum(NG,'atrasado'));
+  const aPagar=r2(nab.filter(n=>vencNota(n)>=h).reduce((s,n)=>s+n.valor,0)+lg.filter(l=>!l.pago&&l.venc>=h).reduce((s,l)=>s+l.valor,0)+nSum(NG,'aPagar'));
   const gasto=r2(pago+atrasado+aPagar);
-  const requisicao=r2(T.sols.filter(s=>['enviada','em_cotacao','cotada'].includes(s.status)).reduce((s,x)=>s+x.qtd*x.preco,0));
+  const requisicao=r2(T.sols.filter(s=>['enviada','em_cotacao','cotada'].includes(s.status)).reduce((s,x)=>s+x.qtd*x.preco,0)+nSum(NG,'req'));
   const cfReal=r2(T.notas.filter(n=>n.status!=='lancada').reduce((s,n)=>s+n.rateio.filter(l=>l.nat==='ADM').reduce((a,l)=>a+ +l.valor,0),0)+lfxDe('custo_fixo').reduce((s,l)=>s+l.valor,0));
-  const cfPrev=r2(S.D.items.filter(i=>i.nat==='ADM').reduce((s,i)=>s+i.meta_total,0));
-  const custoFixo=Math.max(cfReal,0),prov=r2(X.comp+lfxDe('provisao').reduce((s,l)=>s+l.valor,0));
+  const cfPrev=r2(contrato*((T.par.cfPrevPct==null?5:+T.par.cfPrevPct)/100));
+  const custoFixo=Math.max(cfReal,0),provTot=r2(X.comp+lfxDe('provisao').reduce((s,l)=>s+l.valor,0)+nSum(NT,'prov')),prov=provLigada()?provTot:0;
   const saldoFat=r2(contrato-fat);
   const comprom=r2(gasto+custoFixo+prov);
   const lucro=r2(contrato*(1-trib)-comprom);          // projetado com o que já está comprometido
-  const lucroReal=r2(fat*(1-trib)-gasto-custoFixo);   // realizado: só o faturado contra o gasto
-  return {contrato,fat,faturadoAnt,recebido,aReceber,atrRec,fatDireto,impDeb,impCred:0,pago,aPagar,atrasado,gasto,requisicao,custoFixo,cfPrev,
-    pctCF:contrato?custoFixo/contrato:0,prov,saldoFat,comprom,lucro,lucroReal,pctLucro:contrato?lucro/contrato:0,trib}}
+  const lucroReal=r2(fat*(1-trib)-gasto-custoFixo);
+  const lucroPainel=r2(fat*(1-trib)-gasto-custoFixo-prov),lucroPrev=r2(fat*(1-trib)-gasto-Math.max(custoFixo,cfPrev)-prov);   // realizado: só o faturado contra o gasto
+  return {contrato,fat,faturadoAnt,recebido,aReceber,atrRec,fatDireto,impDeb,impCred,pago,aPagar,atrasado,gasto,requisicao,custoFixo,cfPrev,
+    pctCF:contrato?custoFixo/contrato:0,prov,saldoFat,comprom,lucro,lucroReal,lucroPainel,lucroPrev,provTot,pctLucro:contrato?lucro/contrato:0,trib}}
 const PAINEL_DICA={contrato:'Valor do contrato da obra.',fat:'Soma das NFs de serviço emitidas (boletins aprovados e faturados).',
  gasto:'Pago + a pagar + atrasado: notas rateadas/conferidas/pagas e lançamentos importados do tipo gasto. Atrasado = vencimento no passado e sem pagamento.',
  requisicao:'Solicitações de compra ainda sem pedido aprovado (preço × quantidade).',custoFixo:'Natureza indireta (ADM) rateada nas notas + lançamentos de custo fixo importados.',
@@ -131,7 +135,7 @@ function lfxImportar(){const r=lfxParse($('#lf-csv').value),ja=new Set(S.t.lfxs.
 function lfxDesfazer(){const ult=S.t.lfxs[S.t.lfxs.length-1];if(!ult)return toast('Nada para desfazer');const n=S.t.lfxs.filter(l=>l.lote===ult.lote).length;
   S.t.lfxs=S.t.lfxs.filter(l=>l.lote!==ult.lote);log('lancamentos_importados',ult.lote,'desfazer','',n+' removidos');save();toast(n+' lançamentos do último lote removidos');render()}
 ACOES['lf-imp']=()=>{if(!can('lan'))return toast('Só Financeiro importa lançamentos');lfxImportar()};ACOES['lf-undo']=()=>{if(!can('lan'))return toast('Só Financeiro desfaz importação');lfxDesfazer()};
-function impView(){const L=S.t.lfxs;
+function impViewBase(){const L=S.t.lfxs.filter(l=>!l.detalhe&&l.tipo!=='nat');
   return `<div class="sub">Traga para cá o histórico financeiro de planilhas ou de outros controles. Colunas separadas por ponto e vírgula: <span class="mono">tipo;numero;fornecedor;descricao;vencimento;valor;pago_em;fat_direto</span>. Tipo: <b>gasto</b>, <b>custo_fixo</b> ou <b>provisao</b>. Deixe <span class="mono">pago_em</span> vazio para títulos em aberto. Linhas repetidas (mesmo tipo, número, fornecedor, vencimento e valor) são ignoradas.</div>
   <textarea id="lf-csv" rows="6" placeholder="gasto;123;Fornecedor X;Cimento;25/11/2026;2.011,26;;&#10;provisao;;Folha;Provisão de mão de obra;30/11/2026;126.731,81;;"></textarea>
   <div style="margin-top:8px;display:flex;gap:8px"><button class="btn dark" data-act="lf-imp" ${can('lan')?'':'disabled title="Só Financeiro"'}>Importar</button><button class="btn" data-act="lf-undo" ${can('lan')&&L.length?'':'disabled'}>Desfazer último lote</button></div>
@@ -159,7 +163,7 @@ ACOES['pc-det']=el=>{const k=el.dataset.k,R=painelLinhas(k),tot=r2(R.reduce((s,x
 
 /* ---------- comparativo da carteira (342, 343, 281) ---------- */
 S.cart=S.cart||{};
-async function cartCarrega(){for(const [cod] of OBRAS_PADRAO){if(S.cart[cod])continue;try{const d=await obraData(cod);S.cart[cod]={contrato:d.obra.valor_contrato,trib:d.obra.tributos_nota,nome:d.obra.contratante+' · '+d.obra.nome}}catch(e){S.cart[cod]={contrato:0,trib:0,nome:cod}}}render()}
+async function cartCarrega(){for(const [cod] of OBRAS_PADRAO){if(S.cart[cod])continue;try{const d=await obraData(cod);S.cart[cod]={contrato:d.obra.valor_contrato,trib:d.obra.tributos_nota,nome:d.obra.contratante+' · '+d.obra.nome,obra:d.obra};await extratoDe(cod)}catch(e){S.cart[cod]={contrato:0,trib:0,nome:cod}}}render()}
 function cartLinha(cod){const c=S.cart[cod];if(!c)return null;const atual=S.D.obra.codigo===cod;let t=null;
   if(atual)t=S.t;else if(!MODO_SB)try{t=JSON.parse(localStorage.getItem(cod==='342'?KEY:KEY+'_'+cod)||'null')}catch(e){}
   if(!t)return {cod,...c,sem:true};
@@ -168,3 +172,26 @@ function cartLinha(cod){const c=S.cart[cod];if(!c)return null;const atual=S.D.ob
   return {cod,...c,gasto,fat,lucro:r2(c.contrato*(1-c.trib)-gasto-prov)}}
 function carteiraView(){const L=OBRAS_PADRAO.map(([c])=>cartLinha(c));if(L.some(x=>!x))setTimeout(cartCarrega,0);
   return `<div class="panel-t" style="margin-top:16px">Carteira de obras</div><div class="tw"><table class="tbl"><thead><tr><th>Obra</th><th class="r">Contrato</th><th class="r">Faturado</th><th class="r">Gasto</th><th class="r">Lucro (proj.)</th></tr></thead><tbody>${L.map((x,k)=>x?`<tr><td><b>${x.cod}</b> ${esc(x.nome)}</td><td class="r">${brl(x.contrato)}</td><td class="r">${x.sem?'—':brl(x.fat)}</td><td class="r">${x.sem?'—':brl(x.gasto)}</td><td class="r ${x.lucro<0?'neg':''}">${x.sem?'<span class="mut">abra a obra</span>':brl(x.lucro)}</td></tr>`:`<tr><td colspan="5">${OBRAS_PADRAO[k][0]} carregando…</td></tr>`).join('')}</tbody></table></div>`}
+
+/* ---------- extrato financeiro por natureza e lançamentos (colar do export) ---------- */
+const hdrN=h=>String(h||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
+const EXT_NAT={cod:'codnatureza',nome:'natureza',fat:'faturado',cr:'codcr',crNome:'centroderesultado',saldoCR:'saldoporcr',rec:'faturadorecebido',areceber:'faturadoareceber',atrasoRec:'faturadoatrasado',gasto:'gasto',pago:'gastopago',aPagar:'gastoapagar',atrasado:'gastoatrasado',req:'gastorequisicao',prov:'provgasto',impD:'impostosdebito',impC:'impostocredito',impF:'impostofinal'};
+const EXT_LAN={origemTxt:'origem',rd:'receitadespesa',provTxt:'provisao',nota:'nrnota',empresa:'empresa',parceiro:'parceiro',desdob:'vlrdesdobramento',valorNota:'vlrnota',dtNeg:'dtnegociacao',dtBaixa:'dtbaixa',vendComp:'vendedorcomprador',venc:'dtvencimento',top:'top',topDesc:'descricaotop',tipoMov:'tipomovimento'};
+function extParse(txt,mapa,numeros,datas){const L=String(txt||'').replace(/^\uFEFF/,'').split(/\r?\n/).filter(x=>x.trim());if(L.length<2)return {out:[],erros:['Cole o cabeçalho e ao menos uma linha']};
+  const sep=L[0].includes('\t')?'\t':';',H=L[0].split(sep).map(hdrN),ix={},erros=[],out=[];for(const k in mapa){ix[k]=H.indexOf(mapa[k]);if(ix[k]<0)return {out:[],erros:['Falta a coluna "'+mapa[k]+'" no cabeçalho']}}
+  L.slice(1).forEach((ln,i)=>{const c=ln.split(sep).map(x=>x.trim()),o={};for(const k in ix){const v=c[ix[k]]||'';o[k]=numeros.includes(k)?r2(numBR(v)):datas.includes(k)?dataImp(v):v}if(!o[Object.keys(mapa)[0]]&&!c.some(x=>x))return;out.push(o)});return {out,erros}}
+function extImportar(){if(!can('lan'))return toast('Só Financeiro importa o extrato');const cod=S.D.obra.codigo,txN=$('#ex-nat').value,txL=$('#ex-lan').value;let nN=0,nL=0,erros=[];
+  if(txN.trim()){const r=extParse(txN,EXT_NAT,['fat','saldoCR','rec','areceber','atrasoRec','gasto','pago','aPagar','atrasado','req','prov','impD','impC','impF'],[]);erros.push(...r.erros);
+    if(r.out.length){S.t.lfxs=S.t.lfxs.filter(l=>l.tipo!=='nat');r.out.filter(o=>o.cod).forEach((o,i)=>{S.t.lfxs.push({id:'nat-'+cod+'-'+Date.now()+'-'+i,tipo:'nat',origem:'Importado',lote:'extrato-'+cod,corte:$('#ex-corte').value||hojeISO(),...o,cr:o.cr||CR_PAD[0],crNome:o.crNome||CR_PAD[1],foraGasto:/ADIANTAMENTO A FORNECE/i.test(o.nome)});nN++});S.t.par.extratoCorte=$('#ex-corte').value||hojeISO();S.t.par.extratoSeed=true}}
+  if(txL.trim()){const r=extParse(txL,EXT_LAN,['desdob','valorNota'],['dtNeg','dtBaixa','venc']);erros.push(...r.erros);const nc=$('#ex-natcod').value.trim(),ja=new Set(S.t.lfxs.filter(l=>l.detalhe).map(l=>[l.nota,l.natCod,l.desdob,l.venc].join('|')));
+    r.out.filter(o=>o.nota).forEach((o,i)=>{const k=[o.nota,nc,o.desdob,o.venc].join('|');if(ja.has(k))return;ja.add(k);S.t.lfxs.push({id:'lan-'+cod+'-'+Date.now()+'-'+i,tipo:'gasto',detalhe:true,origem:'Importado',lote:'lanc-'+Date.now(),forn:o.parceiro,numero:o.nota,desc:o.topDesc,valor:o.valorNota,pago:o.dtBaixa,natCod:nc,...o});nL++})}
+  if(!nN&&!nL)return toast(erros[0]||'Nada para importar');log('extrato',cod,'importar','',nN+' naturezas, '+nL+' lançamentos'+(erros.length?' · '+erros.length+' avisos':''));save();toast(nN+' naturezas e '+nL+' lançamentos importados'+(erros.length?' · '+erros[0]:''));render()}
+ACOES['ex-imp']=extImportar;
+function extratoView(){const N=S.t.lfxs.filter(l=>l.tipo==='nat'),D=S.t.lfxs.filter(l=>l.detalhe),pode=can('lan');
+  return `<div class="panel-t" style="margin-top:18px">Extrato por natureza e lançamentos</div>
+  <div class="sub">${N.length?`<b>${N.length}</b> naturezas e <b>${D.length}</b> lançamentos importados${S.t.par.extratoCorte?' · histórico até <b>'+fdz(S.t.par.extratoCorte)+'</b>':''}.`:'Nenhum extrato importado: o painel mostra 0 até você colar o extrato.'} O que for lançado aqui depois soma-se ao histórico. Cole as tabelas copiadas do relatório (colunas separadas por tabulação ou ponto e vírgula, com o cabeçalho). Importar o extrato por natureza substitui o anterior; os lançamentos repetidos são ignorados.</div>
+  <div class="g3" style="grid-template-columns:1fr 1fr 1fr;margin-top:6px"><div><label style="margin-top:0">Data de corte do histórico</label><input id="ex-corte" type="date" value="${esc(S.t.par.extratoCorte||hojeISO())}"></div><div><label style="margin-top:0">Natureza dos lançamentos (código)</label><input id="ex-natcod" placeholder="ex.: 1040302"></div></div>
+  <label>Por natureza e centro de resultado (cabeçalho: Cód. Natureza, Natureza, Faturado, Cód. CR., Centro de Resultado, Saldo Por CR, Faturado (Recebido)…)</label><textarea id="ex-nat" rows="4"></textarea>
+  <label>Lançamentos (cabeçalho: Origem, Receita/Despesa, Provisão?, Nr. Nota, Empresa, Parceiro, Vlr. Desdobramento, Vlr. Nota, Dt. Negociação, Dt. Baixa, Vendedor/Comprador, Dt. Vencimento, TOP, Descrição TOP, Tipo Movimento)</label><textarea id="ex-lan" rows="4"></textarea>
+  <div style="margin-top:8px"><button class="btn dark" data-act="ex-imp" ${pode?'':'disabled title="Só Financeiro"'}>Importar extrato</button></div>`}
+const impView=()=>impViewBase()+extratoView();

@@ -39,7 +39,7 @@ const {chromium}=require('playwright');
  // ---- várias obras (7b) ----
  // as obras 343 e 281 estão guardadas (fora da interface): o teste as reativa para exercitar o código de várias obras
  await p.evaluate(([a,b])=>{window.TAF_OBRAS[343]=a;window.TAF_OBRAS[281]=b;if(!OBRAS_PADRAO.some(o=>o[0]==='343'))OBRAS_PADRAO.push(['343','CAESB · Subadutora Sobradinho I'],['281','SANEAGO · Mozarlândia (consórcio)'])},[JSON.parse(require('fs').readFileSync('/home/user/TAF/web/data/obra343.json','utf8')),JSON.parse(require('fs').readFileSync('/home/user/TAF/web/data/obra281.json','utf8'))]);
- ok('por padrão só a 342 está na interface',await p.evaluate(()=>OBRAS_PADRAO.length===3));await p.click('.obra-sel');ok('seletor lista as 3 obras reativadas (342, 343, 281)',await T('Subadutora Sobradinho')&&await T('Mozarl'));
+ ok('as 3 obras (342, 343, 281) estão na interface',await p.evaluate(()=>OBRAS_PADRAO.length===3));await p.click('.obra-sel');ok('seletor lista as 3 obras (342, 343, 281)',await T('Sobradinho')&&await T('Mozarl'));
  await p.click('[data-act=obra-abrir][data-cod="343"]');await p.waitForFunction(()=>S.D&&S.D.obra.codigo==='343');
  ok('obra 343 carrega a EAP da Viabilidade (244 itens, só preço licitado)',await p.evaluate(()=>S.D.items.length===244&&S.D.items.every(i=>i.meta_total==null)));
  const sem=await p.evaluate(()=>{const i=S.D.items[0];S.t.frozen=true;return semaforo(i.codigo,100)});

@@ -13,11 +13,11 @@ const {chromium}=require('playwright');
  await p.reload();await p.waitForSelector('.big');ok('o tema escolhido persiste após recarregar',await E(()=>document.documentElement.dataset.theme==='dark'));
  await p.click('#t-claro');ok('Claro volta ao tema claro',await E(()=>document.documentElement.dataset.theme==='light'&&getComputedStyle(document.body).backgroundColor.match(/\d+/g).map(Number)[0]>200));
  // ---- só 342, sem demo
- ok('só a obra 342 está ativa',await E(()=>OBRAS_PADRAO.length===1&&OBRAS_PADRAO[0][0]==='342'));
+ ok('as 3 obras (342, 343, 281) estão ativas',await E(()=>OBRAS_PADRAO.map(o=>o[0]).join()==='342,343,281'));
  const txt=await E(()=>{const out=[];S.role='admin';const tabs={pain:['contrato','compras','obra','dre','prod','lean','carteira','conf','imp'],ctb:['bal','diario','razao','dre','orc','fech','liv','plano'],est:['saldo','mov','inv','nec'],pes:['col','pto','rh','custo'],fin:['tit','conc','contas','cobr','apur','fech'],fat:['bc','nf','caixa'],compras:['sols','ocs','aprov'],cad:['forn','ins','banc','emp']};const key={pain:'pain',ctb:'ctb',est:'est',pes:'pes',fin:'fin',fat:'fat',compras:'compras',cad:'cad'};
   for(const v of areasVisiveis().flatMap(a=>a.tabs.map(t=>t[0]))){for(const s of (tabs[v]||[null])){S.view=v;S.tab={};if(s)S.tab[key[v]]=s;render();out.push(document.body.innerText)}}return out.join('\\n')});
  ok('nenhuma tela fala em demo/demonstração',!/demo|demonstra/i.test(txt));
- ok('nenhuma tela cita 343, 281 ou Mozarlândia',!/Mozarl|Sobradinho|\\b343\\b|\\b281\\b/.test(txt));
+ ok('nenhuma tela cita demonstração',!/demo/i.test(txt));
  // ---- vazio = 0
  const vazios=await E(()=>{const bad=[];for(const v of areasVisiveis().flatMap(a=>a.tabs.map(t=>t[0]))){S.view=v;S.tab={};render();document.querySelector('#view').innerText.split('\\n').forEach(l=>{if(/(^|\\s)—(\\s|$)/.test(l.trim()))bad.push(v+': '+l.trim().slice(0,50))})}return bad});
  ok('nenhum "—" no lugar de zero em nenhuma tela',!vazios.length,vazios.slice(0,4).join(' | '));

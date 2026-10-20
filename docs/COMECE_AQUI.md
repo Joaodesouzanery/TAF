@@ -126,3 +126,13 @@ Decidido (delegado ao Claude pelo usuário): o **custo realizado do item vem da 
 - Projeto Vercel `taf` (liga ao GitHub; a branch padrão do repositório é `claude/obras-compras-management-e4nsfm`, então cada push publica). Serve a pasta `web/` (`vercel.json`).
 - `web/config.js` está em `modo: 'aberto'` (sem login, cada navegador guarda os próprios dados). Para ligar login e banco compartilhado, troque para `modo: 'supabase'`.
 - Sem login, quem tiver o link vê a obra 342.
+
+## Fase 21 — Painel de Contratos no Início, 3 obras e detalhe por natureza
+- **Obras**: 342, 343 e 281 ativas (`OBRAS_PADRAO`). Cadastro por obra (empresa, gerente, vendedor, tipo, situação, custo fixo previsto %) em Início → "Cadastro da obra" (Gestão, Diretoria, Gerente).
+- **Início**: 8 cartões (Gasto, Custo fixo, Prov. gasto, Faturado, Fat. direto, Saldo a faturar, Impostos, Lucro), painel de **Filtros** (Empresa, Gerente, Vendedor, Tipo, Situação, Nº do contrato), interruptor de provisão e barra de composição por obra. Código: `web/src/js/44_painel_inicio.js` (`painelInicio`, `kpisObra`, `somaObras`, `comObra`).
+- **Detalhe**: clicar num cartão abre a tabela por natureza × centro de resultado (18 colunas, total, busca, escolha e ordem de colunas, copiar CSV); clicar numa natureza abre os lançamentos (15 colunas).
+- **Extrato importado**: linhas `lfx` `tipo:'nat'` (resumo por natureza) e `gasto` com `detalhe:true` (lançamento só para consulta, fora dos totais). A 342 vem pronta de `web/data/extrato342.json`, gerado por `scripts/importa_extrato.py <obra> <por_natureza.xls> [lancamentos.xls [cod_natureza]]` (precisa de `xlrd`). Para 343/281: rode o script com os exports e `python3 scripts/build_web.py`. No app, dá para colar as tabelas em Painéis → Importar.
+- **Lucro**: cartão = faturado·(1−tributos) − gasto − custo fixo − provisão (342: −93.883,22); também mostra o lucro com custo fixo previsto (5 % do contrato).
+- Contrato da 342 segue R$ 3.257.970,74 (planilha); o export mostra R$ 3.258.000,00 (diferença de R$ 29,26).
+- Limite atual: com login ativo (Supabase) a consolidação usa só a obra aberta; no modo aberto (link sem login) soma as 3 obras guardadas no navegador.
+- Teste: `scripts/e2e_fase21.js`; guia para o gerente: `docs/GUIA_GERENTE.md`.

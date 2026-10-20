@@ -23,7 +23,7 @@ function partidasAutoRaw(){const T=S.t,E=[],f=fisc(),push=(ref,origem,data,desc,
     push('nf:'+n.id,'Nota '+n.num,n.emissao,'Nota '+n.num+' · '+n.emitente,[...Object.entries(porConta).map(([c,v])=>({conta:c,d:v})),{conta:'2.1.01',c:n.valor}]);
     if(rt.total>0)push('rt:'+n.id,'Retenção '+n.num,n.emissao,'Retenções na nota '+n.num,[{conta:'2.1.01',d:rt.total},{conta:'2.1.03',c:rt.inss},{conta:'2.1.04',c:rt.iss},{conta:'2.1.06',c:rt.out}]);
     if(n.status==='paga'){const liq=rt.liquido;push('pg:'+n.id,'Pagamento '+n.num,n.pago||n.emissao,'Pagamento da nota '+n.num,[{conta:'2.1.01',d:liq},{conta:'5.9.01',d:n.encargos||0},{conta:'1.1.01',c:r2(liq+(n.encargos||0))}])}});
-  T.lfxs.filter(l=>l.tipo==='gasto').forEach(l=>{push('lx:'+l.id,'Importado',l.venc,'Gasto importado · '+l.forn+' '+l.desc,[{conta:'5.9.02',d:l.valor},{conta:'2.1.01',c:l.valor}]);
+  T.lfxs.filter(l=>l.tipo==='gasto'&&!l.detalhe).forEach(l=>{push('lx:'+l.id,'Importado',l.venc,'Gasto importado · '+l.forn+' '+l.desc,[{conta:'5.9.02',d:l.valor},{conta:'2.1.01',c:l.valor}]);
     if(l.pago)push('lp:'+l.id,'Importado',l.pago,'Pagamento importado · '+l.forn,[{conta:'2.1.01',d:l.valor},{conta:'1.1.01',c:l.valor}])});
   T.fats.forEach(x=>{const ret=r2(x.valor*(x.ret||0)/100),tr=r2(x.valor*(f.iss+f.pis+f.cofins+f.irpjCsll)/100);
     push('ft:'+x.id,'NF serviço '+x.num,x.emissao,'Faturamento '+x.num,[{conta:'1.1.02',d:r2(x.valor-ret)},{conta:'1.1.03',d:ret},{conta:'4.1.01',c:x.valor}]);

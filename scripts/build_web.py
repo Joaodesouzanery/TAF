@@ -7,6 +7,8 @@ src = root / "web/src"
 import json
 man = {f.stem[7:]: f.read_text(encoding="utf-8") for f in sorted((root / "docs").glob("MANUAL_*.md"))}
 (src / "js/40_ajuda_dados.js").write_text("/* GERADO por scripts/build_web.py a partir de docs/MANUAL_*.md: não edite. */\nconst MANUAIS=" + json.dumps(man, ensure_ascii=False) + ";\n", encoding="utf-8")
+ex = {p.stem[7:]: json.loads(p.read_text(encoding="utf-8")) for p in sorted((root / "web/data").glob("extrato*.json"))}
+(src / "js/45_extrato_dados.js").write_text("/* GERADO por scripts/build_web.py a partir de web/data/extrato*.json: não edite. */\nwindow.TAF_EXTRATO=" + json.dumps(ex, ensure_ascii=False) + ";\n", encoding="utf-8")
 shell = (src / "shell.html").read_text(encoding="utf-8")
 css = (src / "style.css").read_text(encoding="utf-8").rstrip("\n")
 js = "\n".join(p.read_text(encoding="utf-8").rstrip("\n") for p in sorted((src / "js").glob("*.js")))

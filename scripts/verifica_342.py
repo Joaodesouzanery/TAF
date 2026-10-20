@@ -30,4 +30,9 @@ chk('contrato 342 = R$ 3.257.970,74',d['obra']['valor_contrato']==3257970.74)
 chk('soma licitada difere do contrato só em centavos (R$ 29,25 de arredondamento da planilha)',abs(soma-d['obra']['valor_contrato'])<30,round(soma-d['obra']['valor_contrato'],2))
 grp={e['codigo'] for e in d['eap'] if e.get('tipo_linha')!='item'}; pais=[e for e in d['eap'] if e.get('pai') and e['pai'] not in {x['codigo'] for x in d['eap']}]
 chk('EAP sem pai órfão',not pais,len(pais))
+ex=json.load(open('web/data/extrato342.json')); NG=[n for n in ex['nat'] if not n['foraGasto']]
+chk('extrato 342: 15 naturezas e corte em 20/10/2026',len(ex['nat'])==15 and ex['corte']=='2026-10-20',len(ex['nat']))
+chk('extrato 342: gasto 31.159,67 (pago 28.709,84 + a pagar 2.449,83), sem o adiantamento a fornecedor',round(sum(n['pago']+n['aPagar']+n['atrasado'] for n in NG),2)==31159.67 and round(sum(n['pago'] for n in NG),2)==28709.84 and round(sum(n['aPagar'] for n in NG),2)==2449.83)
+chk('extrato 342: coluna Gasto soma 32.908,67 e prov. gasto 62.723,55',round(sum(n['gasto'] for n in ex['nat']),2)==32908.67 and round(sum(n['prov'] for n in ex['nat']),2)==62723.55)
+chk('extrato 342: lançamento da nota 397 (R$ 594,00)',len(ex['lanc'])==1 and ex['lanc'][0]['nota']=='397' and ex['lanc'][0]['valorNota']==594.0 and ex['lanc'][0]['natCod']=='1040302')
 sys.exit(0 if ok else 1)
