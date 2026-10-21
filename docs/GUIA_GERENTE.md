@@ -15,6 +15,8 @@ Cada obra é um centro de custo. Troque de obra pelo bloco no topo da barra late
 - **Medição e resultado**: mede o executado e mostra o resultado da obra.
 
 ## Suprimentos
+- **Dashboard de compras**: pedidos, valor, entregue, pendente, atrasados, prazo médio e gráficos por fornecedor, obra, natureza e mês.
+- **Consulta de pedidos**: grade de pedidos com as colunas escolhíveis, Σ Estatísticas (soma, média, ocorrências, maior, menor), copiar CSV e baixar Excel; importa o histórico do relatório de pedidos.
 - **Compras**: solicitação → cotação → pedido, com semáforo (verde na meta, amarelo acima da meta, vermelho acima do teto) e alçadas de aprovação.
 - **Notas e rateio**: lança a nota fiscal e fecha 100 % do valor nos itens da EAP.
 - **Cadastros**: fornecedores, insumos e bancos (valem para todas as obras).
@@ -31,7 +33,7 @@ Cada obra é um centro de custo. Troque de obra pelo bloco no topo da barra late
 - **Pessoas e ponto** e **Segurança (SST)**: SST vencido bloqueia o ponto.
 
 ## Contratos e ativos
-- **Contratos**, **Projetos**, **Patrimônio** e **Frota**.
+- **Contratos**: lista de contratos de obra (clique para abrir a **ficha**: Geral, Responsáveis, Anexos, Extrato mov., Produtos/Serviços, Provisões financeiras, Pedidos/Notas) mais aditivos e subcontratos. **Projetos**, **Patrimônio** e **Frota**.
 
 ## Gestão e administração
 - **Indicadores e BI**, **Administração** (alçadas, backup), **Fluxos e SLA**, **Auditoria** (antes e depois de cada mudança) e **Usuários**.

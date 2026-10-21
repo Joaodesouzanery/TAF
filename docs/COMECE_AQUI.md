@@ -136,3 +136,12 @@ Decidido (delegado ao Claude pelo usuário): o **custo realizado do item vem da 
 - Contrato da 342 segue R$ 3.257.970,74 (planilha); o export mostra R$ 3.258.000,00 (diferença de R$ 29,26).
 - Limite atual: com login ativo (Supabase) a consolidação usa só a obra aberta; no modo aberto (link sem login) soma as 3 obras guardadas no navegador.
 - Teste: `scripts/e2e_fase21.js`; guia para o gerente: `docs/GUIA_GERENTE.md`.
+
+## Fase 22 — Compras, ficha do contrato, marca e Modo apresentação
+- **Marca**: "Grupo Nery" na barra lateral (`marca` em `web/config.js`).
+- **Modo apresentação** (`47_apresentacao.js`): olho na lateral com 3 chaves (obra, fornecedores/parceiros, valores). Mascara só a tela, as cópias e a planilha; nada gravado muda. Roteiro em `docs/APRESENTACAO.md`.
+- **Grade genérica** (`46_grade.js`): colunas escolhíveis, busca, Σ Estatísticas, copiar CSV e baixar Excel (`.xls` em HTML). Usada no detalhe do Início, na consulta de pedidos e na ficha.
+- **Compras** (`49_compras_consulta.js`): Dashboard de compras e Consulta de pedidos (22 colunas); importar pedidos colados (lfx `tipo:'ped'`, `detalhe:true`, fora dos totais). Prov. gasto agora mostra produtos e serviços.
+- **Ficha do contrato** (`48_ficha_contrato.js`): lista de contratos de obra e ficha com 7 abas; responsáveis (gerente, vendedor…) alimentam os filtros do Início. A 342 já vem com os dados das telas do contrato.
+- Sem migration nova: tudo em `par` e `lfx` (jsonb). Anexos guardam nome e link; upload de arquivo fica para quando houver login + Storage.
+- Teste: `scripts/e2e_fase22.js`.

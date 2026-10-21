@@ -3,7 +3,7 @@
 const AREAS=[
  {k:'inicio',n:'Início',i:'hoje',tabs:[['dash','Dashboard'],['hoje','Hoje'],['pain','Painéis']]},
  {k:'obra',n:'Obra',i:'eap',tabs:[['eap','Orçamento (EAP)'],['pac','Pacotes'],['campo','Campo'],['lean','Lean e planejamento'],['med','Medição e resultado']]},
- {k:'sup',n:'Suprimentos',i:'compras',tabs:[['compras','Compras'],['nota','Notas e rateio'],['cad','Cadastros'],['est','Estoque']]},
+ {k:'sup',n:'Suprimentos',i:'compras',tabs:[['compras','Compras'],['cdash','Dashboard de compras'],['pedc','Consulta de pedidos'],['nota','Notas e rateio'],['cad','Cadastros'],['est','Estoque']]},
  {k:'fin',n:'Financeiro',i:'fin',tabs:[['fin','Pagar e conciliar'],['fat','Faturamento e caixa']]},
  {k:'cont',n:'Contábil e fiscal',i:'plano',tabs:[['plano','Plano de contas'],['ctb','Contabilidade']]},
  {k:'pess',n:'Pessoas',i:'hoje',tabs:[['pes','Pessoas e ponto'],['sst','Segurança (SST)']]},
@@ -11,8 +11,8 @@ const AREAS=[
  {k:'adm',n:'Gestão e administração',i:'aud',tabs:[['bi','Indicadores e BI'],['admin','Administração'],['fluxo','Fluxos e SLA'],['aud','Auditoria'],['usuarios','Usuários']]},
 ];
 /* Quais telas cada papel vê no menu (as ações dentro de cada tela continuam limitadas por can()). Papéis de gestão veem tudo. */
-const TELAS_PAPEL={encarregado:['hoje','eap','campo','lean','frt','pes'],almox:['hoje','pac','compras','nota','cad','est','frt','lean'],planejamento:['hoje','pain','eap','pac','campo','lean','med','prj'],
-  compras:['hoje','pain','eap','pac','compras','nota','cad','est','lean'],adm:['hoje','compras','nota','cad','est','ctr','pat','frt','pes','sst','fluxo','fin','plano','ctb','aud'],financeiro:['hoje','pain','ctr','pat','compras','nota','cad','fin','fat','plano','ctb','aud']};
+const TELAS_PAPEL={encarregado:['hoje','eap','campo','lean','frt','pes'],almox:['hoje','pac','compras','cdash','pedc','nota','cad','est','frt','lean'],planejamento:['hoje','pain','eap','pac','campo','lean','med','prj'],
+  compras:['hoje','pain','eap','pac','compras','cdash','pedc','nota','cad','est','lean'],adm:['hoje','compras','cdash','pedc','nota','cad','est','ctr','pat','frt','pes','sst','fluxo','fin','plano','ctb','aud'],financeiro:['hoje','pain','ctr','pat','compras','cdash','pedc','nota','cad','fin','fat','plano','ctb','aud']};
 const tabVisivel=k=>{if(k==='dash')return true;if(k==='admin')return isRole('diretoria','gestao','gerente')||S.role==='admin';if(k==='usuarios')return MODO_SB&&S.role==='admin';const l=TELAS_PAPEL[S.role];return !l||l.includes(k)};
 const areasVisiveis=()=>AREAS.map(a=>({...a,tabs:a.tabs.filter(t=>tabVisivel(t[0]))})).filter(a=>a.tabs.length);
 const areaDe=v=>areasVisiveis().find(a=>a.tabs.some(t=>t[0]===v))||areasVisiveis()[0];
@@ -27,7 +27,7 @@ function bar(a,b,tot){const w=x=>tot>0?Math.min(100,Math.max(0,x/tot*100)):0;ret
 function tabs(id,list,cur){return `<div class="tabs" data-tabs="${id}">${list.map(([k,l,n])=>`<button data-t="${k}" class="${cur===k?'on':''}">${l}${n?` <em>${n}</em>`:''}</button>`).join('')}</div>`}
 let FOCO_ANT=null;
 function modal(html){$('#mbox').classList.remove('wide');if(!$('#modal').classList.contains('open'))FOCO_ANT=document.activeElement;$('#mbox').innerHTML=html;const h=$('#mbox').querySelector('h3');$('#mbox').setAttribute('aria-label',h?h.textContent:'Janela');$('#modal').classList.add('open');
-  setTimeout(()=>{const f=$('#mbox').querySelector('input:not([type=hidden]),select,textarea,button');if(f&&!$('#mbox').contains(document.activeElement))f.focus()},0)}
+  if(typeof apresPass==='function')apresPass();setTimeout(()=>{const f=$('#mbox').querySelector('input:not([type=hidden]),select,textarea,button');if(f&&!$('#mbox').contains(document.activeElement))f.focus()},0)}
 function closeModal(){$('#modal').classList.remove('open');if(FOCO_ANT&&FOCO_ANT.focus&&document.contains(FOCO_ANT)){try{FOCO_ANT.focus()}catch(e){}}FOCO_ANT=null}
 const itemOptions=(sel)=>S.D.items.map(i=>`<option value="${i.codigo}" ${sel===i.codigo?'selected':''}>${i.codigo} · ${esc(i.descricao.slice(0,70))}</option>`).join('');
 

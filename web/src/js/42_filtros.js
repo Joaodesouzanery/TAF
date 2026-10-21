@@ -36,7 +36,7 @@ function fOrdena(t,i,dir){const body=t.tBodies[0];if(!body)return;const L=fLinha
   const val=r=>{const v=fCelula(r,i);return col.tipo==='data'?(fData(v)||''):col.tipo==='num'?(fNum(v)??-Infinity):v.toLowerCase()};
   L.sort((a,b)=>{const x=val(a),y=val(b);const c=typeof x==='number'?x-y:String(x).localeCompare(String(y),'pt-BR');return dir*c});L.forEach(r=>body.appendChild(r))}
 function filtrosPass(){const R=document.getElementById('view');if(!R)return;
-  [...R.querySelectorAll('table.tbl')].forEach((t,k)=>{if(!t.tHead||!t.tHead.rows.length)return;const L=fLinhas(t);if(L.length<2)return;
+  [...R.querySelectorAll('table.tbl')].forEach((t,k)=>{if(!t.tHead||!t.tHead.rows.length||t.closest('.grw'))return;const L=fLinhas(t);if(L.length<2)return;
     const key=fChave(null,k),st=S.flt[key]||(S.flt[key]={});t.__st=st;t.__key=key;const cols=fAnalisa(t,L);t.__cols=cols;
     const host=t.closest('.tw')||t,div=document.createElement('div');div.innerHTML=fBarra(t,L,cols,st);const bar=div.firstChild;host.parentNode.insertBefore(bar,host);t.__bar=bar;bar.__t=t;
     [...t.tHead.rows[t.tHead.rows.length-1].cells].forEach((h,i)=>{const c=cols[i];if(!c||c.tipo==='vazio'||!h.textContent.trim())return;h.classList.add('f-th');h.tabIndex=0;h.setAttribute('role','columnheader');h.setAttribute('aria-sort',st.sort&&st.sort.i===i?(st.sort.dir>0?'ascending':'descending'):'none');h.title='Ordenar por '+h.textContent.trim()});

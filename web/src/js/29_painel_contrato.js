@@ -25,13 +25,14 @@ function painelCalcRaw(){
   const cfReal=r2(T.notas.filter(n=>n.status!=='lancada').reduce((s,n)=>s+n.rateio.filter(l=>l.nat==='ADM').reduce((a,l)=>a+ +l.valor,0),0)+lfxDe('custo_fixo').reduce((s,l)=>s+l.valor,0));
   const cfPrev=r2(contrato*((T.par.cfPrevPct==null?5:+T.par.cfPrevPct)/100));
   const custoFixo=Math.max(cfReal,0),provTot=r2(X.comp+lfxDe('provisao').reduce((s,l)=>s+l.valor,0)+nSum(NT,'prov')),prov=provLigada()?provTot:0;
+  const servRe=/LOCA[CÇ]|PRESTADOR|M[AÃ]O DE OBRA|TERCEIR/i,pServ0=r2(NT.filter(n=>servRe.test(n.nome)).reduce((s,n)=>s+(+n.prov||0),0)+provOcsSplit(T).serv),provServ=provLigada()?Math.min(provTot,pServ0):0,provProd=r2(prov-provServ);
   const saldoFat=r2(contrato-fat);
   const comprom=r2(gasto+custoFixo+prov);
   const lucro=r2(contrato*(1-trib)-comprom);          // projetado com o que já está comprometido
   const lucroReal=r2(fat*(1-trib)-gasto-custoFixo);
   const lucroPainel=r2(fat*(1-trib)-gasto-custoFixo-prov),lucroPrev=r2(fat*(1-trib)-gasto-Math.max(custoFixo,cfPrev)-prov);   // realizado: só o faturado contra o gasto
   return {contrato,fat,faturadoAnt,recebido,aReceber,atrRec,fatDireto,impDeb,impCred,pago,aPagar,atrasado,gasto,requisicao,custoFixo,cfPrev,
-    pctCF:contrato?custoFixo/contrato:0,prov,saldoFat,comprom,lucro,lucroReal,lucroPainel,lucroPrev,provTot,pctLucro:contrato?lucro/contrato:0,trib}}
+    pctCF:contrato?custoFixo/contrato:0,prov,saldoFat,comprom,lucro,lucroReal,lucroPainel,lucroPrev,provTot,provProd,provServ,pctLucro:contrato?lucro/contrato:0,trib}}
 const PAINEL_DICA={contrato:'Valor do contrato da obra.',fat:'Soma das NFs de serviço emitidas (boletins aprovados e faturados).',
  gasto:'Pago + a pagar + atrasado: notas rateadas/conferidas/pagas e lançamentos importados do tipo gasto. Atrasado = vencimento no passado e sem pagamento.',
  requisicao:'Solicitações de compra ainda sem pedido aprovado (preço × quantidade).',custoFixo:'Natureza indireta (ADM) rateada nas notas + lançamentos de custo fixo importados.',
@@ -177,8 +178,8 @@ function carteiraView(){const L=OBRAS_PADRAO.map(([c])=>cartLinha(c));if(L.some(
 const hdrN=h=>String(h||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
 const EXT_NAT={cod:'codnatureza',nome:'natureza',fat:'faturado',cr:'codcr',crNome:'centroderesultado',saldoCR:'saldoporcr',rec:'faturadorecebido',areceber:'faturadoareceber',atrasoRec:'faturadoatrasado',gasto:'gasto',pago:'gastopago',aPagar:'gastoapagar',atrasado:'gastoatrasado',req:'gastorequisicao',prov:'provgasto',impD:'impostosdebito',impC:'impostocredito',impF:'impostofinal'};
 const EXT_LAN={origemTxt:'origem',rd:'receitadespesa',provTxt:'provisao',nota:'nrnota',empresa:'empresa',parceiro:'parceiro',desdob:'vlrdesdobramento',valorNota:'vlrnota',dtNeg:'dtnegociacao',dtBaixa:'dtbaixa',vendComp:'vendedorcomprador',venc:'dtvencimento',top:'top',topDesc:'descricaotop',tipoMov:'tipomovimento'};
-function extParse(txt,mapa,numeros,datas){const L=String(txt||'').replace(/^\uFEFF/,'').split(/\r?\n/).filter(x=>x.trim());if(L.length<2)return {out:[],erros:['Cole o cabeçalho e ao menos uma linha']};
-  const sep=L[0].includes('\t')?'\t':';',H=L[0].split(sep).map(hdrN),ix={},erros=[],out=[];for(const k in mapa){ix[k]=H.indexOf(mapa[k]);if(ix[k]<0)return {out:[],erros:['Falta a coluna "'+mapa[k]+'" no cabeçalho']}}
+function extParse(txt,mapa,numeros,datas,opc=[]){const L=String(txt||'').replace(/^\uFEFF/,'').split(/\r?\n/).filter(x=>x.trim());if(L.length<2)return {out:[],erros:['Cole o cabeçalho e ao menos uma linha']};
+  const sep=L[0].includes('\t')?'\t':';',H=L[0].split(sep).map(hdrN),ix={},erros=[],out=[];for(const k in mapa){ix[k]=H.indexOf(mapa[k]);if(ix[k]<0&&opc.includes(k)){delete ix[k];continue}if(ix[k]<0)return {out:[],erros:['Falta a coluna "'+mapa[k]+'" no cabeçalho']}}
   L.slice(1).forEach((ln,i)=>{const c=ln.split(sep).map(x=>x.trim()),o={};for(const k in ix){const v=c[ix[k]]||'';o[k]=numeros.includes(k)?r2(numBR(v)):datas.includes(k)?dataImp(v):v}if(!o[Object.keys(mapa)[0]]&&!c.some(x=>x))return;out.push(o)});return {out,erros}}
 function extImportar(){if(!can('lan'))return toast('Só Financeiro importa o extrato');const cod=S.D.obra.codigo,txN=$('#ex-nat').value,txL=$('#ex-lan').value;let nN=0,nL=0,erros=[];
   if(txN.trim()){const r=extParse(txN,EXT_NAT,['fat','saldoCR','rec','areceber','atrasoRec','gasto','pago','aPagar','atrasado','req','prov','impD','impC','impF'],[]);erros.push(...r.erros);
@@ -194,4 +195,4 @@ function extratoView(){const N=S.t.lfxs.filter(l=>l.tipo==='nat'),D=S.t.lfxs.fil
   <label>Por natureza e centro de resultado (cabeçalho: Cód. Natureza, Natureza, Faturado, Cód. CR., Centro de Resultado, Saldo Por CR, Faturado (Recebido)…)</label><textarea id="ex-nat" rows="4"></textarea>
   <label>Lançamentos (cabeçalho: Origem, Receita/Despesa, Provisão?, Nr. Nota, Empresa, Parceiro, Vlr. Desdobramento, Vlr. Nota, Dt. Negociação, Dt. Baixa, Vendedor/Comprador, Dt. Vencimento, TOP, Descrição TOP, Tipo Movimento)</label><textarea id="ex-lan" rows="4"></textarea>
   <div style="margin-top:8px"><button class="btn dark" data-act="ex-imp" ${pode?'':'disabled title="Só Financeiro"'}>Importar extrato</button></div>`}
-const impView=()=>impViewBase()+extratoView();
+const impView=()=>impViewBase()+extratoView()+(typeof pedImpView==='function'?pedImpView():'');

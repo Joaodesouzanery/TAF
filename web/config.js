@@ -3,6 +3,7 @@
 // Login DESLIGADO por enquanto (modo 'aberto': sem login, cada navegador guarda seus dados). Para ligar o login e o banco compartilhado, troque para modo: 'supabase'.
 window.TAF_CONFIG = {
   modo: 'aberto',
+  marca: 'Grupo Nery',
   supabaseUrl: 'https://kefkgydvjjakqaonyjau.supabase.co',
   supabaseKey: 'sb_publishable_E15lCXd5ardT2m_cgP_OVw_ogg2mMH2'
 };

@@ -1,11 +1,11 @@
 /* ============ render / eventos ============ */
-function render(){S.memo={};try{renderCore()}finally{S.memo=null}if(typeof zerosPass==='function')zerosPass();if(typeof filtrosPass==='function')filtrosPass();if(typeof a11yPass==='function')a11yPass()}
+function render(){S.memo={};try{renderCore()}finally{S.memo=null}if(typeof zerosPass==='function')zerosPass();if(typeof filtrosPass==='function')filtrosPass();if(typeof a11yPass==='function')a11yPass();if(typeof apresPass==='function')apresPass()}
 function renderCore(){
   const X=derive();S.X=X;
   const AR=areaDe(S.view);
   $('#nav').innerHTML=areasVisiveis().map(a=>`<button class="${a.k===AR.k?'on':''}" data-v="${a.k===AR.k?S.view:a.tabs[0][0]}">${ico(a.i)}${a.n}${badgeArea(a,X)}</button>`).join('');
   $('#crumb').textContent=AR.n+(AR.tabs.length>1?' · '+(AR.tabs.find(t=>t[0]===S.view)||AR.tabs[0])[1]:'');
-  const V={fat:viewFat,campo:viewCampo,lean:viewLean,hoje:viewHoje,eap:viewEap,pac:viewPac,compras:viewCompras,nota:viewNota,fin:viewFin,med:viewMed,plano:viewPlano,pain:viewPain,ctb:viewCtb,est:viewEst,dash:viewDash,pes:viewPessoas,sst:viewSst,bi:biView,admin:viewAdmin,fluxo:viewFluxo,ctr:viewCtr,prj:viewPrj,pat:viewPat,frt:viewFrt,aud:viewAud,usuarios:viewUsuarios,cad:viewCadastros}[S.view]||viewHoje;
+  const V={fat:viewFat,campo:viewCampo,lean:viewLean,hoje:viewHoje,eap:viewEap,pac:viewPac,compras:viewCompras,cdash:viewCdash,pedc:viewPedc,nota:viewNota,fin:viewFin,med:viewMed,plano:viewPlano,pain:viewPain,ctb:viewCtb,est:viewEst,dash:viewDash,pes:viewPessoas,sst:viewSst,bi:biView,admin:viewAdmin,fluxo:viewFluxo,ctr:viewCtr,prj:viewPrj,pat:viewPat,frt:viewFrt,aud:viewAud,usuarios:viewUsuarios,cad:viewCadastros}[S.view]||viewHoje;
   const keepQ=document.activeElement&&document.activeElement.id==='q';
   $('#view').innerHTML=abasDaArea(AR)+V(X);
   if(keepQ){const q=$('#q');if(q){q.focus();q.setSelectionRange(q.value.length,q.value.length)}}
@@ -47,7 +47,7 @@ async function load(cod){
 async function abreDemo(cod){
   try{S.D=await load(cod);S.t=loadT();await seedExtrato();S.exp=new Set();S.tab={};S.view='dash';prep();
     S.D.eap.filter(e=>e.nivel<=2).forEach(e=>S.exp.add(e.codigo));
-    $('#obra-av').textContent=S.D.obra.codigo;$('#obra-nome').textContent=S.D.obra.contratante+' · '+S.D.obra.nome;$('#obra-sub').textContent='Centro de custo '+S.D.obra.codigo;
+    pintaObra();
     $('#src-label').textContent=S.src[0];$('#src-sub').textContent=S.src[1];render();
   }catch(e){$('#view').innerHTML=`<div class="err">Não consegui carregar os dados: ${esc(e.message)}<br><span class="sub">Rode um servidor estático em <code>web/</code> ou use o arquivo único.</span></div>`}
 }

@@ -51,3 +51,6 @@ Execução: `bash scripts/qa.sh` (sobe Postgres 16 local, aplica `supabase/migra
 
 ## Fase 21
 `bash scripts/qa.sh`: ver resultado no commit; novo `e2e_fase21` (filtros, cartões = export da 342, detalhe, colunas, cadastro, extrato colado, contraste, mobile) e checagens do extrato 342 em `verifica_342.py`.
+
+## Fase 22
+`e2e_fase22` cobre marca, modo apresentação (obra/fornecedores/valores, persistência, CSV), dashboard e consulta de compras (Σ, colunas, Excel, importar), ficha do contrato (7 abas, responsáveis → filtros, anexos), contraste e mobile.

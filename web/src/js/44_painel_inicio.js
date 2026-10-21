@@ -3,9 +3,10 @@ const EMPRESA_PAD='TAF EQUIPAMENTOS E SERVICOS LTDA',CR_PAD=['104023','CONSTRUÇ
 const CAD_PAD={'342':{tipo:'Contrato',situacao:'Em execução'}};
 const CAD_LISTAS={tipo:['Ata','Contrato','Comissão'],situacao:['Em execução','Financeiro','Fechada'],gerente:['FABRICIO.OLIVEIRA','THADEU.FIDELIS'],vendedor:['SEM VENDEDOR','THADEU.FIDELIS','THALITA.SILVA']};
 const GRUPOS_FLT=[['empresa','Empresa'],['gerente','Gerente'],['vendedor','Vendedor'],['tipo','Tipo de contrato'],['situacao','Situação da obra'],['obras','Nº do contrato']];
-const KPI_KEYS=['contrato','fat','faturadoAnt','recebido','aReceber','atrRec','fatDireto','impDeb','impCred','pago','aPagar','atrasado','gasto','requisicao','custoFixo','cfPrev','prov','provTot','saldoFat','comprom','lucroPainel','lucroPrev'];
+const KPI_KEYS=['provProd','provServ','contrato','fat','faturadoAnt','recebido','aReceber','atrRec','fatDireto','impDeb','impCred','pago','aPagar','atrasado','gasto','requisicao','custoFixo','cfPrev','prov','provTot','saldoFat','comprom','lucroPainel','lucroPrev'];
 const fdz=s=>s?s.split('-').reverse().join('/'):'';
-const cadDe=(cod,t)=>({empresa:EMPRESA_PAD,gerente:'',vendedor:'',tipo:'',situacao:'',...(CAD_PAD[cod]||{}),...(((t||{}).par||{}).cad||{})});
+const cadDe=(cod,t)=>{const f=typeof cadFichaDe==='function'?cadFichaDe(cod,t):{},r=f.resp||{};
+  return {empresa:EMPRESA_PAD,gerente:(r.gerente&&r.gerente.nome)||'',vendedor:(r.vendedor&&r.vendedor.nome)||'',tipo:f.tipo||'',situacao:f.situacao||'',...(CAD_PAD[cod]||{}),...(((t||{}).par||{}).cad||{})}};
 
 /* ---------- estado de cada obra e extrato importado ---------- */
 function lerT(cod){if(S.D&&S.D.obra.codigo===cod)return S.t;if(MODO_SB)return null;
@@ -19,6 +20,7 @@ function aplicaExtrato(t,ex){const lote='extrato-'+ex.obra;t.lfxs=(t.lfxs||[]).f
   t.par=t.par||{};t.par.extratoCorte=ex.corte}
 async function seedExtrato(){const cod=S.D.obra.codigo,ex=await extratoDe(cod);if(!ex||S.t.par.extratoSeed)return;
   aplicaExtrato(S.t,ex);S.t.par.extratoSeed=true;log('extrato',cod,'importar','',ex.nat.length+' naturezas, '+(ex.lanc||[]).length+' lançamentos (corte '+ex.corte+')');save()}
+const provOcsSplit=t=>{const r={prod:0,serv:0};(t.ocs||[]).filter(o=>['aprovada','recebida_parcial','recebida'].includes(o.status)).forEach(o=>{const f=(t.notas||[]).filter(n=>n.oc===o.id&&n.status!=='lancada').reduce((a,n)=>a+n.rateio.filter(l=>l.item===o.item).reduce((b,l)=>b+ +l.valor,0),0),v=Math.max(0,o.valor-f);if(['MO','EQP','TER'].includes(o.nat))r.serv+=v;else r.prod+=v});r.prod=r2(r.prod);r.serv=r2(r.serv);return r};
 const provOcs=t=>r2((t.ocs||[]).filter(o=>['aprovada','recebida_parcial','recebida'].includes(o.status)).reduce((s,o)=>{const f=(t.notas||[]).filter(n=>n.oc===o.id&&n.status!=='lancada').reduce((a,n)=>a+n.rateio.filter(l=>l.item===o.item).reduce((b,l)=>b+ +l.valor,0),0);return s+Math.max(0,o.valor-f)},0));
 /* roda uma função "como se" a obra de outro estado estivesse aberta (sem tocar em nada que fica gravado) */
 function comObra(t,O,fn){const pv=provLigada(),sv={t:S.t,D:S.D,X:S.X,m:S.memo,p:S.provTmp};S.provTmp=pv;S.t=t;S.D={obra:O,items:[]};S.X={venda:O.valor_contrato,comp:provOcs(t)};S.memo=null;
@@ -61,7 +63,7 @@ const pct=(v,b)=>b?((v/b)*100).toFixed(2).replace('.',',')+' %':'0,00 %';
 function kcard(k,t,cls,T){const sub=l=>`<div class="ksub">${l}</div>`,B=T.contrato;let v=0,s='';
   if(k==='gasto'){v=T.gasto;s=sub('Pago: '+brl(T.pago))+sub('A pagar: '+brl(T.aPagar))+sub('Atrasado: '+brl(T.atrasado))+sub('Requisição: '+brl(T.requisicao))}
   else if(k==='custoFixo'){v=T.custoFixo;s=sub(pct(T.custoFixo,B)+' do contrato')+sub('Previsto: '+brl(T.cfPrev))}
-  else if(k==='prov'){v=T.prov;s=provPref()?sub('Pedidos sem nota e provisões'):sub('Provisão desligada nos filtros')}
+  else if(k==='prov'){v=T.prov;s=provPref()?sub('Produtos: '+brl(T.provProd))+sub('Serviços: '+brl(T.provServ)):sub('Provisão desligada nos filtros')}
   else if(k==='fat'){v=T.fat;s=sub('Anteriormente: '+brl(T.faturadoAnt))+sub('Recebido: '+brl(T.recebido))+sub('A receber: '+brl(T.aReceber))+sub('Atrasado: '+brl(T.atrRec))}
   else if(k==='fatDireto'){v=T.fatDireto;s=sub('Compras faturadas direto ao cliente')}
   else if(k==='saldoFat'){v=T.saldoFat;s=sub(pct(T.saldoFat,B)+' do contrato')}
@@ -106,38 +108,15 @@ function lancRowsT(cod){const R=[],cd=cadDe(S.D.obra.codigo,S.t);
 function porObras(cods,fn){const out=[];cods.forEach(c=>{if(S.D&&S.D.obra.codigo===c)out.push(...fn());else{const k=S.cart&&S.cart[c];if(k&&k.obra)out.push(...comObra(tEf(c),k.obra,fn))}});return out}
 function linhasNat(cods){const M=new Map();porObras(cods,natRowsT).forEach(r=>{const k=r.cod+'|'+r.cr;let x=M.get(k);if(!x){M.set(k,{...r});return}NAT_COLS.forEach(([c,,t])=>{if(t==='n')x[c]=r2(x[c]+r[c])});x.fora=x.fora||r.fora});
   return [...M.values()].sort((a,b)=>String(a.cod).localeCompare(String(b.cod)))}
-const colsKey=tab=>'taf_cols_'+tab;
-function colsVis(tab,def){let v=null;try{v=JSON.parse(localStorage.getItem(colsKey(tab))||'null')}catch(e){}if(!v&&S.colMem)v=S.colMem[tab];const ok=Array.isArray(v)?v.filter(k=>def.some(d=>d[0]===k)):null;return ok&&ok.length?ok:def.map(d=>d[0])}
-const fcel=(t,v)=>t==='n'?brl(v):t==='d'?fdz(v):esc(v==null?'':v);
-function detGrade(tab,def,rows,hl,rowAct){const vis=colsVis(tab,def),C=vis.map(k=>def.find(d=>d[0]===k)),tot=C.map(([k,,t])=>t==='n'?r2(rows.reduce((s,r)=>s+(+r[k]||0),0)):null);
-  return `<div class="tw detw"><table class="tbl"><thead><tr>${C.map(([k,l,t])=>`<th class="${t==='n'?'r':''} ${hl===k?'hl':''}">${l}</th>`).join('')}</tr></thead><tbody>${rows.length?rows.map(r=>`<tr ${rowAct?`class="clk" tabindex="0" ${rowAct(r)}`:''}>${C.map(([k,,t])=>`<td class="${t==='n'?'r':''} ${hl===k?'hl':''} ${t==='n'&&+r[k]<0?'neg':''}">${fcel(t,r[k])}</td>`).join('')}</tr>`).join(''):`<tr><td colspan="${C.length}"><span class="zero">0</span> registros</td></tr>`}</tbody>
-  <tfoot><tr>${C.map(([k,,t],i)=>`<td class="${t==='n'?'r':''}">${i===0?'Total ('+rows.length+')':t==='n'?brl(tot[i]):''}</td>`).join('')}</tr></tfoot></table></div>`}
-function detCsv(tab,def,rows){const vis=colsVis(tab,def),C=vis.map(k=>def.find(d=>d[0]===k));
-  return '﻿'+[C.map(c=>c[1]),...rows.map(r=>C.map(([k,,t])=>t==='n'?String(r2(+r[k]||0)).replace('.',','):t==='d'?fdz(r[k]):String(r[k]??'')))].map(l=>l.map(csvCel).join(';')).join('\r\n')}
 function detModal(){const d=S.det,cods=d.cods,nome=KNOME[d.k]||'Detalhe',lanc=d.vista==='lanc',tab=lanc?'lanc':'nat',def=lanc?LANC_COLS:NAT_COLS;
-  if(d.cfg){const vis=colsVis(tab,def);return cfgHtml([...vis,...def.map(c=>c[0]).filter(k=>!vis.includes(k))],vis,def)}
   let rows,corte='';
   if(lanc){rows=porObras(cods,()=>lancRowsT(d.nat))}else{rows=linhasNat(cods);cods.forEach(c=>{const t=tEf(c);if(t.par&&t.par.extratoCorte)corte=t.par.extratoCorte})}
   const nm=lanc?(linhasNat(cods).find(r=>r.cod===d.nat)||{}).nome||d.nat:'';
   return `<h3>${lanc?'Lançamentos · '+esc(nm):'Detalhe · '+nome}</h3><div class="sub">Obras: ${cods.map(esc).join(', ')}${corte?' · histórico importado até '+fdz(corte):''}${lanc?'':' · clique numa natureza para ver os lançamentos'}</div>
-  <div class="dtools"><input id="det-q" type="search" placeholder="Buscar na tabela" aria-label="Buscar na tabela">${lanc?'<button class="btn sm" data-act="det-back">‹ Naturezas</button>':''}<button class="btn sm" data-act="det-cfg">Colunas</button><button class="btn sm" data-act="det-csv">Copiar CSV</button><button class="btn sm" data-act="fechar">Fechar</button></div>
-  ${detGrade(tab,def,rows,lanc?'':KHL[d.k],lanc?null:r=>`data-act="det-nat" data-c="${esc(r.cod)}"`)}
+  <div class="dtools">${gradeBusca(tab)}${lanc?'<button class="btn sm" data-act="det-back">‹ Naturezas</button>':''}${gradeTools(tab,def,()=>abreDet({}))}<button class="btn sm" data-act="fechar">Fechar</button></div>
+  ${gradeTable(tab,def,rows,{hl:lanc?'':KHL[d.k],rowAct:lanc?null:r=>`data-act="det-nat" data-c="${esc(r.cod)}"`})}
   ${lanc?'':'<div class="sub" style="margin-top:8px">Adiantamento a fornecedor aparece na tabela, mas não entra no cartão Gasto.</div>'}`}
 function abreDet(patch){S.det={...(S.det||{}),...patch};modal(detModal());$('#mbox').classList.add('wide')}
 ACOES['kdet']=el=>abreDet({k:el.dataset.k,cods:obrasSel(),vista:'nat',nat:'',cfg:false});
 ACOES['det-nat']=el=>abreDet({vista:'lanc',nat:el.dataset.c,cfg:false});
 ACOES['det-back']=()=>abreDet({vista:'nat',nat:'',cfg:false});
-ACOES['det-cfg']=()=>{S.det.cfg=!S.det.cfg;S.colTmp=null;abreDet({})};
-const colTab=()=>S.det.vista==='lanc'?'lanc':'nat',colDef=()=>S.det.vista==='lanc'?LANC_COLS:NAT_COLS;
-const colMarcadas=()=>[...document.querySelectorAll('#mbox [data-colk]')].filter(x=>x.checked).map(x=>x.dataset.colk),colOrdem=()=>[...document.querySelectorAll('#mbox [data-colk]')].map(x=>x.dataset.colk);
-function colGrava(tab,v){try{localStorage.setItem(colsKey(tab),JSON.stringify(v))}catch(e){}S.colMem=S.colMem||{};S.colMem[tab]=v}
-function colMove(k,d){const o=colOrdem(),m=colMarcadas(),i=o.indexOf(k),j=i+d;if(j<0||j>=o.length)return;[o[i],o[j]]=[o[j],o[i]];modal(cfgHtml(o,m,colDef()));$('#mbox').classList.add('wide')}
-function cfgHtml(o,m,def){return `<h3>Configuração da grade</h3><div class="sub">Marque as colunas que quer ver e ajuste a ordem. Fica salvo neste navegador.</div><div class="colcfg">${o.map(k=>{const [,l]=def.find(c=>c[0]===k);return `<div class="colrow"><label><input type="checkbox" data-colk="${k}" ${m.includes(k)?'checked':''}> ${l}</label><button class="btn sm" data-act="col-up" data-k="${k}" aria-label="Subir ${l}">↑</button><button class="btn sm" data-act="col-down" data-k="${k}" aria-label="Descer ${l}">↓</button></div>`}).join('')}</div>
-  <div class="acts"><button class="btn" data-act="col-reset">Restaurar padrão</button><button class="btn" data-act="det-cfg">Cancelar</button><button class="btn dark" data-act="col-save">Salvar</button></div>`}
-ACOES['col-up']=el=>colMove(el.dataset.k,-1);ACOES['col-down']=el=>colMove(el.dataset.k,1);
-ACOES['col-save']=()=>{const m=colMarcadas();if(!m.length)return toast('Deixe ao menos uma coluna');colGrava(colTab(),colOrdem().filter(k=>m.includes(k)));S.det.cfg=false;abreDet({})};
-ACOES['col-reset']=()=>{try{localStorage.removeItem(colsKey(colTab()))}catch(e){}if(S.colMem)delete S.colMem[colTab()];S.det.cfg=false;abreDet({})};
-ACOES['det-csv']=()=>{const d=S.det,lanc=d.vista==='lanc',def=lanc?LANC_COLS:NAT_COLS,rows=lanc?porObras(d.cods,()=>lancRowsT(d.nat)):linhasNat(d.cods),txt=detCsv(lanc?'lanc':'nat',def,rows);
-  try{navigator.clipboard.writeText(txt.replace('﻿','')).then(()=>toast('CSV copiado'),()=>toast('Não consegui copiar'))}catch(e){toast('Não consegui copiar')}};
-document.addEventListener('input',e=>{if(e.target.id==='det-q'){const q=e.target.value.toLowerCase();document.querySelectorAll('#mbox .detw tbody tr').forEach(r=>{r.style.display=!q||r.innerText.toLowerCase().includes(q)?'':'none'})}});
-document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches&&e.target.matches('#mbox tr.clk'))e.target.click()});
